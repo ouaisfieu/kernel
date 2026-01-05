@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN::NETWORK — Réseau de Contacts</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --bg-void: #0a0a0f;
+            --bg-deep: #0f0f18;
+            --bg-surface: #14141f;
+            --bg-card: #1a1a28;
+            --bg-hover: #22222f;
+            --border: #2a2a3a;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --accent: #6366f1;
+            --accent-dim: #4f46e5;
+            --cyan: #22d3ee;
+            --green: #4ade80;
+            --amber: #fbbf24;
+            --red: #f87171;
+            --purple: #a78bfa;
+            --pink: #f472b6;
+            --orange: #fb923c;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-void);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .app {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / 3;
+            background: var(--bg-deep);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--cyan), var(--accent));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-sub {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 350px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            opacity: 0.5;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-left: auto;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .stat-label {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Skill Bar */
+        .skill-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .skill-icon {
+            font-size: 1.2rem;
+        }
+        
+        .skill-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        
+        .skill-name {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .skill-level {
+            font-weight: 700;
+            color: var(--cyan);
+            font-size: 0.85rem;
+        }
+        
+        .skill-progress {
+            width: 80px;
+            height: 6px;
+            background: var(--bg-card);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--accent));
+            transition: width 0.5s;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-deep);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+        
+        .btn-primary {
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dim);
+        }
+        
+        /* Filters */
+        .filters {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+        
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        /* Contacts List */
+        .contacts-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+        }
+        
+        .contact-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .contact-item.active {
+            background: var(--bg-card);
+            border-left: 3px solid var(--cyan);
+        }
+        
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .contact-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-role {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-tags {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+        }
+        
+        .contact-tag {
+            font-size: 0.55rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: var(--bg-surface);
+        }
+        
+        .contact-strength {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .strength-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+        
+        .strength-dot.active {
+            background: var(--cyan);
+        }
+        
+        /* Main Content - Graph */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .graph-toolbar {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            background: var(--bg-deep);
+        }
+        
+        .toolbar-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .toolbar-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        
+        .toolbar-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .toolbar-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .graph-container {
+            flex: 1;
+            background: var(--bg-surface);
+            position: relative;
+        }
+        
+        .graph-container svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Graph Nodes */
+        .node-group {
+            cursor: pointer;
+        }
+        
+        .node-circle {
+            stroke: var(--bg-void);
+            stroke-width: 3px;
+            transition: all 0.2s;
+        }
+        
+        .node-group:hover .node-circle {
+            stroke: var(--cyan);
+            stroke-width: 4px;
+        }
+        
+        .node-label {
+            font-size: 10px;
+            fill: var(--text);
+            pointer-events: none;
+            text-anchor: middle;
+        }
+        
+        .node-role {
+            font-size: 8px;
+            fill: var(--text-dim);
+            pointer-events: none;
+            text-anchor: middle;
+        }
+        
+        .link {
+            stroke: var(--border);
+            stroke-opacity: 0.4;
+        }
+        
+        .link.highlighted {
+            stroke: var(--cyan);
+            stroke-opacity: 1;
+            stroke-width: 2px;
+        }
+        
+        .link.strong { stroke-width: 3px; stroke-opacity: 0.6; }
+        .link.medium { stroke-width: 2px; stroke-opacity: 0.5; }
+        .link.weak { stroke-width: 1px; stroke-opacity: 0.3; }
+        
+        /* Center Node (User) */
+        .center-node .node-circle {
+            stroke: var(--amber);
+            stroke-width: 4px;
+        }
+        
+        /* Graph Legend */
+        .graph-legend {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.7rem;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        /* Contact Detail Panel */
+        .detail-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 350px;
+            height: 100%;
+            background: var(--bg-deep);
+            border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-panel.open {
+            transform: translateX(0);
+        }
+        
+        .detail-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .detail-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        
+        .detail-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .detail-info h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-info p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .detail-field {
+            margin-bottom: 0.75rem;
+        }
+        
+        .detail-field label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-field-value {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            background: var(--bg-surface);
+            border-radius: 6px;
+        }
+        
+        .connections-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-surface);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .connection-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .connection-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .detail-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .detail-footer button {
+            flex: 1;
+        }
+        
+        .btn-danger {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--red);
+            border-radius: 6px;
+            color: var(--red);
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: var(--red);
+            color: white;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .modal.open {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .strength-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .strength-option {
+            flex: 1;
+            padding: 0.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+        
+        .strength-option:hover {
+            border-color: var(--cyan);
+        }
+        
+        .strength-option.selected {
+            background: var(--cyan);
+            border-color: var(--cyan);
+            color: var(--bg-void);
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary {
+            padding: 0.5rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        
+        /* Role Colors */
+        .role-colleague { background: var(--accent); color: white; }
+        .role-friend { background: var(--green); color: var(--bg-void); }
+        .role-family { background: var(--pink); color: var(--bg-void); }
+        .role-source { background: var(--amber); color: var(--bg-void); }
+        .role-professional { background: var(--cyan); color: var(--bg-void); }
+        .role-politician { background: var(--red); color: white; }
+        .role-journalist { background: var(--purple); color: white; }
+        .role-activist { background: var(--orange); color: var(--bg-void); }
+        .role-other { background: var(--text-dim); color: var(--bg-void); }
+        
+        /* XP Popup */
+        .xp-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--green);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            z-index: 1000;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .xp-popup-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .xp-popup-text {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🔗</div>
+                <div>
+                    <div class="logo-text">KERN::NETWORK</div>
+                    <div class="logo-sub">Réseau de Contacts</div>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher un contact...">
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-value" style="color: var(--cyan)" id="statContacts">0</div>
+                    <div class="stat-label">Contacts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" style="color: var(--purple)" id="statConnections">0</div>
+                    <div class="stat-label">Connexions</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" style="color: var(--amber)" id="statInfluence">0</div>
+                    <div class="stat-label">Influence</div>
+                </div>
+            </div>
+            
+            <div class="skill-bar">
+                <span class="skill-icon">🌐</span>
+                <div class="skill-info">
+                    <span class="skill-name">Réseau</span>
+                    <span class="skill-level">Niv. <span id="skillLevel">1</span></span>
+                </div>
+                <div class="skill-progress">
+                    <div class="skill-fill" id="skillFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Mes Contacts</span>
+                <button class="btn-primary" onclick="openAddModal()">+ Ajouter</button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Tous</button>
+                <button class="filter-btn" data-filter="colleague" onclick="setFilter('colleague')">Collègues</button>
+                <button class="filter-btn" data-filter="source" onclick="setFilter('source')">Sources</button>
+                <button class="filter-btn" data-filter="politician" onclick="setFilter('politician')">Politiques</button>
+                <button class="filter-btn" data-filter="journalist" onclick="setFilter('journalist')">Journalistes</button>
+                <button class="filter-btn" data-filter="activist" onclick="setFilter('activist')">Activistes</button>
+            </div>
+            
+            <div class="contacts-list" id="contactsList"></div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="graph-toolbar">
+                <div class="toolbar-group">
+                    <span class="toolbar-label">Vue:</span>
+                    <button class="toolbar-btn active" onclick="setGraphMode('radial')">Radiale</button>
+                    <button class="toolbar-btn" onclick="setGraphMode('force')">Force</button>
+                    <button class="toolbar-btn" onclick="setGraphMode('hierarchical')">Hiérarchie</button>
+                </div>
+                <div class="toolbar-group">
+                    <span class="toolbar-label">Afficher:</span>
+                    <button class="toolbar-btn active" id="toggleLabels" onclick="toggleLabels()">Labels</button>
+                    <button class="toolbar-btn" id="toggleConnections" onclick="toggleSecondaryConnections()">Connexions 2°</button>
+                </div>
+                <div class="toolbar-group" style="margin-left: auto;">
+                    <button class="toolbar-btn" onclick="centerGraph()">🎯 Centrer</button>
+                    <button class="toolbar-btn" onclick="exportGraph()">📤 Exporter</button>
+                </div>
+            </div>
+            
+            <div class="graph-container" id="graphContainer">
+                <svg id="graphSvg"></svg>
+                <div class="graph-legend">
+                    <div class="legend-title">Types de contacts</div>
+                    <div class="legend-item"><div class="legend-dot role-colleague"></div><span>Collègue</span></div>
+                    <div class="legend-item"><div class="legend-dot role-source"></div><span>Source</span></div>
+                    <div class="legend-item"><div class="legend-dot role-politician"></div><span>Politique</span></div>
+                    <div class="legend-item"><div class="legend-dot role-journalist"></div><span>Journaliste</span></div>
+                    <div class="legend-item"><div class="legend-dot role-activist"></div><span>Activiste</span></div>
+                    <div class="legend-item"><div class="legend-dot role-friend"></div><span>Ami</span></div>
+                </div>
+            </div>
+            
+            <!-- Detail Panel -->
+            <aside class="detail-panel" id="detailPanel">
+                <div class="detail-header">
+                    <div class="detail-avatar" id="detailAvatar">JD</div>
+                    <div class="detail-info">
+                        <h2 id="detailName">John Doe</h2>
+                        <p id="detailRole">Analyste politique</p>
+                    </div>
+                    <button class="detail-close" onclick="closeDetail()">×</button>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-section">
+                        <div class="detail-section-title">Informations</div>
+                        <div class="detail-field">
+                            <label>Organisation</label>
+                            <div class="detail-field-value" id="detailOrg">-</div>
+                        </div>
+                        <div class="detail-field">
+                            <label>Email</label>
+                            <div class="detail-field-value" id="detailEmail">-</div>
+                        </div>
+                        <div class="detail-field">
+                            <label>Téléphone</label>
+                            <div class="detail-field-value" id="detailPhone">-</div>
+                        </div>
+                        <div class="detail-field">
+                            <label>Force du lien</label>
+                            <div class="contact-strength" id="detailStrength">
+                                <span class="strength-dot"></span>
+                                <span class="strength-dot"></span>
+                                <span class="strength-dot"></span>
+                                <span class="strength-dot"></span>
+                                <span class="strength-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Notes</div>
+                        <div class="detail-field-value" id="detailNotes" style="min-height: 80px;">-</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Connexions partagées</div>
+                        <div class="connections-list" id="detailConnections"></div>
+                    </div>
+                </div>
+                <div class="detail-footer">
+                    <button class="btn-secondary" onclick="editContact()">✏️ Modifier</button>
+                    <button class="btn-danger" onclick="deleteContact()">🗑️ Supprimer</button>
+                </div>
+            </aside>
+        </main>
+    </div>
+    
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">Ajouter un contact</span>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Prénom *</label>
+                        <input type="text" id="inputFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom *</label>
+                        <input type="text" id="inputLastName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rôle/Fonction</label>
+                        <input type="text" id="inputRole" placeholder="Ex: Député, Journaliste...">
+                    </div>
+                    <div class="form-group">
+                        <label>Type de contact</label>
+                        <select id="inputType">
+                            <option value="colleague">Collègue</option>
+                            <option value="friend">Ami</option>
+                            <option value="family">Famille</option>
+                            <option value="source">Source</option>
+                            <option value="professional">Professionnel</option>
+                            <option value="politician">Politique</option>
+                            <option value="journalist">Journaliste</option>
+                            <option value="activist">Activiste</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Organisation</label>
+                    <input type="text" id="inputOrg" placeholder="Entreprise, institution...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="inputEmail">
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="inputPhone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Force du lien</label>
+                    <div class="strength-selector" id="strengthSelector">
+                        <div class="strength-option" data-value="1">Faible</div>
+                        <div class="strength-option selected" data-value="2">Moyen</div>
+                        <div class="strength-option" data-value="3">Fort</div>
+                        <div class="strength-option" data-value="4">Très fort</div>
+                        <div class="strength-option" data-value="5">Intime</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Connecté à (autres contacts)</label>
+                    <select id="inputConnections" multiple style="height: 100px;">
+                    </select>
+                    <small style="color: var(--text-dim); font-size: 0.7rem;">Ctrl+clic pour sélectionner plusieurs</small>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="inputNotes" rows="3" placeholder="Informations supplémentaires..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+                <button class="btn-primary" onclick="saveContact()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ==================== STATE ====================
+let contacts = [];
+let currentContactId = null;
+let editingContactId = null;
+let currentFilter = 'all';
+let graphMode = 'radial';
+let showLabels = true;
+let showSecondaryConnections = false;
+let simulation = null;
+
+const STORAGE_KEY = 'kern_network_contacts';
+const SKILL_KEY = 'kern_network_skill';
+
+let skill = { level: 1, xp: 0, toNext: 100 };
+
+// ==================== ROLE COLORS ====================
+const ROLE_COLORS = {
+    colleague: '#6366f1',
+    friend: '#4ade80',
+    family: '#f472b6',
+    source: '#fbbf24',
+    professional: '#22d3ee',
+    politician: '#f87171',
+    journalist: '#a78bfa',
+    activist: '#fb923c',
+    other: '#888888'
+};
+
+// ==================== INITIALIZATION ====================
+function init() {
+    loadData();
+    renderContactsList();
+    renderGraph();
+    updateStats();
+    updateSkill();
+    
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    
+    // Strength selector
+    document.querySelectorAll('.strength-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.strength-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+        });
+    });
+    
+    // Create demo data if empty
+    if (contacts.length === 0) {
+        createDemoContacts();
+    }
+}
+
+function createDemoContacts() {
+    contacts = [
+        {
+            id: generateId(),
+            firstName: 'Marie',
+            lastName: 'Dupont',
+            role: 'Journaliste politique',
+            type: 'journalist',
+            org: 'Le Soir',
+            email: 'marie.dupont@lesoir.be',
+            phone: '+32 470 123 456',
+            strength: 4,
+            connections: [],
+            notes: 'Contact fiable pour les infos parlementaires. Rencontrée lors d\'une conférence.',
+            created: new Date().toISOString()
+        },
+        {
+            id: generateId(),
+            firstName: 'Pierre',
+            lastName: 'Martin',
+            role: 'Député fédéral',
+            type: 'politician',
+            org: 'Parlement fédéral',
+            email: 'p.martin@lachambre.be',
+            phone: '+32 2 549 xxxx',
+            strength: 2,
+            connections: [],
+            notes: 'Commission finances. Plutôt accessible.',
+            created: new Date().toISOString()
+        },
+        {
+            id: generateId(),
+            firstName: 'Sophie',
+            lastName: 'Leroy',
+            role: 'Coordinatrice',
+            type: 'activist',
+            org: 'Plateforme Climat',
+            email: 'sophie@climat.org',
+            phone: '+32 485 xxx xxx',
+            strength: 3,
+            connections: [],
+            notes: 'Très active sur les réseaux. Bonne source pour les mobilisations.',
+            created: new Date().toISOString()
+        },
+        {
+            id: generateId(),
+            firstName: 'Thomas',
+            lastName: 'Bernard',
+            role: 'Analyste',
+            type: 'colleague',
+            org: 'Think Tank Démocratie',
+            email: 'thomas.b@thinktank.eu',
+            phone: '+32 2 xxx xxxx',
+            strength: 4,
+            connections: [],
+            notes: 'Ancien collègue. Expert en données électorales.',
+            created: new Date().toISOString()
+        },
+        {
+            id: generateId(),
+            firstName: 'Emma',
+            lastName: 'Janssen',
+            role: 'Attachée de presse',
+            type: 'source',
+            org: 'Commission européenne',
+            email: 'emma.janssen@ec.europa.eu',
+            phone: '',
+            strength: 2,
+            connections: [],
+            notes: 'DG Environment. Peut fournir des briefings off.',
+            created: new Date().toISOString()
+        }
+    ];
+    
+    // Add some connections
+    contacts[0].connections = [contacts[1].id, contacts[2].id];
+    contacts[1].connections = [contacts[0].id, contacts[4].id];
+    contacts[2].connections = [contacts[0].id, contacts[3].id];
+    contacts[3].connections = [contacts[2].id, contacts[4].id];
+    contacts[4].connections = [contacts[1].id, contacts[3].id];
+    
+    saveData();
+}
+
+// ==================== DATA MANAGEMENT ====================
+function loadData() {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) contacts = JSON.parse(stored);
+        
+        const storedSkill = localStorage.getItem(SKILL_KEY);
+        if (storedSkill) skill = JSON.parse(storedSkill);
+    } catch (e) {
+        console.error('Error loading data:', e);
+    }
+}
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
+    localStorage.setItem(SKILL_KEY, JSON.stringify(skill));
+}
+
+function generateId() {
+    return 'contact_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// ==================== CONTACTS CRUD ====================
+function openAddModal() {
+    editingContactId = null;
+    document.getElementById('modalTitle').textContent = 'Ajouter un contact';
+    clearForm();
+    updateConnectionsSelect();
+    document.getElementById('contactModal').classList.add('open');
+}
+
+function editContact() {
+    if (!currentContactId) return;
+    const contact = contacts.find(c => c.id === currentContactId);
+    if (!contact) return;
+    
+    editingContactId = currentContactId;
+    document.getElementById('modalTitle').textContent = 'Modifier le contact';
+    
+    document.getElementById('inputFirstName').value = contact.firstName;
+    document.getElementById('inputLastName').value = contact.lastName;
+    document.getElementById('inputRole').value = contact.role || '';
+    document.getElementById('inputType').value = contact.type;
+    document.getElementById('inputOrg').value = contact.org || '';
+    document.getElementById('inputEmail').value = contact.email || '';
+    document.getElementById('inputPhone').value = contact.phone || '';
+    document.getElementById('inputNotes').value = contact.notes || '';
+    
+    // Set strength
+    document.querySelectorAll('.strength-option').forEach(opt => {
+        opt.classList.toggle('selected', parseInt(opt.dataset.value) === contact.strength);
+    });
+    
+    updateConnectionsSelect(contact.id);
+    
+    // Set connections
+    const select = document.getElementById('inputConnections');
+    Array.from(select.options).forEach(opt => {
+        opt.selected = contact.connections.includes(opt.value);
+    });
+    
+    document.getElementById('contactModal').classList.add('open');
+}
+
+function saveContact() {
+    const firstName = document.getElementById('inputFirstName').value.trim();
+    const lastName = document.getElementById('inputLastName').value.trim();
+    
+    if (!firstName || !lastName) {
+        alert('Prénom et nom requis');
+        return;
+    }
+    
+    const strength = parseInt(document.querySelector('.strength-option.selected')?.dataset.value || 2);
+    const selectedConnections = Array.from(document.getElementById('inputConnections').selectedOptions).map(o => o.value);
+    
+    const contactData = {
+        firstName,
+        lastName,
+        role: document.getElementById('inputRole').value.trim(),
+        type: document.getElementById('inputType').value,
+        org: document.getElementById('inputOrg').value.trim(),
+        email: document.getElementById('inputEmail').value.trim(),
+        phone: document.getElementById('inputPhone').value.trim(),
+        strength,
+        connections: selectedConnections,
+        notes: document.getElementById('inputNotes').value.trim()
+    };
+    
+    if (editingContactId) {
+        // Update existing
+        const index = contacts.findIndex(c => c.id === editingContactId);
+        if (index !== -1) {
+            contacts[index] = { ...contacts[index], ...contactData };
+            
+            // Update bidirectional connections
+            updateBidirectionalConnections(editingContactId, selectedConnections);
+        }
+    } else {
+        // Create new
+        const newContact = {
+            id: generateId(),
+            ...contactData,
+            created: new Date().toISOString()
+        };
+        contacts.push(newContact);
+        
+        // Add bidirectional connections
+        updateBidirectionalConnections(newContact.id, selectedConnections);
+        
+        // Award XP
+        awardXP(20, 'Nouveau contact ajouté !');
+    }
+    
+    saveData();
+    closeModal();
+    renderContactsList();
+    renderGraph();
+    updateStats();
+    
+    if (currentContactId) {
+        showDetail(currentContactId);
+    }
+}
+
+function updateBidirectionalConnections(contactId, newConnections) {
+    // Remove old connections
+    contacts.forEach(c => {
+        if (c.id !== contactId) {
+            c.connections = c.connections.filter(id => id !== contactId);
+        }
+    });
+    
+    // Add new connections
+    newConnections.forEach(targetId => {
+        const target = contacts.find(c => c.id === targetId);
+        if (target && !target.connections.includes(contactId)) {
+            target.connections.push(contactId);
+        }
+    });
+}
+
+function deleteContact() {
+    if (!currentContactId) return;
+    if (!confirm('Supprimer ce contact ?')) return;
+    
+    // Remove from all connections
+    contacts.forEach(c => {
+        c.connections = c.connections.filter(id => id !== currentContactId);
+    });
+    
+    contacts = contacts.filter(c => c.id !== currentContactId);
+    currentContactId = null;
+    
+    saveData();
+    closeDetail();
+    renderContactsList();
+    renderGraph();
+    updateStats();
+}
+
+function closeModal() {
+    document.getElementById('contactModal').classList.remove('open');
+    editingContactId = null;
+}
+
+function clearForm() {
+    document.getElementById('inputFirstName').value = '';
+    document.getElementById('inputLastName').value = '';
+    document.getElementById('inputRole').value = '';
+    document.getElementById('inputType').value = 'colleague';
+    document.getElementById('inputOrg').value = '';
+    document.getElementById('inputEmail').value = '';
+    document.getElementById('inputPhone').value = '';
+    document.getElementById('inputNotes').value = '';
+    
+    document.querySelectorAll('.strength-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.value === '2');
+    });
+}
+
+function updateConnectionsSelect(excludeId = null) {
+    const select = document.getElementById('inputConnections');
+    select.innerHTML = contacts
+        .filter(c => c.id !== excludeId)
+        .map(c => `<option value="${c.id}">${c.firstName} ${c.lastName}</option>`)
+        .join('');
+}
+
+// ==================== RENDER CONTACTS LIST ====================
+function renderContactsList() {
+    const container = document.getElementById('contactsList');
+    const filtered = currentFilter === 'all' 
+        ? contacts 
+        : contacts.filter(c => c.type === currentFilter);
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-dim);">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">👤</div>
+                <div>Aucun contact</div>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = filtered.map(c => `
+        <div class="contact-item ${c.id === currentContactId ? 'active' : ''}" 
+             onclick="showDetail('${c.id}')">
+            <div class="contact-avatar role-${c.type}">${getInitials(c.firstName, c.lastName)}</div>
+            <div class="contact-info">
+                <div class="contact-name">${c.firstName} ${c.lastName}</div>
+                <div class="contact-role">${c.role || c.type}</div>
+                <div class="contact-tags">
+                    ${c.org ? `<span class="contact-tag">${c.org}</span>` : ''}
+                </div>
+            </div>
+            <div class="contact-strength">
+                ${[1,2,3,4,5].map(i => `<span class="strength-dot ${i <= c.strength ? 'active' : ''}"></span>`).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function getInitials(first, last) {
+    return (first.charAt(0) + last.charAt(0)).toUpperCase();
+}
+
+function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    renderContactsList();
+}
+
+function handleSearch(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const items = document.querySelectorAll('.contact-item');
+    
+    items.forEach(item => {
+        const name = item.querySelector('.contact-name').textContent.toLowerCase();
+        const role = item.querySelector('.contact-role').textContent.toLowerCase();
+        item.style.display = (name.includes(query) || role.includes(query)) ? 'flex' : 'none';
+    });
+}
+
+// ==================== DETAIL PANEL ====================
+function showDetail(id) {
+    currentContactId = id;
+    const contact = contacts.find(c => c.id === id);
+    if (!contact) return;
+    
+    document.getElementById('detailAvatar').textContent = getInitials(contact.firstName, contact.lastName);
+    document.getElementById('detailAvatar').className = `detail-avatar role-${contact.type}`;
+    document.getElementById('detailName').textContent = `${contact.firstName} ${contact.lastName}`;
+    document.getElementById('detailRole').textContent = contact.role || contact.type;
+    document.getElementById('detailOrg').textContent = contact.org || '-';
+    document.getElementById('detailEmail').textContent = contact.email || '-';
+    document.getElementById('detailPhone').textContent = contact.phone || '-';
+    document.getElementById('detailNotes').textContent = contact.notes || '-';
+    
+    // Strength dots
+    const strengthDots = document.getElementById('detailStrength');
+    strengthDots.innerHTML = [1,2,3,4,5].map(i => 
+        `<span class="strength-dot ${i <= contact.strength ? 'active' : ''}"></span>`
+    ).join('');
+    
+    // Connections
+    const connectionsEl = document.getElementById('detailConnections');
+    const connectedContacts = contacts.filter(c => contact.connections.includes(c.id));
+    connectionsEl.innerHTML = connectedContacts.length ? connectedContacts.map(c => `
+        <div class="connection-item" onclick="showDetail('${c.id}')">
+            <div class="connection-avatar role-${c.type}">${getInitials(c.firstName, c.lastName)}</div>
+            <span>${c.firstName} ${c.lastName}</span>
+        </div>
+    `).join('') : '<div style="color: var(--text-dim); font-size: 0.8rem;">Aucune connexion</div>';
+    
+    document.getElementById('detailPanel').classList.add('open');
+    
+    // Update list selection
+    document.querySelectorAll('.contact-item').forEach(item => {
+        item.classList.toggle('active', item.onclick.toString().includes(id));
+    });
+    
+    // Highlight in graph
+    highlightContact(id);
+}
+
+function closeDetail() {
+    document.getElementById('detailPanel').classList.remove('open');
+    currentContactId = null;
+    unhighlightAll();
+}
+
+// ==================== GRAPH ====================
+function renderGraph() {
+    const container = document.getElementById('graphContainer');
+    const svg = d3.select('#graphSvg');
+    svg.selectAll('*').remove();
+    
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    
+    // Create nodes (add "You" as center)
+    const nodes = [
+        { id: 'user', firstName: 'Vous', lastName: '', type: 'user', isUser: true }
+    ];
+    
+    contacts.forEach(c => {
+        nodes.push({
+            id: c.id,
+            firstName: c.firstName,
+            lastName: c.lastName,
+            type: c.type,
+            strength: c.strength
+        });
+    });
+    
+    // Create links
+    const links = [];
+    
+    // All contacts connect to user
+    contacts.forEach(c => {
+        links.push({
+            source: 'user',
+            target: c.id,
+            strength: c.strength
+        });
+    });
+    
+    // Inter-contact connections
+    if (showSecondaryConnections) {
+        contacts.forEach(c => {
+            c.connections.forEach(targetId => {
+                // Avoid duplicates
+                if (!links.find(l => 
+                    (l.source === c.id && l.target === targetId) ||
+                    (l.source === targetId && l.target === c.id)
+                )) {
+                    links.push({
+                        source: c.id,
+                        target: targetId,
+                        strength: 2,
+                        secondary: true
+                    });
+                }
+            });
+        });
+    }
+    
+    // Simulation
+    simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.id).distance(d => d.secondary ? 150 : 100 - d.strength * 10))
+        .force('charge', d3.forceManyBody().strength(-400))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(50));
+    
+    // Draw links
+    const link = svg.append('g')
+        .selectAll('line')
+        .data(links)
+        .join('line')
+        .attr('class', d => `link ${d.secondary ? 'secondary' : ''} ${d.strength >= 4 ? 'strong' : d.strength >= 2 ? 'medium' : 'weak'}`)
+        .attr('stroke', d => d.secondary ? 'var(--purple)' : 'var(--border)')
+        .attr('stroke-dasharray', d => d.secondary ? '5,5' : 'none');
+    
+    // Draw nodes
+    const node = svg.append('g')
+        .selectAll('g')
+        .data(nodes)
+        .join('g')
+        .attr('class', d => `node-group ${d.isUser ? 'center-node' : ''}`)
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended))
+        .on('click', (event, d) => {
+            event.stopPropagation();
+            if (!d.isUser) showDetail(d.id);
+        });
+    
+    // Node circles
+    node.append('circle')
+        .attr('class', 'node-circle')
+        .attr('r', d => d.isUser ? 25 : 15 + (d.strength || 2) * 2)
+        .attr('fill', d => d.isUser ? 'var(--amber)' : ROLE_COLORS[d.type] || ROLE_COLORS.other);
+    
+    // Labels
+    if (showLabels) {
+        node.append('text')
+            .attr('class', 'node-label')
+            .attr('y', d => d.isUser ? 40 : 30)
+            .text(d => d.isUser ? 'VOUS' : `${d.firstName} ${d.lastName.charAt(0)}.`);
+    }
+    
+    // Simulation tick
+    simulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+        
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+    
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+    
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+    
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+}
+
+function highlightContact(id) {
+    d3.selectAll('.node-group').each(function(d) {
+        const isHighlighted = d.id === id;
+        d3.select(this).select('.node-circle')
+            .attr('stroke', isHighlighted ? 'var(--cyan)' : 'var(--bg-void)')
+            .attr('stroke-width', isHighlighted ? 4 : 3);
+    });
+    
+    d3.selectAll('.link').each(function(d) {
+        const isHighlighted = d.source.id === id || d.target.id === id;
+        d3.select(this)
+            .classed('highlighted', isHighlighted);
+    });
+}
+
+function unhighlightAll() {
+    d3.selectAll('.node-circle')
+        .attr('stroke', 'var(--bg-void)')
+        .attr('stroke-width', 3);
+    
+    d3.selectAll('.link').classed('highlighted', false);
+}
+
+function setGraphMode(mode) {
+    graphMode = mode;
+    document.querySelectorAll('.toolbar-group .toolbar-btn').forEach(btn => {
+        if (btn.textContent.includes('Radiale') || btn.textContent.includes('Force') || btn.textContent.includes('Hiérarchie')) {
+            btn.classList.remove('active');
+        }
+    });
+    event.target.classList.add('active');
+    renderGraph();
+}
+
+function toggleLabels() {
+    showLabels = !showLabels;
+    document.getElementById('toggleLabels').classList.toggle('active', showLabels);
+    renderGraph();
+}
+
+function toggleSecondaryConnections() {
+    showSecondaryConnections = !showSecondaryConnections;
+    document.getElementById('toggleConnections').classList.toggle('active', showSecondaryConnections);
+    renderGraph();
+}
+
+function centerGraph() {
+    if (simulation) {
+        simulation.alpha(1).restart();
+    }
+}
+
+function exportGraph() {
+    const data = {
+        contacts: contacts,
+        exported: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kern_network_export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ==================== STATS & XP ====================
+function updateStats() {
+    document.getElementById('statContacts').textContent = contacts.length;
+    
+    let totalConnections = 0;
+    contacts.forEach(c => totalConnections += c.connections.length);
+    document.getElementById('statConnections').textContent = Math.floor(totalConnections / 2); // Each connection counted twice
+    
+    // Influence = sum of strengths
+    const influence = contacts.reduce((sum, c) => sum + c.strength, 0);
+    document.getElementById('statInfluence').textContent = influence;
+}
+
+function updateSkill() {
+    document.getElementById('skillLevel').textContent = skill.level;
+    document.getElementById('skillFill').style.width = `${(skill.xp / skill.toNext) * 100}%`;
+}
+
+function awardXP(amount, reason) {
+    skill.xp += amount;
+    
+    while (skill.xp >= skill.toNext) {
+        skill.xp -= skill.toNext;
+        skill.level++;
+        skill.toNext = Math.floor(skill.toNext * 1.4);
+        showToast(`🎉 Compétence Réseau niveau ${skill.level} !`);
+    }
+    
+    saveData();
+    updateSkill();
+    showXPPopup(amount, reason);
+}
+
+function showXPPopup(amount, reason) {
+    const popup = document.createElement('div');
+    popup.className = 'xp-popup';
+    popup.innerHTML = `
+        <div class="xp-popup-amount">+${amount} XP</div>
+        <div class="xp-popup-text">${reason}</div>
+    `;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 2000);
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        z-index: 1000;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('resize', () => renderGraph());
+</script>
+</body>
+</html>
