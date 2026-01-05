@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "lang": "nl",
+    "name": "Nederlands",
+    "flag": "🇳🇱",
+    "version": "2.0",
+    "coverage": "100%"
+  },
+  
+  "common": {
+    "loading": "Laden...",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "create": "Aanmaken",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "export": "Exporteren",
+    "import": "Importeren",
+    "close": "Sluiten",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "yes": "Ja",
+    "no": "Nee",
+    "confirm": "Bevestigen",
+    "reset": "Resetten",
+    "settings": "Instellingen",
+    "help": "Hulp",
+    "language": "Taal",
+    "theme": "Thema",
+    "dark": "Donker",
+    "light": "Licht"
+  },
+  
+  "index": {
+    "title": "KERN — Belgische Burger Hub",
+    "subtitle": "Autonoom burgerplatform voor België",
+    "tagline": "Begrijpen · Monitoren · Handelen",
+    "version": "Versie",
+    "modules": "Modules",
+    "offline": "100% Offline",
+    "verified": "Geverifieerde gegevens",
+    "opensource": "Open Source",
+    
+    "stats": {
+      "modules": "Modules",
+      "politicians": "Politici",
+      "governments": "Regeringen",
+      "parties": "Partijen"
+    },
+    
+    "categories": {
+      "command": "Commando",
+      "commandDesc": "Controlecentra en dashboards",
+      "data": "Politieke Gegevens",
+      "dataDesc": "Databases en visualisaties",
+      "tools": "Operationele Tools",
+      "toolsDesc": "Productie en projectbeheer",
+      "game": "Gamificatie",
+      "gameDesc": "Speelse betrokkenheid en ARG"
+    },
+    
+    "modules": {
+      "citadel": {
+        "name": "CITADEL Command",
+        "desc": "Operationeel commandocentrum"
+      },
+      "nexushq": {
+        "name": "NEXUS HQ",
+        "desc": "Netwerk hoofdkwartier"
+      },
+      "dashboard": {
+        "name": "Dashboard",
+        "desc": "Overzichtsdashboard"
+      },
+      "beldata": {
+        "name": "BELDATA Burger",
+        "desc": "Belgische politieke database"
+      },
+      "dossiers": {
+        "name": "KERN::DOSSIERS",
+        "desc": "Politieke persoonlijkheidsdossiers"
+      },
+      "panopticon": {
+        "name": "PANOPTICON",
+        "desc": "Machtskaart"
+      },
+      "agenda": {
+        "name": "Politieke Agenda",
+        "desc": "Evenementenkalender"
+      },
+      "forge": {
+        "name": "FORGE Studio",
+        "desc": "Documentcreatie"
+      },
+      "finance": {
+        "name": "Financiën Tracker",
+        "desc": "Financieel beheer"
+      },
+      "missions": {
+        "name": "Missies",
+        "desc": "Projectbeheer"
+      },
+      "journal": {
+        "name": "Journaal",
+        "desc": "Logboek"
+      },
+      "network": {
+        "name": "Netwerk",
+        "desc": "Contactenkaart"
+      },
+      "library": {
+        "name": "Bibliotheek",
+        "desc": "Documentaire bronnen"
+      },
+      "nexusprime": {
+        "name": "NEXUS PRIME",
+        "desc": "Complete gamified hub"
+      },
+      "nexusarg": {
+        "name": "NEXUS ARG",
+        "desc": "Alternatieve realiteitsspel"
+      },
+      "wiki": {
+        "name": "Wiki",
+        "desc": "Documentatie"
+      }
+    },
+    
+    "quickAccess": "Snelle Toegang",
+    "allModules": "Alle modules",
+    "recentActivity": "Recente Activiteit",
+    "noActivity": "Geen recente activiteit",
+    
+    "footer": {
+      "madeFor": "Gemaakt voor Belgische burgers",
+      "disclaimer": "Gegevens uit officiële bronnen",
+      "license": "MIT Licentie"
+    }
+  },
+  
+  "wiki": {
+    "title": "KERN Documentatie",
+    "search": "Zoeken in documentatie...",
+    "nav": {
+      "start": "Aan de slag",
+      "intro": "Introductie",
+      "install": "Installatie",
+      "quickstart": "Snelstart",
+      "modules": "Modules",
+      "core": "Hub & Navigatie",
+      "data": "Politieke Gegevens",
+      "tools": "Operationele Tools",
+      "game": "Gamificatie & ARG",
+      "reference": "Referentie",
+      "arch": "Architectuur",
+      "datamodel": "Gegevensmodel",
+      "i18n": "Internationalisatie",
+      "contribute": "Bijdragen",
+      "contrib": "Bijdragegids",
+      "roadmap": "Routekaart"
+    }
+  },
+  
+  "levels": {
+    "eu": "Europees",
+    "fed": "Federaal",
+    "reg": "Regionaal",
+    "prov": "Provinciaal",
+    "com": "Gemeentelijk"
+  },
+  
+  "parties": {
+    "MR": "Mouvement Réformateur",
+    "PS": "Parti Socialiste",
+    "Ecolo": "Écologistes Confédérés",
+    "PTB": "Partij van de Arbeid van België",
+    "LesEngages": "Les Engagés",
+    "N-VA": "Nieuw-Vlaamse Alliantie",
+    "CD&V": "Christen-Democratisch en Vlaams",
+    "OpenVLD": "Open Vlaamse Liberalen en Democraten",
+    "Vooruit": "Vooruit",
+    "Groen": "Groen",
+    "PVDA": "Partij van de Arbeid",
+    "VlaamsBelang": "Vlaams Belang"
+  },
+  
+  "regions": {
+    "wallonia": "Wallonië",
+    "flanders": "Vlaanderen",
+    "brussels": "Brussel",
+    "german": "Duitstalige Gemeenschap"
+  },
+  
+  "time": {
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "thisWeek": "Deze week",
+    "thisMonth": "Deze maand",
+    "ago": "geleden",
+    "minutes": "minuten",
+    "hours": "uur",
+    "days": "dagen"
+  }
+}

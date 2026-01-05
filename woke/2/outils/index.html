@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN — Hub Citoyen Belge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --bg-void: #0a0a0f;
+            --bg-deep: #0f0f18;
+            --bg-surface: #14141f;
+            --bg-card: #1a1a28;
+            --bg-elevated: #202030;
+            --border: #2a2a40;
+            --border-light: #3a3a55;
+            
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --cyan: #22d3ee;
+            --green: #4ade80;
+            --yellow: #fbbf24;
+            --orange: #fb923c;
+            --red: #f87171;
+            --pink: #f472b6;
+            --purple: #a78bfa;
+            
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-dim: #64748b;
+            
+            --glow: 0 0 20px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-void);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Background effects */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .bg-effects::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
+        }
+        
+        .bg-effects::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(20, 20, 31, 0.9) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tagline {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            padding: 0.3rem 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-left: auto;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+        
+        .stat-label {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Language Selector */
+        .lang-selector {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        
+        .lang-btn {
+            padding: 0.4rem 0.7rem;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn:hover {
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+        
+        .lang-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        
+        /* Main content */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--cyan) 50%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .badge.highlight {
+            border-color: var(--accent);
+            color: var(--accent-light);
+        }
+        
+        /* Categories */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .category {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .category:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .category-icon.command { background: linear-gradient(135deg, var(--red), var(--orange)); }
+        .category-icon.data { background: linear-gradient(135deg, var(--cyan), var(--accent)); }
+        .category-icon.tools { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+        .category-icon.game { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        
+        .category-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        
+        .category-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+        
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .module-link {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .module-link:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-light);
+            transform: translateX(5px);
+        }
+        
+        .module-link .icon {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .module-link .name {
+            font-weight: 600;
+        }
+        
+        .module-link .desc {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-left: auto;
+        }
+        
+        .module-link.featured {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1));
+            border-color: var(--accent);
+        }
+        
+        .module-link.new::after {
+            content: 'NEW';
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            background: var(--green);
+            color: #000;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+        
+        /* Quick access */
+        .quick-access {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quick-access h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .quick-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .quick-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-2px);
+            box-shadow: var(--glow) rgba(34, 211, 238, 0.2);
+        }
+        
+        .quick-card .icon {
+            font-size: 1.8rem;
+        }
+        
+        .quick-card .info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .quick-card .info p {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-item {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        
+        .footer-item a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+        
+        .footer-item a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            .header-stats {
+                display: none;
+            }
+            .categories {
+                grid-template-columns: 1fr;
+            }
+            main {
+                padding: 1rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-effects"></div>
+    
+    <div class="app">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <span class="logo-text">KERN</span>
+            </div>
+            
+            <span class="tagline" data-i18n="index.tagline">Comprendre · Surveiller · Agir</span>
+            
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label" data-i18n="index.stats.modules">Modules</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">22</div>
+                    <div class="stat-label" data-i18n="index.stats.politicians">MEPs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label" data-i18n="index.stats.governments">Gouvernements</div>
+                </div>
+            </div>
+            
+            <div class="lang-selector">
+                <button class="lang-btn active" onclick="setLanguage('fr')">FR</button>
+                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn" onclick="setLanguage('nl')">NL</button>
+                <button class="lang-btn" onclick="setLanguage('de')">DE</button>
+            </div>
+        </header>
+        
+        <main>
+            <section class="hero">
+                <h1 data-i18n="index.title">KERN — Hub Citoyen Belge</h1>
+                <p data-i18n="index.subtitle">Plateforme citoyenne autonome pour la Belgique</p>
+                <div class="hero-badges">
+                    <span class="badge highlight">
+                        <span>⚡</span>
+                        <span data-i18n="index.offline">100% Hors-ligne</span>
+                    </span>
+                    <span class="badge">
+                        <span>✓</span>
+                        <span data-i18n="index.verified">Données vérifiées</span>
+                    </span>
+                    <span class="badge">
+                        <span>🔓</span>
+                        <span data-i18n="index.opensource">Open Source</span>
+                    </span>
+                    <span class="badge">
+                        <span>v2.0</span>
+                    </span>
+                </div>
+            </section>
+            
+            <section class="quick-access">
+                <h3 data-i18n="index.quickAccess">Accès rapide</h3>
+                <div class="quick-grid">
+                    <a href="outils/10-beldata-citoyen-v2.html" class="quick-card">
+                        <span class="icon">🇧🇪</span>
+                        <div class="info">
+                            <h4 data-i18n="index.modules.beldata.name">BELDATA Citoyen</h4>
+                            <p data-i18n="index.modules.beldata.desc">Base de données politiques</p>
+                        </div>
+                    </a>
+                    <a href="outils/11-kern-dossiers.html" class="quick-card">
+                        <span class="icon">📁</span>
+                        <div class="info">
+                            <h4 data-i18n="index.modules.dossiers.name">KERN::DOSSIERS</h4>
+                            <p data-i18n="index.modules.dossiers.desc">Fiches personnalités</p>
+                        </div>
+                    </a>
+                    <a href="outils/12-panopticon.html" class="quick-card">
+                        <span class="icon">🔺</span>
+                        <div class="info">
+                            <h4 data-i18n="index.modules.panopticon.name">PANOPTICON</h4>
+                            <p data-i18n="index.modules.panopticon.desc">Cartographie du pouvoir</p>
+                        </div>
+                    </a>
+                    <a href="outils/14-nexus-arg.html" class="quick-card">
+                        <span class="icon">◈</span>
+                        <div class="info">
+                            <h4 data-i18n="index.modules.nexusarg.name">NEXUS ARG</h4>
+                            <p data-i18n="index.modules.nexusarg.desc">Jeu en réalité alternée</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+            
+            <section class="categories">
+                <!-- Command -->
+                <div class="category">
+                    <div class="category-header">
+                        <div class="category-icon command">🎯</div>
+                        <div>
+                            <div class="category-title" data-i18n="index.categories.command">Commandement</div>
+                        </div>
+                    </div>
+                    <div class="category-desc" data-i18n="index.categories.commandDesc">Centres de contrôle et tableaux de bord</div>
+                    <div class="module-list">
+                        <a href="outils/00-citadel-command.html" class="module-link featured">
+                            <span class="icon">🏰</span>
+                            <span class="name" data-i18n="index.modules.citadel.name">CITADEL Command</span>
+                        </a>
+                        <a href="outils/00-nexus-hq.html" class="module-link">
+                            <span class="icon">🌐</span>
+                            <span class="name" data-i18n="index.modules.nexushq.name">NEXUS HQ</span>
+                        </a>
+                        <a href="outils/07-dashboard.html" class="module-link">
+                            <span class="icon">📊</span>
+                            <span class="name" data-i18n="index.modules.dashboard.name">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Data -->
+                <div class="category">
+                    <div class="category-header">
+                        <div class="category-icon data">📊</div>
+                        <div>
+                            <div class="category-title" data-i18n="index.categories.data">Données Politiques</div>
+                        </div>
+                    </div>
+                    <div class="category-desc" data-i18n="index.categories.dataDesc">Bases de données et visualisations</div>
+                    <div class="module-list">
+                        <a href="outils/10-beldata-citoyen-v2.html" class="module-link featured">
+                            <span class="icon">🇧🇪</span>
+                            <span class="name" data-i18n="index.modules.beldata.name">BELDATA Citoyen</span>
+                        </a>
+                        <a href="outils/11-kern-dossiers.html" class="module-link">
+                            <span class="icon">📁</span>
+                            <span class="name" data-i18n="index.modules.dossiers.name">KERN::DOSSIERS</span>
+                        </a>
+                        <a href="outils/12-panopticon.html" class="module-link new">
+                            <span class="icon">🔺</span>
+                            <span class="name" data-i18n="index.modules.panopticon.name">PANOPTICON</span>
+                        </a>
+                        <a href="outils/05-agenda-politique.html" class="module-link">
+                            <span class="icon">📅</span>
+                            <span class="name" data-i18n="index.modules.agenda.name">Agenda Politique</span>
+                        </a>
+                        <a href="outils/09-beldata-complet.html" class="module-link">
+                            <span class="icon">🗃️</span>
+                            <span class="name">BELDATA Complet</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Tools -->
+                <div class="category">
+                    <div class="category-header">
+                        <div class="category-icon tools">🛠️</div>
+                        <div>
+                            <div class="category-title" data-i18n="index.categories.tools">Outils Opérationnels</div>
+                        </div>
+                    </div>
+                    <div class="category-desc" data-i18n="index.categories.toolsDesc">Production et gestion de projets</div>
+                    <div class="module-list">
+                        <a href="outils/08-forge-studio.html" class="module-link featured">
+                            <span class="icon">⚡</span>
+                            <span class="name" data-i18n="index.modules.forge.name">FORGE Studio</span>
+                        </a>
+                        <a href="outils/01-finance-tracker.html" class="module-link">
+                            <span class="icon">💰</span>
+                            <span class="name" data-i18n="index.modules.finance.name">Finance Tracker</span>
+                        </a>
+                        <a href="outils/02-mission-creator.html" class="module-link">
+                            <span class="icon">🎯</span>
+                            <span class="name" data-i18n="index.modules.missions.name">Missions</span>
+                        </a>
+                        <a href="outils/03-journal.html" class="module-link">
+                            <span class="icon">📓</span>
+                            <span class="name" data-i18n="index.modules.journal.name">Journal</span>
+                        </a>
+                        <a href="outils/04-network-map.html" class="module-link">
+                            <span class="icon">🔗</span>
+                            <span class="name" data-i18n="index.modules.network.name">Réseau</span>
+                        </a>
+                        <a href="outils/06-bibliotheque.html" class="module-link">
+                            <span class="icon">📚</span>
+                            <span class="name" data-i18n="index.modules.library.name">Bibliothèque</span>
+                        </a>
+                        <a href="outils/06-generateur-documents.html" class="module-link">
+                            <span class="icon">📄</span>
+                            <span class="name">Générateur Docs</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Gamification -->
+                <div class="category">
+                    <div class="category-header">
+                        <div class="category-icon game">🎮</div>
+                        <div>
+                            <div class="category-title" data-i18n="index.categories.game">Gamification</div>
+                        </div>
+                    </div>
+                    <div class="category-desc" data-i18n="index.categories.gameDesc">Engagement ludique et ARG</div>
+                    <div class="module-list">
+                        <a href="outils/13-nexus-prime.html" class="module-link featured new">
+                            <span class="icon">⬡</span>
+                            <span class="name" data-i18n="index.modules.nexusprime.name">NEXUS PRIME</span>
+                        </a>
+                        <a href="outils/14-nexus-arg.html" class="module-link new">
+                            <span class="icon">◈</span>
+                            <span class="name" data-i18n="index.modules.nexusarg.name">NEXUS ARG</span>
+                        </a>
+                        <a href="wiki.html" class="module-link">
+                            <span class="icon">📚</span>
+                            <span class="name" data-i18n="index.modules.wiki.name">Wiki</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <div class="footer-content">
+                <span class="footer-item">🇧🇪 <span data-i18n="index.footer.madeFor">Fait pour les citoyens belges</span></span>
+                <span class="footer-item" data-i18n="index.footer.disclaimer">Données issues de sources officielles</span>
+                <span class="footer-item"><a href="wiki.html" data-i18n="index.modules.wiki.name">Documentation</a></span>
+                <span class="footer-item" data-i18n="index.footer.license">Licence MIT</span>
+            </div>
+        </footer>
+    </div>
+
+<script>
+// Internationalization system
+const i18n = {
+    fr: null,
+    en: null,
+    nl: null,
+    de: null
+};
+
+let currentLang = localStorage.getItem('kern_lang') || 'fr';
+
+// Language data (embedded for offline use)
+const langData = {
+    fr: {
+        "index.title": "KERN — Hub Citoyen Belge",
+        "index.subtitle": "Plateforme citoyenne autonome pour la Belgique",
+        "index.tagline": "Comprendre · Surveiller · Agir",
+        "index.offline": "100% Hors-ligne",
+        "index.verified": "Données vérifiées",
+        "index.opensource": "Open Source",
+        "index.stats.modules": "Modules",
+        "index.stats.politicians": "MEPs",
+        "index.stats.governments": "Gouvernements",
+        "index.quickAccess": "Accès rapide",
+        "index.categories.command": "Commandement",
+        "index.categories.commandDesc": "Centres de contrôle et tableaux de bord",
+        "index.categories.data": "Données Politiques",
+        "index.categories.dataDesc": "Bases de données et visualisations",
+        "index.categories.tools": "Outils Opérationnels",
+        "index.categories.toolsDesc": "Production et gestion de projets",
+        "index.categories.game": "Gamification",
+        "index.categories.gameDesc": "Engagement ludique et ARG",
+        "index.modules.citadel.name": "CITADEL Command",
+        "index.modules.nexushq.name": "NEXUS HQ",
+        "index.modules.dashboard.name": "Dashboard",
+        "index.modules.beldata.name": "BELDATA Citoyen",
+        "index.modules.beldata.desc": "Base de données politiques",
+        "index.modules.dossiers.name": "KERN::DOSSIERS",
+        "index.modules.dossiers.desc": "Fiches personnalités",
+        "index.modules.panopticon.name": "PANOPTICON",
+        "index.modules.panopticon.desc": "Cartographie du pouvoir",
+        "index.modules.agenda.name": "Agenda Politique",
+        "index.modules.forge.name": "FORGE Studio",
+        "index.modules.finance.name": "Finance Tracker",
+        "index.modules.missions.name": "Missions",
+        "index.modules.journal.name": "Journal",
+        "index.modules.network.name": "Réseau",
+        "index.modules.library.name": "Bibliothèque",
+        "index.modules.nexusprime.name": "NEXUS PRIME",
+        "index.modules.nexusarg.name": "NEXUS ARG",
+        "index.modules.nexusarg.desc": "Jeu en réalité alternée",
+        "index.modules.wiki.name": "Wiki / Documentation",
+        "index.footer.madeFor": "Fait pour les citoyens belges",
+        "index.footer.disclaimer": "Données issues de sources officielles",
+        "index.footer.license": "Licence MIT"
+    },
+    en: {
+        "index.title": "KERN — Belgian Citizen Hub",
+        "index.subtitle": "Autonomous citizen platform for Belgium",
+        "index.tagline": "Understand · Monitor · Act",
+        "index.offline": "100% Offline",
+        "index.verified": "Verified data",
+        "index.opensource": "Open Source",
+        "index.stats.modules": "Modules",
+        "index.stats.politicians": "MEPs",
+        "index.stats.governments": "Governments",
+        "index.quickAccess": "Quick Access",
+        "index.categories.command": "Command",
+        "index.categories.commandDesc": "Control centers and dashboards",
+        "index.categories.data": "Political Data",
+        "index.categories.dataDesc": "Databases and visualizations",
+        "index.categories.tools": "Operational Tools",
+        "index.categories.toolsDesc": "Production and project management",
+        "index.categories.game": "Gamification",
+        "index.categories.gameDesc": "Playful engagement and ARG",
+        "index.modules.citadel.name": "CITADEL Command",
+        "index.modules.nexushq.name": "NEXUS HQ",
+        "index.modules.dashboard.name": "Dashboard",
+        "index.modules.beldata.name": "BELDATA Citizen",
+        "index.modules.beldata.desc": "Political database",
+        "index.modules.dossiers.name": "KERN::DOSSIERS",
+        "index.modules.dossiers.desc": "Personality files",
+        "index.modules.panopticon.name": "PANOPTICON",
+        "index.modules.panopticon.desc": "Power mapping",
+        "index.modules.agenda.name": "Political Agenda",
+        "index.modules.forge.name": "FORGE Studio",
+        "index.modules.finance.name": "Finance Tracker",
+        "index.modules.missions.name": "Missions",
+        "index.modules.journal.name": "Journal",
+        "index.modules.network.name": "Network",
+        "index.modules.library.name": "Library",
+        "index.modules.nexusprime.name": "NEXUS PRIME",
+        "index.modules.nexusarg.name": "NEXUS ARG",
+        "index.modules.nexusarg.desc": "Alternate reality game",
+        "index.modules.wiki.name": "Wiki / Documentation",
+        "index.footer.madeFor": "Made for Belgian citizens",
+        "index.footer.disclaimer": "Data from official sources",
+        "index.footer.license": "MIT License"
+    },
+    nl: {
+        "index.title": "KERN — Belgische Burger Hub",
+        "index.subtitle": "Autonoom burgerplatform voor België",
+        "index.tagline": "Begrijpen · Monitoren · Handelen",
+        "index.offline": "100% Offline",
+        "index.verified": "Geverifieerde gegevens",
+        "index.opensource": "Open Source",
+        "index.stats.modules": "Modules",
+        "index.stats.politicians": "MEPs",
+        "index.stats.governments": "Regeringen",
+        "index.quickAccess": "Snelle Toegang",
+        "index.categories.command": "Commando",
+        "index.categories.commandDesc": "Controlecentra en dashboards",
+        "index.categories.data": "Politieke Gegevens",
+        "index.categories.dataDesc": "Databases en visualisaties",
+        "index.categories.tools": "Operationele Tools",
+        "index.categories.toolsDesc": "Productie en projectbeheer",
+        "index.categories.game": "Gamificatie",
+        "index.categories.gameDesc": "Speelse betrokkenheid en ARG",
+        "index.modules.citadel.name": "CITADEL Command",
+        "index.modules.nexushq.name": "NEXUS HQ",
+        "index.modules.dashboard.name": "Dashboard",
+        "index.modules.beldata.name": "BELDATA Burger",
+        "index.modules.beldata.desc": "Politieke database",
+        "index.modules.dossiers.name": "KERN::DOSSIERS",
+        "index.modules.dossiers.desc": "Persoonlijkheidsdossiers",
+        "index.modules.panopticon.name": "PANOPTICON",
+        "index.modules.panopticon.desc": "Machtskaart",
+        "index.modules.agenda.name": "Politieke Agenda",
+        "index.modules.forge.name": "FORGE Studio",
+        "index.modules.finance.name": "Financiën Tracker",
+        "index.modules.missions.name": "Missies",
+        "index.modules.journal.name": "Journaal",
+        "index.modules.network.name": "Netwerk",
+        "index.modules.library.name": "Bibliotheek",
+        "index.modules.nexusprime.name": "NEXUS PRIME",
+        "index.modules.nexusarg.name": "NEXUS ARG",
+        "index.modules.nexusarg.desc": "Alternatieve realiteitsspel",
+        "index.modules.wiki.name": "Wiki / Documentatie",
+        "index.footer.madeFor": "Gemaakt voor Belgische burgers",
+        "index.footer.disclaimer": "Gegevens uit officiële bronnen",
+        "index.footer.license": "MIT Licentie"
+    },
+    de: {
+        "index.title": "KERN — Belgischer Bürger-Hub",
+        "index.subtitle": "Autonome Bürgerplattform für Belgien",
+        "index.tagline": "Verstehen · Überwachen · Handeln",
+        "index.offline": "100% Offline",
+        "index.verified": "Verifizierte Daten",
+        "index.opensource": "Open Source",
+        "index.stats.modules": "Module",
+        "index.stats.politicians": "MEPs",
+        "index.stats.governments": "Regierungen",
+        "index.quickAccess": "Schnellzugriff",
+        "index.categories.command": "Kommando",
+        "index.categories.commandDesc": "Kontrollzentren und Dashboards",
+        "index.categories.data": "Politische Daten",
+        "index.categories.dataDesc": "Datenbanken und Visualisierungen",
+        "index.categories.tools": "Operative Werkzeuge",
+        "index.categories.toolsDesc": "Produktion und Projektmanagement",
+        "index.categories.game": "Gamifizierung",
+        "index.categories.gameDesc": "Spielerisches Engagement und ARG",
+        "index.modules.citadel.name": "CITADEL Command",
+        "index.modules.nexushq.name": "NEXUS HQ",
+        "index.modules.dashboard.name": "Dashboard",
+        "index.modules.beldata.name": "BELDATA Bürger",
+        "index.modules.beldata.desc": "Politische Datenbank",
+        "index.modules.dossiers.name": "KERN::DOSSIERS",
+        "index.modules.dossiers.desc": "Persönlichkeitsakten",
+        "index.modules.panopticon.name": "PANOPTICON",
+        "index.modules.panopticon.desc": "Machtkartierung",
+        "index.modules.agenda.name": "Politische Agenda",
+        "index.modules.forge.name": "FORGE Studio",
+        "index.modules.finance.name": "Finanz-Tracker",
+        "index.modules.missions.name": "Missionen",
+        "index.modules.journal.name": "Journal",
+        "index.modules.network.name": "Netzwerk",
+        "index.modules.library.name": "Bibliothek",
+        "index.modules.nexusprime.name": "NEXUS PRIME",
+        "index.modules.nexusarg.name": "NEXUS ARG",
+        "index.modules.nexusarg.desc": "Alternatives Realitätsspiel",
+        "index.modules.wiki.name": "Wiki / Dokumentation",
+        "index.footer.madeFor": "Für belgische Bürger gemacht",
+        "index.footer.disclaimer": "Daten aus offiziellen Quellen",
+        "index.footer.license": "MIT-Lizenz"
+    }
+};
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('kern_lang', lang);
+    
+    // Update active button
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+    });
+    
+    // Update HTML lang attribute
+    document.documentElement.lang = lang;
+    
+    // Translate all elements with data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = langData[lang]?.[key];
+        if (translation) {
+            el.textContent = translation;
+        }
+    });
+    
+    // Update page title
+    document.title = langData[lang]?.['index.title'] || 'KERN — Hub Citoyen Belge';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLang);
+});
+</script>
+</body>
+</html>

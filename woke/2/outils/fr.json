@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "lang": "fr",
+    "name": "Français",
+    "flag": "🇫🇷",
+    "version": "2.0",
+    "coverage": "100%"
+  },
+  
+  "common": {
+    "loading": "Chargement...",
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "reset": "Réinitialiser",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "language": "Langue",
+    "theme": "Thème",
+    "dark": "Sombre",
+    "light": "Clair"
+  },
+  
+  "index": {
+    "title": "KERN — Hub Citoyen Belge",
+    "subtitle": "Plateforme citoyenne autonome pour la Belgique",
+    "tagline": "Comprendre · Surveiller · Agir",
+    "version": "Version",
+    "modules": "Modules",
+    "offline": "100% Hors-ligne",
+    "verified": "Données vérifiées",
+    "opensource": "Open Source",
+    
+    "stats": {
+      "modules": "Modules",
+      "politicians": "Politiciens",
+      "governments": "Gouvernements",
+      "parties": "Partis"
+    },
+    
+    "categories": {
+      "command": "Commandement",
+      "commandDesc": "Centres de contrôle et tableaux de bord",
+      "data": "Données Politiques",
+      "dataDesc": "Bases de données et visualisations",
+      "tools": "Outils Opérationnels",
+      "toolsDesc": "Production et gestion de projets",
+      "game": "Gamification",
+      "gameDesc": "Engagement ludique et ARG"
+    },
+    
+    "modules": {
+      "citadel": {
+        "name": "CITADEL Command",
+        "desc": "Centre de commandement opérationnel"
+      },
+      "nexushq": {
+        "name": "NEXUS HQ",
+        "desc": "Quartier général du réseau"
+      },
+      "dashboard": {
+        "name": "Dashboard",
+        "desc": "Tableau de bord synthétique"
+      },
+      "beldata": {
+        "name": "BELDATA Citoyen",
+        "desc": "Base de données politiques belges"
+      },
+      "dossiers": {
+        "name": "KERN::DOSSIERS",
+        "desc": "Fiches personnalités politiques"
+      },
+      "panopticon": {
+        "name": "PANOPTICON",
+        "desc": "Cartographie du pouvoir"
+      },
+      "agenda": {
+        "name": "Agenda Politique",
+        "desc": "Calendrier des événements"
+      },
+      "forge": {
+        "name": "FORGE Studio",
+        "desc": "Création de documents"
+      },
+      "finance": {
+        "name": "Finance Tracker",
+        "desc": "Gestion financière"
+      },
+      "missions": {
+        "name": "Missions",
+        "desc": "Gestion de projets"
+      },
+      "journal": {
+        "name": "Journal",
+        "desc": "Carnet de bord"
+      },
+      "network": {
+        "name": "Réseau",
+        "desc": "Cartographie contacts"
+      },
+      "library": {
+        "name": "Bibliothèque",
+        "desc": "Ressources documentaires"
+      },
+      "nexusprime": {
+        "name": "NEXUS PRIME",
+        "desc": "Hub gamifié complet"
+      },
+      "nexusarg": {
+        "name": "NEXUS ARG",
+        "desc": "Jeu en réalité alternée"
+      },
+      "wiki": {
+        "name": "Wiki",
+        "desc": "Documentation"
+      }
+    },
+    
+    "quickAccess": "Accès rapide",
+    "allModules": "Tous les modules",
+    "recentActivity": "Activité récente",
+    "noActivity": "Aucune activité récente",
+    
+    "footer": {
+      "madeFor": "Fait pour les citoyens belges",
+      "disclaimer": "Données issues de sources officielles",
+      "license": "Licence MIT"
+    }
+  },
+  
+  "wiki": {
+    "title": "Documentation KERN",
+    "search": "Rechercher dans la documentation...",
+    "nav": {
+      "start": "Démarrage",
+      "intro": "Introduction",
+      "install": "Installation",
+      "quickstart": "Démarrage rapide",
+      "modules": "Modules",
+      "core": "Hub & Navigation",
+      "data": "Données politiques",
+      "tools": "Outils opérationnels",
+      "game": "Gamification & ARG",
+      "reference": "Référence",
+      "arch": "Architecture",
+      "datamodel": "Modèle de données",
+      "i18n": "Internationalisation",
+      "contribute": "Contribuer",
+      "contrib": "Guide contribution",
+      "roadmap": "Feuille de route"
+    }
+  },
+  
+  "levels": {
+    "eu": "Européen",
+    "fed": "Fédéral",
+    "reg": "Régional",
+    "prov": "Provincial",
+    "com": "Communal"
+  },
+  
+  "parties": {
+    "MR": "Mouvement Réformateur",
+    "PS": "Parti Socialiste",
+    "Ecolo": "Écologistes Confédérés",
+    "PTB": "Parti du Travail de Belgique",
+    "LesEngages": "Les Engagés",
+    "N-VA": "Nieuw-Vlaamse Alliantie",
+    "CD&V": "Christen-Democratisch en Vlaams",
+    "OpenVLD": "Open Vlaamse Liberalen en Democraten",
+    "Vooruit": "Vooruit",
+    "Groen": "Groen",
+    "PVDA": "Partij van de Arbeid",
+    "VlaamsBelang": "Vlaams Belang"
+  },
+  
+  "regions": {
+    "wallonia": "Wallonie",
+    "flanders": "Flandre",
+    "brussels": "Bruxelles",
+    "german": "Communauté germanophone"
+  },
+  
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois",
+    "ago": "il y a",
+    "minutes": "minutes",
+    "hours": "heures",
+    "days": "jours"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "lang": "en",
+    "name": "English",
+    "flag": "🇬🇧",
+    "version": "2.0",
+    "coverage": "100%"
+  },
+  
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "reset": "Reset",
+    "settings": "Settings",
+    "help": "Help",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light"
+  },
+  
+  "index": {
+    "title": "KERN — Belgian Citizen Hub",
+    "subtitle": "Autonomous citizen platform for Belgium",
+    "tagline": "Understand · Monitor · Act",
+    "version": "Version",
+    "modules": "Modules",
+    "offline": "100% Offline",
+    "verified": "Verified data",
+    "opensource": "Open Source",
+    
+    "stats": {
+      "modules": "Modules",
+      "politicians": "Politicians",
+      "governments": "Governments",
+      "parties": "Parties"
+    },
+    
+    "categories": {
+      "command": "Command",
+      "commandDesc": "Control centers and dashboards",
+      "data": "Political Data",
+      "dataDesc": "Databases and visualizations",
+      "tools": "Operational Tools",
+      "toolsDesc": "Production and project management",
+      "game": "Gamification",
+      "gameDesc": "Playful engagement and ARG"
+    },
+    
+    "modules": {
+      "citadel": {
+        "name": "CITADEL Command",
+        "desc": "Operational command center"
+      },
+      "nexushq": {
+        "name": "NEXUS HQ",
+        "desc": "Network headquarters"
+      },
+      "dashboard": {
+        "name": "Dashboard",
+        "desc": "Summary dashboard"
+      },
+      "beldata": {
+        "name": "BELDATA Citizen",
+        "desc": "Belgian political database"
+      },
+      "dossiers": {
+        "name": "KERN::DOSSIERS",
+        "desc": "Political personality files"
+      },
+      "panopticon": {
+        "name": "PANOPTICON",
+        "desc": "Power mapping"
+      },
+      "agenda": {
+        "name": "Political Agenda",
+        "desc": "Events calendar"
+      },
+      "forge": {
+        "name": "FORGE Studio",
+        "desc": "Document creation"
+      },
+      "finance": {
+        "name": "Finance Tracker",
+        "desc": "Financial management"
+      },
+      "missions": {
+        "name": "Missions",
+        "desc": "Project management"
+      },
+      "journal": {
+        "name": "Journal",
+        "desc": "Logbook"
+      },
+      "network": {
+        "name": "Network",
+        "desc": "Contact mapping"
+      },
+      "library": {
+        "name": "Library",
+        "desc": "Documentary resources"
+      },
+      "nexusprime": {
+        "name": "NEXUS PRIME",
+        "desc": "Complete gamified hub"
+      },
+      "nexusarg": {
+        "name": "NEXUS ARG",
+        "desc": "Alternate reality game"
+      },
+      "wiki": {
+        "name": "Wiki",
+        "desc": "Documentation"
+      }
+    },
+    
+    "quickAccess": "Quick Access",
+    "allModules": "All modules",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    
+    "footer": {
+      "madeFor": "Made for Belgian citizens",
+      "disclaimer": "Data from official sources",
+      "license": "MIT License"
+    }
+  },
+  
+  "wiki": {
+    "title": "KERN Documentation",
+    "search": "Search documentation...",
+    "nav": {
+      "start": "Getting Started",
+      "intro": "Introduction",
+      "install": "Installation",
+      "quickstart": "Quick Start",
+      "modules": "Modules",
+      "core": "Hub & Navigation",
+      "data": "Political Data",
+      "tools": "Operational Tools",
+      "game": "Gamification & ARG",
+      "reference": "Reference",
+      "arch": "Architecture",
+      "datamodel": "Data Model",
+      "i18n": "Internationalization",
+      "contribute": "Contribute",
+      "contrib": "Contribution Guide",
+      "roadmap": "Roadmap"
+    }
+  },
+  
+  "levels": {
+    "eu": "European",
+    "fed": "Federal",
+    "reg": "Regional",
+    "prov": "Provincial",
+    "com": "Municipal"
+  },
+  
+  "parties": {
+    "MR": "Reformist Movement",
+    "PS": "Socialist Party",
+    "Ecolo": "Confederated Ecologists",
+    "PTB": "Workers' Party of Belgium",
+    "LesEngages": "The Committed",
+    "N-VA": "New Flemish Alliance",
+    "CD&V": "Christian Democratic and Flemish",
+    "OpenVLD": "Open Flemish Liberals and Democrats",
+    "Vooruit": "Forward",
+    "Groen": "Green",
+    "PVDA": "Workers' Party",
+    "VlaamsBelang": "Flemish Interest"
+  },
+  
+  "regions": {
+    "wallonia": "Wallonia",
+    "flanders": "Flanders",
+    "brussels": "Brussels",
+    "german": "German-speaking Community"
+  },
+  
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "ago": "ago",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days"
+  }
+}
