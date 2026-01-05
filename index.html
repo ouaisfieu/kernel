@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN::HUB — Écosystème Citoyen Complet</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#080810;--bg2:#0d1117;--bg3:#161b22;--bg4:#21262d;
+            --border:#30363d;
+            --neon:#00ff41;--cyan:#00d4ff;--magenta:#ff00ff;--yellow:#ffff00;--red:#ff3333;--orange:#ff8800;
+            --text:#e6edf3;--dim:#7d8590;
+            --placeholder:#ff00ff; /* Couleur flashy pour les placeholders */
+        }
+        body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
+        
+        /* Matrix background */
+        .matrix{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.02;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px)}
+        
+        main{max-width:1400px;margin:0 auto;padding:1.5rem;position:relative;z-index:1}
+        
+        /* ============ LOGO CAROUSEL SECTION ============ */
+        .logo-section{background:var(--bg2);border:2px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+        .logo-section::before{content:'LOGO SELECTOR';position:absolute;top:0.5rem;left:1rem;font-size:0.6rem;color:var(--dim);letter-spacing:0.2em}
+        
+        .logo-carousel{display:flex;gap:1rem;overflow-x:auto;padding:1rem 0;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--neon) var(--bg3)}
+        .logo-carousel::-webkit-scrollbar{height:6px}
+        .logo-carousel::-webkit-scrollbar-track{background:var(--bg3);border-radius:3px}
+        .logo-carousel::-webkit-scrollbar-thumb{background:var(--neon);border-radius:3px}
+        
+        .logo-item{min-width:280px;height:200px;background:var(--bg3);border:2px solid var(--border);border-radius:12px;scroll-snap-align:center;display:flex;flex-direction:column;overflow:hidden;transition:all 0.3s;cursor:pointer}
+        .logo-item:hover{border-color:var(--neon);box-shadow:0 0 30px var(--neon-glow)}
+        .logo-item.active{border-color:var(--neon);box-shadow:0 0 30px rgba(0,255,65,0.3)}
+        .logo-item iframe{flex:1;border:none;pointer-events:none}
+        .logo-item-label{padding:0.5rem;background:var(--bg4);font-size:0.65rem;text-align:center;color:var(--dim)}
+        
+        /* Placeholder items - TRÈS VISIBLE */
+        .logo-item.placeholder{background:linear-gradient(135deg,rgba(255,0,255,0.1),rgba(0,255,255,0.1));border:2px dashed var(--placeholder)}
+        .logo-item.placeholder .placeholder-text{flex:1;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--placeholder);text-shadow:0 0 10px var(--placeholder)}
+        
+        .carousel-nav{display:flex;justify-content:center;gap:0.5rem;margin-top:1rem}
+        .carousel-nav button{width:40px;height:40px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-size:1.2rem;transition:all 0.2s}
+        .carousel-nav button:hover{border-color:var(--neon);background:var(--bg2)}
+        
+        /* ============ CCPLC MEGA BUTTON ============ */
+        .ccplc-section{margin-bottom:2rem}
+        .ccplc-btn{display:block;width:100%;padding:2rem;background:linear-gradient(135deg,var(--magenta),var(--cyan),var(--neon));border-radius:16px;text-decoration:none;text-align:center;position:relative;overflow:hidden;animation:glow-pulse 2s ease-in-out infinite}
+        .ccplc-btn::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(255,255,255,0.1),transparent);animation:shine 3s linear infinite}
+        @keyframes shine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+        @keyframes glow-pulse{0%,100%{box-shadow:0 0 30px var(--magenta),0 0 60px var(--cyan)}50%{box-shadow:0 0 50px var(--neon),0 0 100px var(--magenta)}}
+        .ccplc-btn:hover{transform:scale(1.02);animation:none;box-shadow:0 0 80px var(--neon)}
+        .ccplc-title{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:900;color:#000;text-shadow:2px 2px 0 #fff;letter-spacing:0.2em;margin-bottom:0.5rem;position:relative;z-index:1}
+        .ccplc-subtitle{font-size:1rem;color:rgba(0,0,0,0.8);position:relative;z-index:1}
+        
+        /* ============ SOCIAL/EXTERNAL LINKS ============ */
+        .social-section{margin-bottom:2rem}
+        .social-title{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem}
+        .social-title::before{content:'';width:20px;height:1px;background:var(--border)}
+        .social-title::after{content:'';flex:1;height:1px;background:var(--border)}
+        
+        .social-grid{display:flex;flex-wrap:wrap;gap:0.5rem}
+        .social-link{padding:0.4rem 0.8rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);text-decoration:none;font-size:0.65rem;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem}
+        .social-link:hover{border-color:var(--cyan);background:var(--bg3)}
+        .social-link .icon{font-size:0.9rem}
+        
+        /* Placeholder links - TRÈS VISIBLE */
+        .social-link.placeholder{border:2px dashed var(--placeholder);background:rgba(255,0,255,0.1);color:var(--placeholder);font-weight:700;animation:placeholder-blink 1.5s ease-in-out infinite}
+        @keyframes placeholder-blink{0%,100%{opacity:1}50%{opacity:0.6}}
+        
+        /* ============ STATS BAR ============ */
+        .stats-bar{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;padding:1.5rem;background:var(--bg2);border-radius:12px;border:1px solid var(--border)}
+        .stat{text-align:center}
+        .stat-value{font-size:1.8rem;font-weight:700;color:var(--neon);text-shadow:0 0 15px rgba(0,255,65,0.4)}
+        .stat-label{font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em}
+        
+        /* ============ SECTION TITLES ============ */
+        .section-title{font-family:'Orbitron',sans-serif;font-size:0.85rem;letter-spacing:0.2em;color:var(--cyan);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.75rem}
+        .section-title::before{content:'';width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+        
+        /* ============ DASHBOARDS ============ */
+        .dashboards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:3rem}
+        .dashboard-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:2px solid var(--neon);border-radius:12px;padding:1.5rem;text-decoration:none;color:var(--text);transition:all 0.3s;position:relative;overflow:hidden}
+        .dashboard-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--magenta))}
+        .dashboard-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px rgba(0,255,65,0.2)}
+        .dashboard-icon{font-size:2.5rem;margin-bottom:0.75rem}
+        .dashboard-name{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.25rem}
+        .dashboard-desc{font-size:0.7rem;color:var(--dim);line-height:1.5}
+        
+        /* ============ TOOLS GRID ============ */
+        .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:3rem}
+        .tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-decoration:none;color:var(--text);transition:all 0.2s;display:flex;flex-direction:column}
+        .tool-card:hover{border-color:var(--neon);transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,255,65,0.1)}
+        .tool-icon{font-size:2rem;margin-bottom:0.5rem}
+        .tool-name{font-weight:600;font-size:0.85rem;margin-bottom:0.25rem}
+        .tool-desc{font-size:0.65rem;color:var(--dim);line-height:1.4;flex:1}
+        .tool-tag{margin-top:0.75rem;font-size:0.55rem;padding:0.2rem 0.5rem;background:var(--bg3);border-radius:4px;color:var(--dim);align-self:flex-start}
+        .tool-tag.new{background:var(--neon);color:#000}
+        .tool-tag.data{background:var(--cyan);color:#000}
+        
+        /* Placeholder tool cards - TRÈS VISIBLE */
+        .tool-card.placeholder{border:2px dashed var(--placeholder);background:rgba(255,0,255,0.05)}
+        .tool-card.placeholder .tool-name{color:var(--placeholder)}
+        .tool-card.placeholder .tool-tag{background:var(--placeholder);color:#000;animation:placeholder-blink 1.5s ease-in-out infinite}
+        
+        /* ============ QUICK ACTIONS ============ */
+        .quick-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
+        .quick-btn{padding:0.6rem 1.2rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.7rem;font-family:inherit;cursor:pointer;transition:all 0.2s;text-decoration:none;display:flex;align-items:center;gap:0.4rem}
+        .quick-btn:hover{border-color:var(--cyan);background:var(--bg2)}
+        
+        /* ============ STATUS BAR ============ */
+        .status-bar{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:3rem}
+        .status-item{display:flex;align-items:center;gap:0.5rem;font-size:0.7rem}
+        .status-dot{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        
+        /* ============ ITCH.IO EMBED ============ */
+        .itchio-section{margin-top:3rem;margin-bottom:2rem}
+        .itchio-embed{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+        .itchio-embed iframe{width:100%;height:500px;border:none}
+        .itchio-placeholder{height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,0,255,0.1),rgba(250,80,80,0.1));border:2px dashed var(--placeholder)}
+        .itchio-placeholder .placeholder-text{font-size:1.5rem;color:var(--placeholder);margin-bottom:1rem}
+        .itchio-placeholder .placeholder-hint{font-size:0.75rem;color:var(--dim)}
+        
+        /* ============ FOOTER ============ */
+        footer{text-align:center;padding:2rem;color:var(--dim);font-size:0.65rem;border-top:1px solid var(--border)}
+        footer a{color:var(--neon);text-decoration:none}
+        
+        @media(max-width:768px){
+            .ccplc-title{font-size:1.5rem}
+            .stats-bar{gap:1rem}
+            .stat-value{font-size:1.3rem}
+            .logo-item{min-width:240px;height:160px}
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix"></div>
+    
+    <main>
+        <!-- ============ LOGO CAROUSEL ============ -->
+        <section class="logo-section">
+            <div class="logo-carousel" id="logo-carousel">
+                <!-- Placeholder logos - REMPLACER PAR VOS CODEPENS -->
+                <div class="logo-item placeholder" onclick="selectLogo(0)">
+                    <div class="placeholder-text">#CODEPEN_1</div>
+                    <div class="logo-item-label">Remplacer par iframe CodePen</div>
+                </div>
+                <div class="logo-item placeholder" onclick="selectLogo(1)">
+                    <div class="placeholder-text">#CODEPEN_2</div>
+                    <div class="logo-item-label">Remplacer par iframe CodePen</div>
+                </div>
+                <div class="logo-item placeholder" onclick="selectLogo(2)">
+                    <div class="placeholder-text">#CODEPEN_3</div>
+                    <div class="logo-item-label">Remplacer par iframe CodePen</div>
+                </div>
+                <div class="logo-item placeholder" onclick="selectLogo(3)">
+                    <div class="placeholder-text">#CODEPEN_4</div>
+                    <div class="logo-item-label">Remplacer par iframe CodePen</div>
+                </div>
+                <div class="logo-item placeholder" onclick="selectLogo(4)">
+                    <div class="placeholder-text">#CODEPEN_5</div>
+                    <div class="logo-item-label">Remplacer par iframe CodePen</div>
+                </div>
+            </div>
+            <div class="carousel-nav">
+                <button onclick="scrollCarousel(-1)">◀</button>
+                <button onclick="scrollCarousel(1)">▶</button>
+            </div>
+        </section>
+        
+        <!-- ============ CCPLC MEGA BUTTON ============ -->
+        <section class="ccplc-section">
+            <a href="#CCPLC_LINK" class="ccplc-btn">
+                <div class="ccplc-title">CCPLC</div>
+                <div class="ccplc-subtitle">Collectif Citoyen Pour La Cause — Rejoindre le mouvement</div>
+            </a>
+        </section>
+        
+        <!-- ============ SOCIAL / EXTERNAL LINKS ============ -->
+        <section class="social-section">
+            <div class="social-title">Nous retrouver ailleurs</div>
+            <div class="social-grid">
+                <a href="#LINKEDIN" class="social-link placeholder"><span class="icon">💼</span> #LINKEDIN</a>
+                <a href="#TWITTER" class="social-link placeholder"><span class="icon">🐦</span> #TWITTER</a>
+                <a href="#MASTODON" class="social-link placeholder"><span class="icon">🐘</span> #MASTODON</a>
+                <a href="#DISCORD" class="social-link placeholder"><span class="icon">💬</span> #DISCORD</a>
+                <a href="#TELEGRAM" class="social-link placeholder"><span class="icon">✈️</span> #TELEGRAM</a>
+                <a href="#GITHUB" class="social-link placeholder"><span class="icon">🐙</span> #GITHUB</a>
+                <a href="#GITLAB" class="social-link placeholder"><span class="icon">🦊</span> #GITLAB</a>
+                <a href="#ITCHIO" class="social-link placeholder"><span class="icon">🎮</span> #ITCH.IO</a>
+                <a href="#BLOG_1" class="social-link placeholder"><span class="icon">📝</span> #BLOG_1</a>
+                <a href="#BLOG_2" class="social-link placeholder"><span class="icon">📝</span> #BLOG_2</a>
+                <a href="#YOUTUBE" class="social-link placeholder"><span class="icon">📺</span> #YOUTUBE</a>
+                <a href="#PEERTUBE" class="social-link placeholder"><span class="icon">🎬</span> #PEERTUBE</a>
+                <a href="#PODCAST" class="social-link placeholder"><span class="icon">🎙️</span> #PODCAST</a>
+                <a href="#NEWSLETTER" class="social-link placeholder"><span class="icon">📧</span> #NEWSLETTER</a>
+                <a href="#LOREM" class="social-link placeholder"><span class="icon">🔗</span> #Lorem</a>
+                <a href="#IPSUM" class="social-link placeholder"><span class="icon">🔗</span> #Ipsum</a>
+                <a href="#FOO" class="social-link placeholder"><span class="icon">🔗</span> #Foo</a>
+                <a href="#BAR" class="social-link placeholder"><span class="icon">🔗</span> #Bar</a>
+            </div>
+        </section>
+        
+        <!-- ============ STATS ============ -->
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value">12</div><div class="stat-label">Modules</div></div>
+            <div class="stat"><div class="stat-value">22</div><div class="stat-label">Eurodéputés BE</div></div>
+            <div class="stat"><div class="stat-value">581</div><div class="stat-label">Communes</div></div>
+            <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Possibilités</div></div>
+        </div>
+        
+        <!-- ============ COMMAND CENTERS ============ -->
+        <div class="section-title">COMMAND CENTERS</div>
+        <div class="dashboards">
+            <a href="00-citadel-command.html" class="dashboard-card">
+                <div class="dashboard-icon">🏰</div>
+                <div class="dashboard-name">CITADEL COMMAND</div>
+                <div class="dashboard-desc">Dashboard central NSA-style. Vue d'ensemble de tous les modules.</div>
+            </a>
+            <a href="00-nexus-hq.html" class="dashboard-card">
+                <div class="dashboard-icon">⚡</div>
+                <div class="dashboard-name">NEXUS HQ</div>
+                <div class="dashboard-desc">Quartier général personnel. Productivité et widgets.</div>
+            </a>
+            <a href="11-kern-dossiers.html" class="dashboard-card" style="border-color:var(--magenta)">
+                <div class="dashboard-icon">📁</div>
+                <div class="dashboard-name">KERN::DOSSIERS</div>
+                <div class="dashboard-desc">Système de fiches politiques NSA-style. Créez vos dossiers sur les élus.</div>
+            </a>
+        </div>
+        
+        <!-- ============ OUTILS OPÉRATIONNELS ============ -->
+        <div class="section-title">OUTILS OPÉRATIONNELS</div>
+        <div class="tools-grid">
+            <a href="01-finance-tracker.html" class="tool-card"><div class="tool-icon">💰</div><div class="tool-name">Finance Tracker</div><div class="tool-desc">Suivi budgétaire et dépenses.</div><span class="tool-tag">localStorage</span></a>
+            <a href="02-mission-creator.html" class="tool-card"><div class="tool-icon">🎯</div><div class="tool-name">Mission Creator</div><div class="tool-desc">Créer et suivre des missions.</div><span class="tool-tag">localStorage</span></a>
+            <a href="03-journal.html" class="tool-card"><div class="tool-icon">📓</div><div class="tool-name">Journal</div><div class="tool-desc">Carnet de bord et notes.</div><span class="tool-tag">localStorage</span></a>
+            <a href="04-network-map.html" class="tool-card"><div class="tool-icon">🕸️</div><div class="tool-name">Network Map</div><div class="tool-desc">Cartographie relationnelle.</div><span class="tool-tag">localStorage</span></a>
+            <a href="05-agenda-politique.html" class="tool-card"><div class="tool-icon">📅</div><div class="tool-name">Agenda Politique</div><div class="tool-desc">Calendrier des événements.</div><span class="tool-tag">localStorage</span></a>
+            <a href="06-generateur-documents.html" class="tool-card"><div class="tool-icon">📝</div><div class="tool-name">Générateur Docs</div><div class="tool-desc">Créer des documents.</div><span class="tool-tag">templates</span></a>
+            <a href="06-bibliotheque.html" class="tool-card"><div class="tool-icon">📚</div><div class="tool-name">Bibliothèque</div><div class="tool-desc">Base documentaire.</div><span class="tool-tag">localStorage</span></a>
+            <a href="08-forge-studio.html" class="tool-card"><div class="tool-icon">🔧</div><div class="tool-name">Forge Studio</div><div class="tool-desc">Atelier de création avancé.</div><span class="tool-tag">avancé</span></a>
+        </div>
+        
+        <!-- ============ DONNÉES POLITIQUES BELGES ============ -->
+        <div class="section-title">DONNÉES POLITIQUES BELGES</div>
+        <div class="tools-grid">
+            <a href="10-beldata-citoyen-v2.html" class="tool-card" style="border-color:var(--cyan)"><div class="tool-icon">🇧🇪</div><div class="tool-name">BELDATA Citoyen v2</div><div class="tool-desc">Hub politique belge VÉRIFIÉ. Modèle Ostbelgien inclus.</div><span class="tool-tag data">✓ VÉRIFIÉ</span></a>
+            <a href="09-beldata-complet.html" class="tool-card"><div class="tool-icon">📊</div><div class="tool-name">BELDATA Complet</div><div class="tool-desc">Version étendue tous niveaux.</div><span class="tool-tag">données</span></a>
+        </div>
+        
+        <!-- ============ DONNÉES MAISON ============ -->
+        <div class="section-title">DONNÉES MAISON</div>
+        <div class="tools-grid">
+            <a href="#LOREM_DATA_1" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Lorem_Dataset</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+            <a href="#IPSUM_DATA_2" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Ipsum_Dataset</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+            <a href="#FOO_DATA_3" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Foo_Dataset</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+            <a href="#BAR_DATA_4" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Bar_Dataset</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+            <a href="#CUSTOM_1" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Custom_1</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+            <a href="#CUSTOM_2" class="tool-card placeholder"><div class="tool-icon">📦</div><div class="tool-name">#Custom_2</div><div class="tool-desc">Description de votre dataset personnalisé...</div><span class="tool-tag">PLACEHOLDER</span></a>
+        </div>
+        
+        <!-- ============ QUICK ACTIONS ============ -->
+        <div class="section-title">ACTIONS RAPIDES</div>
+        <div class="quick-actions">
+            <a href="11-kern-dossiers.html" class="quick-btn">➕ Nouveau dossier</a>
+            <a href="02-mission-creator.html" class="quick-btn">🎯 Nouvelle mission</a>
+            <a href="03-journal.html" class="quick-btn">📓 Nouvelle note</a>
+            <button class="quick-btn" onclick="exportAllData()">📤 Export global</button>
+            <button class="quick-btn" onclick="showSyncStatus()">🔄 Sync status</button>
+        </div>
+        
+        <!-- ============ STATUS BAR ============ -->
+        <div class="status-bar">
+            <div class="status-item"><span class="status-dot"></span><span>Système opérationnel</span></div>
+            <div class="status-item"><span>📦 localStorage actif</span></div>
+            <div class="status-item"><span>🔒 100% local</span></div>
+            <div class="status-item"><span>📅 Janvier 2025</span></div>
+        </div>
+        
+        <!-- ============ ITCH.IO EMBED ============ -->
+        <section class="itchio-section">
+            <div class="section-title">NOTRE PAGE ITCH.IO</div>
+            <div class="itchio-embed">
+                <!-- REMPLACER PAR VOTRE IFRAME ITCH.IO -->
+                <div class="itchio-placeholder">
+                    <div class="placeholder-text">#ITCH_IO_EMBED</div>
+                    <div class="placeholder-hint">Remplacez ce bloc par votre iframe itch.io</div>
+                    <div class="placeholder-hint" style="margin-top:0.5rem;font-size:0.65rem;color:var(--placeholder)">
+                        &lt;iframe src="https://itch.io/embed/VOTRE_PAGE" width="100%" height="500"&gt;&lt;/iframe&gt;
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <strong>KERN::HUB</strong> — Écosystème citoyen modulaire • 100% local<br>
+        <a href="10-beldata-citoyen-v2.html">Sources officielles</a> • 
+        <span style="color:var(--placeholder)">#FOOTER_LINK_1</span> • 
+        <span style="color:var(--placeholder)">#FOOTER_LINK_2</span>
+    </footer>
+    
+<script>
+// Logo carousel
+function scrollCarousel(direction) {
+    const carousel = document.getElementById('logo-carousel');
+    const scrollAmount = 300;
+    carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+}
+
+function selectLogo(index) {
+    document.querySelectorAll('.logo-item').forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+    });
+    // Store selection
+    localStorage.setItem('kern_selected_logo', index);
+}
+
+// Load selected logo
+const savedLogo = localStorage.getItem('kern_selected_logo');
+if (savedLogo !== null) {
+    selectLogo(parseInt(savedLogo));
+}
+
+// Export all data
+function exportAllData() {
+    const d = {};
+    ['kern_dossiers','kern_finance','kern_missions','kern_journal','kern_network','kern_agenda'].forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v) d[k] = JSON.parse(v);
+    });
+    const b = new Blob([JSON.stringify(d, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b);
+    a.download = 'kern-backup-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    alert('✅ Export téléchargé');
+}
+
+// Sync status
+function showSyncStatus() {
+    let s = 'KERN SYNC STATUS\n================\n\n';
+    ['kern_dossiers','kern_finance','kern_missions','kern_journal','kern_network','kern_agenda'].forEach(k => {
+        const d = localStorage.getItem(k);
+        const c = d ? JSON.parse(d).length || Object.keys(JSON.parse(d)).length : 0;
+        s += (d ? '✅' : '⬜') + ' ' + k.replace('kern_', '').toUpperCase() + ': ' + c + ' entrées\n';
+    });
+    alert(s);
+}
+</script>
+</body>
+</html>
