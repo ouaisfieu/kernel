@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN_BREACH — Collectif Citoyen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-glow: rgba(144, 238, 144, 0.03);
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --text-muted: #606060;
+            --vert: #90EE90;
+            --vert-dim: rgba(144, 238, 144, 0.6);
+            --lilas: #DDA0DD;
+            --lilas-dim: rgba(221, 160, 221, 0.6);
+            --rouge: #ff4757;
+            --jaune: #ffd93d;
+            --border: rgba(144, 238, 144, 0.15);
+            --font-display: 'Orbitron', monospace;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #e8e8ec;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --border: rgba(144, 238, 144, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scanlines effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 9999;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--vert);
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--vert);
+            border-radius: 4px;
+            position: relative;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(144, 238, 144, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(144, 238, 144, 0); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-family: var(--font-mono);
+        }
+
+        .nav-links a:hover { color: var(--vert); }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.4rem 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--vert);
+            color: var(--vert);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(144, 238, 144, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .glitch-container {
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            color: var(--vert);
+            text-shadow: 0 0 40px rgba(144, 238, 144, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--lilas);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .hero-description {
+            max-width: 600px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            padding: 1rem 2rem;
+            border: 2px solid var(--vert);
+            background: transparent;
+            color: var(--vert);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--vert);
+            color: var(--bg-primary);
+            box-shadow: 0 0 30px rgba(144, 238, 144, 0.3);
+        }
+
+        .btn-secondary {
+            border-color: var(--lilas);
+            color: var(--lilas);
+        }
+
+        .btn-secondary:hover {
+            background: var(--lilas);
+            color: var(--bg-primary);
+            box-shadow: 0 0 30px rgba(221, 160, 221, 0.3);
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--vert);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--lilas);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--vert);
+            letter-spacing: 0.05em;
+        }
+
+        /* Manifeste */
+        .manifeste {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .manifeste::before {
+            content: '>';
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-family: var(--font-mono);
+            color: var(--vert);
+            opacity: 0.3;
+            font-size: 2rem;
+        }
+
+        .manifeste-content {
+            font-size: 1.1rem;
+            line-height: 2;
+            color: var(--text-secondary);
+        }
+
+        .manifeste-content strong {
+            color: var(--vert);
+            font-weight: 600;
+        }
+
+        .manifeste-content em {
+            color: var(--lilas);
+            font-style: normal;
+        }
+
+        /* Ateliers Grid */
+        .ateliers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .atelier-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .atelier-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--vert), var(--lilas));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .atelier-card:hover {
+            border-color: var(--vert);
+            transform: translateY(-4px);
+        }
+
+        .atelier-card:hover::before { opacity: 1; }
+
+        .atelier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .atelier-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .atelier-badge {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .badge-async {
+            background: rgba(144, 238, 144, 0.15);
+            color: var(--vert);
+            border: 1px solid var(--vert-dim);
+        }
+
+        .badge-live {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--rouge);
+            border: 1px solid rgba(255, 71, 87, 0.5);
+        }
+
+        .badge-coming {
+            background: rgba(255, 217, 61, 0.15);
+            color: var(--jaune);
+            border: 1px solid rgba(255, 217, 61, 0.5);
+        }
+
+        .atelier-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .atelier-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .atelier-meta {
+            display: flex;
+            gap: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Principes */
+        .principes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .principe {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .principe-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--vert);
+            opacity: 0.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .principe-title {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--lilas);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .principe-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin: 4rem 0;
+        }
+
+        .stat {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--vert);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 0.5rem;
+        }
+
+        /* Comment participer */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            border-color: var(--vert);
+        }
+
+        .step-number {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--vert);
+            opacity: 0.2;
+            line-height: 1;
+        }
+
+        .step-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--lilas);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .step-content code {
+            font-family: var(--font-mono);
+            background: var(--bg-card);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.85rem;
+            color: var(--vert);
+        }
+
+        /* Transparence */
+        .transparency-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .transparency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .transparency-title {
+            font-family: var(--font-display);
+            color: var(--vert);
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--rouge);
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--rouge);
+            animation: pulse-opacity 2s infinite;
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .transparency-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .transparency-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .transparency-link:hover {
+            border-color: var(--vert);
+            color: var(--vert);
+        }
+
+        .transparency-link span {
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--vert);
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--lilas); }
+
+        .footer-copy {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .step { flex-direction: column; gap: 1rem; }
+            .status-bar { flex-direction: column; gap: 0.5rem; }
+        }
+
+        /* Animation d'entrée */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            KERN_BREACH
+        </div>
+        <ul class="nav-links">
+            <li><a href="#manifeste">./manifeste</a></li>
+            <li><a href="#ateliers">./ateliers</a></li>
+            <li><a href="#participer">./participer</a></li>
+            <li><a href="#transparence">./transparence</a></li>
+        </ul>
+        <button class="theme-toggle" onclick="toggleTheme()">◐ theme</button>
+    </nav>
+
+    <section class="hero">
+        <div class="glitch-container fade-in">
+            <h1 class="hero-title">KERN_BREACH</h1>
+        </div>
+        <p class="hero-subtitle fade-in delay-1">Collectif Citoyen Virtuel</p>
+        <p class="hero-description fade-in delay-2">
+            Un laboratoire d'empowerment démocratique. Open source. Transparent. 
+            On déconstruit le système pour le comprendre, on le comprend pour agir.
+            <strong>Ateliers asynchrones</strong> • <strong>Ressources libres</strong> • <strong>Action collective</strong>
+        </p>
+        <div class="cta-group fade-in delay-3">
+            <a href="#ateliers" class="btn">▶ DÉCOUVRIR LES ATELIERS</a>
+            <a href="#participer" class="btn btn-secondary">◇ REJOINDRE LE COLLECTIF</a>
+        </div>
+        <div class="status-bar fade-in delay-4">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Système opérationnel</span>
+            </div>
+            <div class="status-item">
+                <span>v0.1.0-alpha</span>
+            </div>
+            <div class="status-item">
+                <span>Belgique • 2026</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="manifeste">
+        <div class="section-header">
+            <p class="section-tag">// Qui sommes-nous</p>
+            <h2 class="section-title">MANIFESTE</h2>
+        </div>
+        <div class="manifeste">
+            <div class="manifeste-content">
+                <p>
+                    Nous sommes un <strong>collectif informel</strong> de citoyens qui refusent l'opacité du pouvoir.
+                    Pas un parti. Pas une asbl. <em>Un réseau.</em>
+                </p>
+                <br>
+                <p>
+                    Notre terrain de jeu : la <strong>Belgique fédérale</strong>, ses piliers, sa particratie, 
+                    son <em>KERN</em> qui décide dans l'ombre. Notre méthode : <strong>apprendre ensemble</strong>, 
+                    documenter publiquement, partager en open source.
+                </p>
+                <br>
+                <p>
+                    On ne demande pas la permission. On prend notre place. 
+                    <strong>L'information est une arme</strong> — autant qu'elle serve à ceux d'en bas.
+                </p>
+                <br>
+                <p style="color: var(--lilas);">
+                    Tout ce qu'on produit est libre. Copie, fork, adapte. 
+                    <em>La démocratie n'est pas sous copyright.</em>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-value" id="stat-ateliers">7</div>
+            <div class="stat-label">Ateliers actifs</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value" id="stat-participants">--</div>
+            <div class="stat-label">Participants</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value" id="stat-ressources">42</div>
+            <div class="stat-label">Ressources libres</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Ambition</div>
+        </div>
+    </div>
+
+    <section id="ateliers">
+        <div class="section-header">
+            <p class="section-tag">// Formation asynchrone</p>
+            <h2 class="section-title">ATELIERS</h2>
+        </div>
+        <div class="ateliers-grid">
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">🏛️</div>
+                    <span class="atelier-badge badge-async">Asynchrone</span>
+                </div>
+                <h3 class="atelier-title">Anatomie du KERN</h3>
+                <p class="atelier-desc">
+                    Décortiquer le fonctionnement du cabinet restreint. Qui décide vraiment ? 
+                    Comment ? Avec quelles conséquences sur nos vies ?
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ 4 modules</span>
+                    <span>📚 12 ressources</span>
+                </div>
+            </div>
+
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">🗳️</div>
+                    <span class="atelier-badge badge-async">Asynchrone</span>
+                </div>
+                <h3 class="atelier-title">Participation citoyenne 101</h3>
+                <p class="atelier-desc">
+                    Cartographie des outils existants : interpellation, pétition, consultation, 
+                    commission délibérative. Comment les activer ?
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ 6 modules</span>
+                    <span>📚 18 ressources</span>
+                </div>
+            </div>
+
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">🕸️</div>
+                    <span class="atelier-badge badge-async">Asynchrone</span>
+                </div>
+                <h3 class="atelier-title">Pilarisation : le code source</h3>
+                <p class="atelier-desc">
+                    Comprendre la verzuiling belge. Syndicats, mutualités, partis — 
+                    comment les piliers structurent encore le pouvoir en 2026.
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ 3 modules</span>
+                    <span>📚 9 ressources</span>
+                </div>
+            </div>
+
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">📢</div>
+                    <span class="atelier-badge badge-async">Asynchrone</span>
+                </div>
+                <h3 class="atelier-title">Plaidoyer & Influence</h3>
+                <p class="atelier-desc">
+                    Techniques de lobbying citoyen. Framing, coalition-building, 
+                    timing stratégique. Le pouvoir par la méthode.
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ 5 modules</span>
+                    <span>📚 15 ressources</span>
+                </div>
+            </div>
+
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">⚖️</div>
+                    <span class="atelier-badge badge-coming">Bientôt</span>
+                </div>
+                <h3 class="atelier-title">Désobéissance civile — Cadre légal</h3>
+                <p class="atelier-desc">
+                    Ce qu'on peut faire, ce qu'on risque. État de nécessité, 
+                    jurisprudence, ressources juridiques.
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ En préparation</span>
+                    <span>📚 --</span>
+                </div>
+            </div>
+
+            <div class="atelier-card">
+                <div class="atelier-header">
+                    <div class="atelier-icon">🎮</div>
+                    <span class="atelier-badge badge-live">Live mensuel</span>
+                </div>
+                <h3 class="atelier-title">ARG Workshop</h3>
+                <p class="atelier-desc">
+                    Session collective pour créer des missions citoyennes gamifiées. 
+                    Transformer l'action politique en jeu viral.
+                </p>
+                <div class="atelier-meta">
+                    <span>⏱ 2h/mois</span>
+                    <span>📍 Discord</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-header">
+            <p class="section-tag">// Nos fondamentaux</p>
+            <h2 class="section-title">PRINCIPES</h2>
+        </div>
+        <div class="principes-grid">
+            <div class="principe">
+                <div class="principe-number">01</div>
+                <h3 class="principe-title">OPEN SOURCE</h3>
+                <p class="principe-desc">Tout est public. Code, contenus, finances. Fork encouraged.</p>
+            </div>
+            <div class="principe">
+                <div class="principe-number">02</div>
+                <h3 class="principe-title">ASYNCHRONE FIRST</h3>
+                <p class="principe-desc">Chacun avance à son rythme. Pas de pression, pas de FOMO.</p>
+            </div>
+            <div class="principe">
+                <div class="principe-number">03</div>
+                <h3 class="principe-title">DÉCENTRALISÉ</h3>
+                <p class="principe-desc">Pas de chef. Pas de hiérarchie. Des initiatives et des synergies.</p>
+            </div>
+            <div class="principe">
+                <div class="principe-number">04</div>
+                <h3 class="principe-title">ACCESSIBLE</h3>
+                <p class="principe-desc">Vulgariser sans simplifier. Rendre le complexe compréhensible.</p>
+            </div>
+            <div class="principe">
+                <div class="principe-number">05</div>
+                <h3 class="principe-title">TRANSPARENT</h3>
+                <p class="principe-desc">Décisions, finances, conflits — tout est documenté publiquement.</p>
+            </div>
+            <div class="principe">
+                <div class="principe-number">06</div>
+                <h3 class="principe-title">ANARCHISTE</h3>
+                <p class="principe-desc">Au sens noble. Auto-organisation, entraide, refus des dominations.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="participer">
+        <div class="section-header">
+            <p class="section-tag">// Onboarding</p>
+            <h2 class="section-title">COMMENT PARTICIPER</h2>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h3>Rejoins le canal</h3>
+                    <p>
+                        On utilise <code>Matrix/Element</code> pour les discussions. 
+                        Serveur décentralisé, chiffré, pas de tracking. 
+                        Lien d'invitation sur demande via Mastodon.
+                    </p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h3>Explore les ateliers</h3>
+                    <p>
+                        Tous les contenus sont sur le <code>wiki</code> public. 
+                        Commence par ce qui t'intéresse. Pas d'ordre imposé. 
+                        Pose tes questions dans les fils dédiés.
+                    </p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h3>Lance une mission</h3>
+                    <p>
+                        Chaque atelier propose des <code>missions</code> concrètes. 
+                        Documente ton expérience. Partage tes apprentissages. 
+                        Gagne des points (oui, c'est gamifié).
+                    </p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">04</div>
+                <div class="step-content">
+                    <h3>Contribue</h3>
+                    <p>
+                        Améliore une ressource. Traduis un contenu. Propose un atelier. 
+                        Corrige une erreur. <code>git pull request</code> bienvenue.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="transparence">
+        <div class="section-header">
+            <p class="section-tag">// Radical openness</p>
+            <h2 class="section-title">TRANSPARENCE</h2>
+        </div>
+        <div class="transparency-box">
+            <div class="transparency-header">
+                <h3 class="transparency-title">Accès public total</h3>
+                <div class="live-badge">
+                    <span style="width:8px;height:8px;background:#ff4757;border-radius:50%;"></span>
+                    LIVE DATA
+                </div>
+            </div>
+            <div class="transparency-links">
+                <a href="#" class="transparency-link">
+                    <span>💰</span>
+                    <div>
+                        <strong>Finances</strong>
+                        <small style="display:block;font-size:0.75rem;color:var(--text-muted)">Chaque euro tracé</small>
+                    </div>
+                </a>
+                <a href="#" class="transparency-link">
+                    <span>📊</span>
+                    <div>
+                        <strong>Dashboard</strong>
+                        <small style="display:block;font-size:0.75rem;color:var(--text-muted)">Métriques temps réel</small>
+                    </div>
+                </a>
+                <a href="#" class="transparency-link">
+                    <span>📝</span>
+                    <div>
+                        <strong>Décisions</strong>
+                        <small style="display:block;font-size:0.75rem;color:var(--text-muted)">Historique complet</small>
+                    </div>
+                </a>
+                <a href="#" class="transparency-link">
+                    <span>💻</span>
+                    <div>
+                        <strong>Code source</strong>
+                        <small style="display:block;font-size:0.75rem;color:var(--text-muted)">GitHub public</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">KERN_BREACH</div>
+        <p class="footer-tagline">L'anarchie au secours de la démocratie</p>
+        <div class="footer-links">
+            <a href="#">Mastodon</a>
+            <a href="#">Matrix</a>
+            <a href="#">GitHub</a>
+            <a href="#">RSS</a>
+            <a href="#">Wiki</a>
+        </div>
+        <p class="footer-copy">
+            Domaine public (CC0) — Fork, copie, adapte sans restriction<br>
+            <span style="color: var(--vert);">Fait avec 🖤 depuis la Belgique</span>
+        </p>
+    </footer>
+
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsBar = document.querySelector('.stats-bar');
+        if (statsBar) statsObserver.observe(statsBar);
+
+        function animateStats() {
+            const statParticipants = document.getElementById('stat-participants');
+            let count = 0;
+            const target = 127;
+            const interval = setInterval(() => {
+                count += Math.ceil(target / 30);
+                if (count >= target) {
+                    count = target;
+                    clearInterval(interval);
+                }
+                statParticipants.textContent = count;
+            }, 30);
+        }
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
