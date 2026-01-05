@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN::HUB — Écosystème Citoyen Complet</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#080810;--bg2:#0d1117;--bg3:#161b22;--border:#30363d;--neon:#00ff41;--cyan:#00d4ff;--magenta:#ff00ff;--text:#e6edf3;--dim:#7d8590}
+        body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
+        .matrix{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.02;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px)}
+        header{text-align:center;padding:3rem 1.5rem 2rem;background:linear-gradient(180deg,rgba(0,255,65,0.05),transparent)}
+        .logo{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:900;letter-spacing:0.15em;margin-bottom:0.5rem}
+        .logo span{color:var(--neon);text-shadow:0 0 30px rgba(0,255,65,0.5)}
+        .tagline{color:var(--dim);font-size:0.85rem;max-width:500px;margin:0 auto 2rem}
+        .stats-bar{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2rem}
+        .stat{text-align:center}
+        .stat-value{font-size:1.8rem;font-weight:700;color:var(--neon);text-shadow:0 0 15px rgba(0,255,65,0.4)}
+        .stat-label{font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em}
+        main{max-width:1400px;margin:0 auto;padding:0 1.5rem 3rem;position:relative;z-index:1}
+        .section-title{font-family:'Orbitron',sans-serif;font-size:0.85rem;letter-spacing:0.2em;color:var(--cyan);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.75rem}
+        .section-title::before{content:'';width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+        .dashboards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:3rem}
+        .dashboard-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:2px solid var(--neon);border-radius:12px;padding:1.5rem;text-decoration:none;color:var(--text);transition:all 0.3s;position:relative;overflow:hidden}
+        .dashboard-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--magenta))}
+        .dashboard-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px rgba(0,255,65,0.2)}
+        .dashboard-icon{font-size:2.5rem;margin-bottom:0.75rem}
+        .dashboard-name{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.25rem}
+        .dashboard-desc{font-size:0.7rem;color:var(--dim);line-height:1.5}
+        .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:3rem}
+        .tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-decoration:none;color:var(--text);transition:all 0.2s;display:flex;flex-direction:column}
+        .tool-card:hover{border-color:var(--neon);transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,255,65,0.1)}
+        .tool-icon{font-size:2rem;margin-bottom:0.5rem}
+        .tool-name{font-weight:600;font-size:0.85rem;margin-bottom:0.25rem}
+        .tool-desc{font-size:0.65rem;color:var(--dim);line-height:1.4;flex:1}
+        .tool-tag{margin-top:0.75rem;font-size:0.55rem;padding:0.2rem 0.5rem;background:var(--bg3);border-radius:4px;color:var(--dim);align-self:flex-start}
+        .tool-tag.new{background:var(--neon);color:#000}
+        .tool-tag.data{background:var(--cyan);color:#000}
+        .quick-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
+        .quick-btn{padding:0.6rem 1.2rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.7rem;font-family:inherit;cursor:pointer;transition:all 0.2s;text-decoration:none;display:flex;align-items:center;gap:0.4rem}
+        .quick-btn:hover{border-color:var(--cyan);background:var(--bg2)}
+        .status-bar{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .status-item{display:flex;align-items:center;gap:0.5rem;font-size:0.7rem}
+        .status-dot{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        footer{text-align:center;padding:2rem;color:var(--dim);font-size:0.65rem;border-top:1px solid var(--border)}
+        footer a{color:var(--neon);text-decoration:none}
+    </style>
+</head>
+<body>
+    <div class="matrix"></div>
+    <header>
+        <div class="logo">KERN::<span>HUB</span></div>
+        <p class="tagline">Écosystème modulaire pour l'action citoyenne. 12 outils interconnectés, données belges vérifiées, 100% autonome.</p>
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value">12</div><div class="stat-label">Modules</div></div>
+            <div class="stat"><div class="stat-value">22</div><div class="stat-label">Eurodéputés BE</div></div>
+            <div class="stat"><div class="stat-value">581</div><div class="stat-label">Communes</div></div>
+            <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Possibilités</div></div>
+        </div>
+    </header>
+    <main>
+        <div class="section-title">COMMAND CENTERS</div>
+        <div class="dashboards">
+            <a href="00-citadel-command.html" class="dashboard-card">
+                <div class="dashboard-icon">🏰</div>
+                <div class="dashboard-name">CITADEL COMMAND</div>
+                <div class="dashboard-desc">Dashboard central NSA-style. Vue d'ensemble de tous les modules.</div>
+            </a>
+            <a href="00-nexus-hq.html" class="dashboard-card">
+                <div class="dashboard-icon">⚡</div>
+                <div class="dashboard-name">NEXUS HQ</div>
+                <div class="dashboard-desc">Quartier général personnel. Productivité et widgets.</div>
+            </a>
+            <a href="11-kern-dossiers.html" class="dashboard-card" style="border-color:var(--magenta)">
+                <div class="dashboard-icon">📁</div>
+                <div class="dashboard-name">KERN::DOSSIERS</div>
+                <div class="dashboard-desc">Système de fiches politiques NSA-style. Créez vos dossiers sur les élus.</div>
+            </a>
+        </div>
+        <div class="section-title">OUTILS OPÉRATIONNELS</div>
+        <div class="tools-grid">
+            <a href="01-finance-tracker.html" class="tool-card"><div class="tool-icon">💰</div><div class="tool-name">Finance Tracker</div><div class="tool-desc">Suivi budgétaire et dépenses.</div><span class="tool-tag">localStorage</span></a>
+            <a href="02-mission-creator.html" class="tool-card"><div class="tool-icon">🎯</div><div class="tool-name">Mission Creator</div><div class="tool-desc">Créer et suivre des missions.</div><span class="tool-tag">localStorage</span></a>
+            <a href="03-journal.html" class="tool-card"><div class="tool-icon">📓</div><div class="tool-name">Journal</div><div class="tool-desc">Carnet de bord et notes.</div><span class="tool-tag">localStorage</span></a>
+            <a href="04-network-map.html" class="tool-card"><div class="tool-icon">🕸️</div><div class="tool-name">Network Map</div><div class="tool-desc">Cartographie relationnelle.</div><span class="tool-tag">localStorage</span></a>
+            <a href="05-agenda-politique.html" class="tool-card"><div class="tool-icon">📅</div><div class="tool-name">Agenda Politique</div><div class="tool-desc">Calendrier des événements.</div><span class="tool-tag">localStorage</span></a>
+            <a href="06-generateur-documents.html" class="tool-card"><div class="tool-icon">📝</div><div class="tool-name">Générateur Docs</div><div class="tool-desc">Créer des documents.</div><span class="tool-tag">templates</span></a>
+            <a href="06-bibliotheque.html" class="tool-card"><div class="tool-icon">📚</div><div class="tool-name">Bibliothèque</div><div class="tool-desc">Base documentaire.</div><span class="tool-tag">localStorage</span></a>
+            <a href="08-forge-studio.html" class="tool-card"><div class="tool-icon">🔧</div><div class="tool-name">Forge Studio</div><div class="tool-desc">Atelier de création avancé.</div><span class="tool-tag">avancé</span></a>
+        </div>
+        <div class="section-title">DONNÉES POLITIQUES BELGES</div>
+        <div class="tools-grid">
+            <a href="10-beldata-citoyen-v2.html" class="tool-card" style="border-color:var(--cyan)"><div class="tool-icon">🇧🇪</div><div class="tool-name">BELDATA Citoyen v2</div><div class="tool-desc">Hub politique belge VÉRIFIÉ. Modèle Ostbelgien inclus.</div><span class="tool-tag data">✓ VÉRIFIÉ</span></a>
+            <a href="09-beldata-complet.html" class="tool-card"><div class="tool-icon">📊</div><div class="tool-name">BELDATA Complet</div><div class="tool-desc">Version étendue tous niveaux.</div><span class="tool-tag">données</span></a>
+        </div>
+        <div class="section-title">ACTIONS RAPIDES</div>
+        <div class="quick-actions">
+            <a href="11-kern-dossiers.html" class="quick-btn">➕ Nouveau dossier</a>
+            <a href="02-mission-creator.html" class="quick-btn">🎯 Nouvelle mission</a>
+            <a href="03-journal.html" class="quick-btn">📓 Nouvelle note</a>
+            <button class="quick-btn" onclick="exportAllData()">📤 Export global</button>
+            <button class="quick-btn" onclick="showSyncStatus()">🔄 Sync status</button>
+        </div>
+        <div class="status-bar">
+            <div class="status-item"><span class="status-dot"></span><span>Système opérationnel</span></div>
+            <div class="status-item"><span>📦 localStorage actif</span></div>
+            <div class="status-item"><span>🔒 100% local</span></div>
+            <div class="status-item"><span>📅 Janvier 2025</span></div>
+        </div>
+    </main>
+    <footer><strong>KERN::HUB</strong> — Écosystème citoyen modulaire • 100% local • <a href="10-beldata-citoyen-v2.html">Sources officielles</a></footer>
+<script>
+function exportAllData(){const d={};['kern_dossiers','kern_finance','kern_missions','kern_journal','kern_network','kern_agenda'].forEach(k=>{const v=localStorage.getItem(k);if(v)d[k]=JSON.parse(v)});const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kern-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();alert('✅ Export téléchargé')}
+function showSyncStatus(){let s='KERN SYNC STATUS\n================\n\n';['kern_dossiers','kern_finance','kern_missions','kern_journal','kern_network','kern_agenda'].forEach(k=>{const d=localStorage.getItem(k);const c=d?JSON.parse(d).length||Object.keys(JSON.parse(d)).length:0;s+=(d?'✅':'⬜')+' '+k.replace('kern_','').toUpperCase()+': '+c+' entrées\n'});alert(s)}
+</script>
+</body>
+</html>
