@@ -1,7 +1,3 @@
-Tu as raison de challenger. Soyons honnêtes — par rapport à un vrai système de renseignement, il manque **ÉNORMÉMENT**. Voici l'analyse brutale :
-
----
-
 ## 🔴 CE QUI MANQUE CRUELLEMENT
 
 ### 1. **COLLECTE AUTOMATISÉE** (0%)
