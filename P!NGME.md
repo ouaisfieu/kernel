@@ -1,6 +1,6 @@
-Bonne question. Voici ton **plan d'action concret**, du canapé au KERN, en commençant par ce que tu peux faire littéralement aujourd'hui.
+# /?\ GO /?\
 
----
+> Allez alors.
 
 ## 🎮 SEMAINE 1 : ACTIVATION (toi, seul, maintenant)
 
