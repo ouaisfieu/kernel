@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="Collectif citoyen virtuel : ateliers distanciels asynchrones, transparence radicale, action concrète sur précarité/BIM."/>
+  <meta name="theme-color" content="#0b1016"/>
+  <meta property="og:title" content="Collectif BIM Live — Ateliers asynchrones & transparence"/>
+  <meta property="og:description" content="Comprendre ses droits, s’orienter, agir collectivement. Suivi public en lecture seule, méthode réplicable et open source."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:image" content=""/>
+  <title>Collectif BIM Live — Ateliers asynchrones & transparence</title>
+
+  <style>
+    :root{
+      --bg:#070b10; --panel:#0b1016; --panel2:#0e1620;
+      --txt:#e6f0ff; --mut:#98a9c7; --mut2:#6f819f;
+      --acc:#7afcff; --acc2:#b7ff5c; --warn:#ffce5c; --bad:#ff6a86;
+      --ok:#8dffb0; --line:rgba(122,252,255,.18);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --r:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--sans); color:var(--txt); background: radial-gradient(1200px 600px at 10% 10%, rgba(122,252,255,.10), transparent 55%),
+      radial-gradient(900px 500px at 80% 25%, rgba(183,255,92,.08), transparent 60%),
+      radial-gradient(800px 500px at 40% 90%, rgba(255,106,134,.06), transparent 60%),
+      var(--bga, var(--bg));
+      overflow-x:hidden;
+    }
+
+    /* subtle grid + scanline */
+    .bgfx{
+      position:fixed; inset:0; pointer-events:none; z-index:-1;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.035), rgba(255,255,255,0)) ,
+        repeating-linear-gradient( to right, rgba(122,252,255,.05) 0, rgba(122,252,255,.05) 1px, transparent 1px, transparent 42px),
+        repeating-linear-gradient( to bottom, rgba(122,252,255,.04) 0, rgba(122,252,255,.04) 1px, transparent 1px, transparent 42px);
+      mix-blend-mode:screen;
+      opacity:.45;
+    }
+    .scan{
+      position:fixed; inset:-30% -10%; pointer-events:none; z-index:-1;
+      background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 6px, rgba(0,0,0,.10) 7px);
+      opacity:.35;
+      transform: translateY(0);
+      animation: scan 7s linear infinite;
+    }
+    @keyframes scan { 0%{transform:translateY(-6%)} 100%{transform:translateY(6%)} }
+
+    a{color:var(--acc); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .wrap{max-width:1200px; margin:0 auto; padding:22px 18px 80px}
+    .topbar{
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      position:sticky; top:0; padding:14px 0; backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(7,11,16,.80), rgba(7,11,16,.35));
+      border-bottom:1px solid rgba(122,252,255,.12);
+      z-index:20;
+    }
+
+    .brand{display:flex; gap:12px; align-items:center}
+    .sig{
+      width:42px; height:42px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(122,252,255,.28), rgba(183,255,92,.18));
+      border:1px solid rgba(122,252,255,.35);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .sig:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 35% 35%, rgba(122,252,255,.8), transparent 55%),
+                 radial-gradient(circle at 70% 70%, rgba(183,255,92,.55), transparent 55%);
+      opacity:.55;
+      filter: blur(2px);
+    }
+    .brand h1{font-size:14px; margin:0; letter-spacing:.6px}
+    .brand .sub{font-size:12px; color:var(--mut); font-family:var(--mono)}
+    nav{display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-end}
+    .pill{
+      padding:8px 10px; border-radius:999px; font-size:12px;
+      border:1px solid rgba(122,252,255,.20);
+      background: rgba(14,22,32,.35);
+      color:var(--txt);
+    }
+    .pill:hover{border-color:rgba(122,252,255,.45)}
+    .cta{
+      padding:10px 12px; border-radius:12px; font-weight:700; font-size:12px;
+      border:1px solid rgba(183,255,92,.35);
+      background: linear-gradient(135deg, rgba(183,255,92,.18), rgba(122,252,255,.10));
+      color:var(--txt);
+      box-shadow: 0 18px 44px rgba(0,0,0,.40);
+    }
+    .cta:hover{filter:brightness(1.08); text-decoration:none}
+
+    .hero{
+      margin-top:18px;
+      display:grid; grid-template-columns: 1.25fr .75fr; gap:16px;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr}
+      nav{justify-content:flex-start}
+    }
+
+    .card{
+      border-radius: var(--r);
+      border:1px solid rgba(122,252,255,.18);
+      background: linear-gradient(180deg, rgba(11,16,22,.72), rgba(14,22,32,.52));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .pad{padding:18px}
+    .kicker{
+      font-family:var(--mono); font-size:12px; color:var(--mut);
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .tag{
+      border:1px solid rgba(122,252,255,.20);
+      padding:4px 8px; border-radius:999px; background: rgba(0,0,0,.12);
+    }
+    .title{
+      margin:10px 0 10px; font-size:32px; line-height:1.08; letter-spacing:.2px;
+    }
+    .lead{color:var(--mut); font-size:15px; line-height:1.6; margin:0 0 14px}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 680px){ .grid2{grid-template-columns:1fr} }
+
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .btn{
+      border-radius:12px; padding:10px 12px; font-weight:700; font-size:13px;
+      border:1px solid rgba(122,252,255,.28); background: rgba(11,16,22,.55);
+      color:var(--txt);
+    }
+    .btn:hover{border-color:rgba(122,252,255,.55); text-decoration:none}
+    .btn.primary{
+      border-color:rgba(183,255,92,.45);
+      background: linear-gradient(135deg, rgba(183,255,92,.22), rgba(122,252,255,.12));
+    }
+
+    .mini{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--mut);
+      border-top:1px dashed rgba(122,252,255,.18);
+      padding-top:12px;
+      margin-top:14px;
+      display:flex; gap:12px; flex-wrap:wrap;
+    }
+    .stat{
+      flex:1;
+      min-width: 160px;
+      border-radius:16px;
+      border:1px solid rgba(122,252,255,.16);
+      background: rgba(14,22,32,.40);
+      padding:12px;
+    }
+    .stat .n{font-size:18px; color:var(--acc2); font-weight:900}
+    .stat .l{font-size:11px; color:var(--mut2); margin-top:4px}
+
+    .side{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .panelTitle{
+      font-family:var(--mono); font-size:12px; color:var(--mut);
+      display:flex; justify-content:space-between; align-items:center;
+      border-bottom:1px solid rgba(122,252,255,.14);
+      padding:12px 14px;
+    }
+    .panelBody{padding:14px}
+    .list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px}
+    .li{
+      border:1px solid rgba(122,252,255,.14);
+      background: rgba(0,0,0,.14);
+      padding:10px 12px;
+      border-radius:14px;
+    }
+    .li b{display:block; font-size:13px}
+    .li span{display:block; font-size:12px; color:var(--mut); margin-top:4px; line-height:1.45}
+
+    .section{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+
+    .cols3{display:grid; grid-template-columns: repeat(3, 1fr); gap:12px}
+    @media (max-width: 980px){ .cols3{grid-template-columns:1fr} }
+
+    .h2{
+      margin:0 0 8px; font-size:18px; letter-spacing:.2px
+    }
+    .p{margin:0; color:var(--mut); line-height:1.7; font-size:14px}
+    .mono{font-family:var(--mono)}
+    .hr{height:1px; background:rgba(122,252,255,.14); margin:12px 0}
+
+    .kbd{
+      font-family:var(--mono);
+      border:1px solid rgba(122,252,255,.20);
+      background: rgba(11,16,22,.55);
+      padding:2px 6px; border-radius:8px; font-size:12px; color:var(--txt);
+    }
+
+    .footer{
+      margin-top:22px;
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    }
+    @media (max-width: 820px){ .footer{grid-template-columns:1fr} }
+
+    .toast{
+      position:fixed; left:16px; bottom:16px; z-index:40;
+      background: rgba(11,16,22,.85);
+      border:1px solid rgba(122,252,255,.22);
+      border-radius:14px;
+      padding:10px 12px;
+      color:var(--txt);
+      font-family:var(--mono);
+      font-size:12px;
+      box-shadow: var(--shadow);
+      max-width: min(520px, calc(100vw - 32px));
+      display:none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bgfx"></div>
+  <div class="scan"></div>
+
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="sig" aria-hidden="true"></div>
+        <div>
+          <h1>Collectif <span style="color:var(--acc2)">BIM Live</span></h1>
+          <div class="sub">ateliers asynchrones · transparence · pouvoir d’agir</div>
+        </div>
+      </div>
+
+      <nav aria-label="Navigation">
+        <a class="pill" href="#mission">Mission</a>
+        <a class="pill" href="#ateliers">Ateliers</a>
+        <a class="pill" href="#methode">Méthode</a>
+        <a class="pill" href="#transparence">Transparence</a>
+        <a class="pill" href="#rejoindre">Rejoindre</a>
+        <a class="cta" href="#contact">Accéder au kit</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="mission">
+        <div class="card">
+          <div class="pad">
+            <div class="kicker">
+              <span class="tag">BRUXELLES</span>
+              <span class="tag">PRÉCARITÉ / BIM</span>
+              <span class="tag">DISTANCIEL ASYNCHRONE</span>
+              <span class="tag">OPEN SOURCE</span>
+            </div>
+
+            <h2 class="title">Comprendre ses droits.<br/>S’orienter. Agir collectivement.</h2>
+            <p class="lead">
+              Nous sommes un collectif citoyen virtuel : des ateliers distanciels asynchrones, une méthode claire,
+              et un suivi public **en lecture seule** pour documenter l’impact sans exposer les personnes.
+            </p>
+
+            <div class="grid2">
+              <div class="stat">
+                <div class="n" id="kpiSessions">06</div>
+                <div class="l">séquences d’atelier par cycle</div>
+              </div>
+              <div class="stat">
+                <div class="n" id="kpiDocs">12</div>
+                <div class="l">ressources sourcées (et mises à jour)</div>
+              </div>
+              <div class="stat">
+                <div class="n" id="kpiKits">01</div>
+                <div class="l">kit réplicable (CC BY / CC BY-SA)</div>
+              </div>
+              <div class="stat">
+                <div class="n" id="kpiPublic">100%</div>
+                <div class="l">transparence sur les processus, pas sur les identités</div>
+              </div>
+            </div>
+
+            <div class="btnrow">
+              <a class="btn primary" href="#ateliers">Voir le programme</a>
+              <a class="btn" href="#transparence">Comment on mesure</a>
+              <a class="btn" href="#rejoindre">Rejoindre / soutenir</a>
+              <button class="btn" id="btnDemo">Mode “war-room”</button>
+            </div>
+
+            <div class="mini">
+              <span>⚙️ Style “ops” = esthétique + rigueur</span>
+              <span>🔒 Pas de données perso publiées</span>
+              <span>📌 Public = lecture seule</span>
+              <span>🧾 Tout est archivé</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side">
+          <div class="card">
+            <div class="panelTitle">
+              <span>RÉSUMÉ OPÉRATIONNEL</span>
+              <span class="mono" id="clock">—:—:—</span>
+            </div>
+            <div class="panelBody">
+              <ul class="list">
+                <li class="li">
+                  <b>Ce que c’est</b>
+                  <span>Ateliers distanciels asynchrones + suivi public (KPI anonymisés) + kit open source.</span>
+                </li>
+                <li class="li">
+                  <b>Ce que ce n’est pas</b>
+                  <span>Ni un service social officiel, ni un partage de dossiers individuels, ni une “plateforme de doxxing”.</span>
+                </li>
+                <li class="li">
+                  <b>Ce qu’on produit</b>
+                  <span>Guides, scripts, checklists, cartographie des acteurs, et un tableau de bord de transparence.</span>
+                </li>
+              </ul>
+              <div class="hr"></div>
+              <div class="p mono">
+                Raccourci : <span class="kbd">Ctrl</span>+<span class="kbd">K</span> pour chercher (sur le futur dashboard).
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="panelTitle">
+              <span>LIENS CLÉS</span>
+              <span class="mono">lecture seule</span>
+            </div>
+            <div class="panelBody">
+              <ul class="list">
+                <li class="li"><b>Kit du collectif (repo)</b><span><a href="#" onclick="toast('Remplace ce lien par ton dépôt GitHub public.');return false;">github.com/…</a></span></li>
+                <li class="li"><b>Charte & sécurité</b><span><a href="#methode">Confidentialité, RGPD, règles d’atelier</a></span></li>
+                <li class="li"><b>Suivi public</b><span><a href="#transparence">KPI anonymisés + changelog</a></span></li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section" id="ateliers">
+        <div class="card">
+          <div class="pad">
+            <h3 class="h2">Ateliers distanciels asynchrones</h3>
+            <p class="p">
+              Un cycle = 6 “séquences” (vidéo courte / texte / exercice), accessibles à ton rythme.
+              Les échanges se font en fil de discussion (asynchrone), avec des règles simples : respect, clarté, confidentialité.
+            </p>
+
+            <div class="hr"></div>
+
+            <div class="cols3">
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S1</span><span class="tag">base</span></div>
+                  <h4 class="h2">Comprendre BIM & droits</h4>
+                  <p class="p">Définitions, parcours type, erreurs fréquentes, où s’adresser. Objectif : réduire la confusion.</p>
+                </div>
+              </div>
+
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S2</span><span class="tag">action</span></div>
+                  <h4 class="h2">Orientation & “next step”</h4>
+                  <p class="p">Construire une feuille de route individuelle… sans rien publier. On ne traite que l’anonymisé.</p>
+                </div>
+              </div>
+
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S3</span><span class="tag">collectif</span></div>
+                  <h4 class="h2">Cartographie des acteurs</h4>
+                  <p class="p">Mutualités, CPAS, associations, guichets : qui fait quoi, à Bruxelles, et comment coopérer.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cols3" style="margin-top:12px">
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S4</span><span class="tag">plaidoyer</span></div>
+                  <h4 class="h2">Du vécu à la revendication</h4>
+                  <p class="p">Transformer les obstacles récurrents en demandes SMART + preuves + cibles institutionnelles.</p>
+                </div>
+              </div>
+
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S5</span><span class="tag">influence</span></div>
+                  <h4 class="h2">Campagne & transparence</h4>
+                  <p class="p">Règles de communication, anti-récupération, anti-burnout, et suivi public “lecture seule”.</p>
+                </div>
+              </div>
+
+              <div class="card" style="box-shadow:none">
+                <div class="pad">
+                  <div class="kicker"><span class="tag">S6</span><span class="tag">réplicable</span></div>
+                  <h4 class="h2">Fork & reproduction</h4>
+                  <p class="p">Comment répliquer le modèle dans une autre commune : kit, checklists, gouvernance minimale.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="btnrow" style="margin-top:14px">
+              <a class="btn primary" href="#contact">Télécharger le kit (modèle)</a>
+              <a class="btn" href="#rejoindre">Participer (asynchrone)</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="methode">
+        <div class="cols3">
+          <div class="card">
+            <div class="pad">
+              <h3 class="h2">Charte</h3>
+              <p class="p">
+                Respect, entraide, pas de harcèlement. On critique les systèmes, pas les personnes.
+                Objectif : rendre la complexité compréhensible et l’action praticable.
+              </p>
+              <div class="hr"></div>
+              <p class="p mono">Règle simple : pas d’infos perso → pas d’exposition → pas de drame.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="pad">
+              <h3 class="h2">Confidentialité</h3>
+              <p class="p">
+                Le suivi public ne contient que des métriques agrégées (ex : “nombre de personnes orientées”).
+                Les échanges sensibles se font dans des canaux fermés, avec consentement.
+              </p>
+              <div class="hr"></div>
+              <p class="p mono">Public = lecture seule · privé = strict minimum · RGPD = par défaut.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="pad">
+              <h3 class="h2">Gouvernance légère</h3>
+              <p class="p">
+                Pas besoin d’une machine lourde : un cycle, des rôles simples, un changelog public,
+                et une convention si une asbl porte le financement.
+              </p>
+              <div class="hr"></div>
+              <p class="p mono">Objectif : vitesse + transparence + réplicabilité.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="transparence">
+        <div class="card">
+          <div class="pad">
+            <h3 class="h2">Transparence : ce que le public peut suivre (sans intervenir)</h3>
+            <p class="p">
+              Le public voit l’avancement, les budgets agrégés, les décisions, et les apprentissages.
+              Il ne peut pas modifier les données ni accéder à des informations individuelles.
+            </p>
+
+            <div class="hr"></div>
+
+            <div class="cols3">
+              <div class="stat">
+                <div class="n" id="kpiOriented">0</div>
+                <div class="l">orientations (anonymisées)</div>
+              </div>
+              <div class="stat">
+                <div class="n" id="kpiLive">0</div>
+                <div class="l">sessions live / replays publiés</div>
+              </div>
+              <div class="stat">
+                <div class="n" id="kpiFunds">0€</div>
+                <div class="l">fonds collectés (agrégés)</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <p class="p">
+              Chaque semaine : une note “ce qu’on a appris” + un changelog.
+              Chaque mois : une synthèse publique + prochaines étapes.
+            </p>
+
+            <div class="btnrow">
+              <a class="btn" href="#" onclick="toast('Ici, tu lieras le dashboard public (lecture seule).');return false;">Ouvrir le suivi public</a>
+              <a class="btn" href="#" onclick="toast('Ici, tu lieras les replays (YouTube/Twitch).');return false;">Replays & archives</a>
+              <a class="btn" href="#" onclick="toast('Ici, tu lieras la page budget/financement en lecture seule.');return false;">Budget & financements</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="rejoindre">
+        <div class="card">
+          <div class="pad">
+            <h3 class="h2">Rejoindre le collectif</h3>
+            <p class="p">
+              On fonctionne en distanciel asynchrone : tu peux contribuer 20 minutes par semaine ou 3 heures,
+              en choisissant un rôle clair.
+            </p>
+
+            <div class="hr"></div>
+
+            <div class="cols3">
+              <div class="li">
+                <b>Facilitateur·rice</b>
+                <span>Accueil, modération, respect des règles, synthèse hebdomadaire.</span>
+              </div>
+              <div class="li">
+                <b>Documentaliste</b>
+                <span>Sources, mises à jour, fiches pratiques (sans données personnelles).</span>
+              </div>
+              <div class="li">
+                <b>Ops & transparence</b>
+                <span>Changelog, budget agrégé, indicateurs, publication “lecture seule”.</span>
+              </div>
+            </div>
+
+            <div class="btnrow" style="margin-top:14px">
+              <a class="btn primary" href="#contact">Je veux contribuer</a>
+              <a class="btn" href="#" onclick="toast('Ajoute ici un formulaire externe (lecture seule côté site) ou un email de contact.');return false;">Contacter</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="footer">
+          <div class="card">
+            <div class="pad">
+              <h3 class="h2">Kit open source (à forker)</h3>
+              <p class="p">
+                Le kit contient : scripts d’ateliers, checklists, trames (interpellation / mail / budget),
+                et une base de dashboard “lecture seule”.
+              </p>
+              <div class="hr"></div>
+              <p class="p mono">
+                Licence recommandée : CC BY-SA · Publication : GitHub Pages · Suivi : changelog + KPI anonymisés
+              </p>
+              <div class="btnrow">
+                <a class="btn primary" href="#" onclick="toast('Remplace par ton repo public.');return false;">Ouvrir le dépôt</a>
+                <a class="btn" href="#" onclick="toast('Remplace par ton dossier “docs/” ou wiki.');return false;">Documentation</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="pad">
+              <h3 class="h2">Message court (copiable)</h3>
+              <p class="p mono" id="copyText">
+                Nous organisons des ateliers distanciels asynchrones sur précarité/BIM.
+                Suivi public en lecture seule, zéro données personnelles publiées.
+                Objectif : compréhension + orientation + plaidoyer basé sur des preuves.
+              </p>
+              <div class="btnrow">
+                <button class="btn primary" id="btnCopy">Copier</button>
+                <button class="btn" id="btnToast">Pourquoi “lecture seule” ?</button>
+              </div>
+              <div class="hr"></div>
+              <p class="p">Contact : <span class="mono">remplace-moi@exemple.be</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const toastEl = document.getElementById('toast');
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.style.display = 'block';
+      clearTimeout(window.__t);
+      window.__t = setTimeout(()=>toastEl.style.display='none', 3600);
+    }
+
+    // clock
+    const clock = document.getElementById('clock');
+    function tick(){
+      const d = new Date();
+      clock.textContent = d.toLocaleTimeString('fr-BE', {hour12:false});
+      requestAnimationFrame(()=>setTimeout(tick, 250));
+    }
+    tick();
+
+    // copy
+    document.getElementById('btnCopy').addEventListener('click', async ()=>{
+      const t = document.getElementById('copyText').innerText.trim();
+      try{
+        await navigator.clipboard.writeText(t);
+        toast('Copié ✅');
+      }catch(e){
+        toast('Copie impossible (navigateur). Sélectionne le texte manuellement.');
+      }
+    });
+
+    document.getElementById('btnToast').addEventListener('click', ()=>{
+      toast("Lecture seule = transparence sans exposition : le public suit l’évolution, mais ne peut ni modifier ni accéder à des données individuelles.");
+    });
+
+    // "war-room" aesthetic mode toggle (purely visual)
+    let mode = 0;
+    document.getElementById('btnDemo').addEventListener('click', ()=>{
+      mode = (mode + 1) % 3;
+      if(mode === 0){
+        document.body.style.filter = 'none';
+        toast('Mode normal.');
+      } else if(mode === 1){
+        document.body.style.filter = 'contrast(1.08) saturate(1.08)';
+        toast('Mode “war-room” : contraste renforcé.');
+      } else {
+        document.body.style.filter = 'contrast(1.18) saturate(1.18) hue-rotate(10deg)';
+        toast('Mode “war-room+” : signal visuel renforcé (purement esthétique).');
+      }
+    });
+
+    // demo KPI animations (placeholder)
+    const kpiOriented = document.getElementById('kpiOriented');
+    const kpiLive = document.getElementById('kpiLive');
+    const kpiFunds = document.getElementById('kpiFunds');
+
+    let oriented = 0, live = 0, funds = 0;
+
+    function step(){
+      // purely local demo – replace later with real read-only data fetch
+      oriented = Math.min(oriented + (Math.random() < .45 ? 1 : 0), 999);
+      live = Math.min(live + (Math.random() < .18 ? 1 : 0), 99);
+      funds = Math.min(funds + (Math.random() < .22 ? Math.round(25 + Math.random()*120) : 0), 999999);
+
+      kpiOriented.textContent = oriented.toString();
+      kpiLive.textContent = live.toString();
+      kpiFunds.textContent = funds.toLocaleString('fr-BE') + "€";
+
+      setTimeout(step, 1200);
+    }
+    step();
+  </script>
+</body>
+</html>
