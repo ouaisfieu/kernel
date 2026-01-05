@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔺 PANOPTICON — Cartographie du Pouvoir</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #0d0d14;
+            --bg-card: #12121a;
+            --border: #1a1a2e;
+            --border-glow: #00ff9520;
+            --accent: #00ff95;
+            --accent-dim: rgba(0, 255, 149, 0.1);
+            --cyan: #00d4ff;
+            --magenta: #ff00ff;
+            --orange: #ff6b00;
+            --red: #ff3366;
+            --yellow: #ffcc00;
+            --text: #e0e0e0;
+            --text-dim: #606080;
+            --font-ui: 'Inter', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-dark);
+            font-family: var(--font-ui);
+            color: var(--text);
+        }
+        
+        /* Matrix background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 255, 149, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 0, 255, 0.02) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Scanlines */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, var(--bg-panel) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.5rem;
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px var(--accent)); }
+            50% { filter: drop-shadow(0 0 20px var(--accent)); }
+        }
+        
+        .logo-text {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-subtitle {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-dim);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            color: #000;
+            border: none;
+            font-weight: 600;
+        }
+        
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-section {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .sidebar-title {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-title::before {
+            content: '▸';
+        }
+        
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            padding: 3px;
+        }
+        
+        .view-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        
+        .view-btn.active {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .view-btn:hover:not(.active) {
+            color: var(--text);
+        }
+        
+        /* Filters */
+        .filter-group {
+            margin-bottom: 0.75rem;
+        }
+        
+        .filter-label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        .filter-chip {
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-chip:hover, .filter-chip.active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+        
+        .filter-chip[data-level="eu"] { --chip-color: #00d4ff; }
+        .filter-chip[data-level="fed"] { --chip-color: #ffcc00; }
+        .filter-chip[data-level="reg"] { --chip-color: #ff00ff; }
+        .filter-chip[data-level="prov"] { --chip-color: #ff6b00; }
+        .filter-chip[data-level="com"] { --chip-color: #00ff95; }
+        
+        .filter-chip.active {
+            border-color: var(--chip-color);
+            background: color-mix(in srgb, var(--chip-color) 15%, transparent);
+            color: var(--chip-color);
+        }
+        
+        /* Search */
+        .search-box {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 0.75rem 0.6rem 2rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-dim);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+        
+        /* Entity list */
+        .entity-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        
+        .entity-item {
+            padding: 0.6rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 0.4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        
+        .entity-item:hover {
+            border-color: var(--accent);
+            transform: translateX(3px);
+        }
+        
+        .entity-item.selected {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        
+        .entity-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-dim), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+        }
+        
+        .entity-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .entity-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .entity-role {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+        }
+        
+        .entity-level {
+            font-size: 0.5rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .entity-level.eu { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .entity-level.fed { background: rgba(255, 204, 0, 0.2); color: #ffcc00; }
+        .entity-level.reg { background: rgba(255, 0, 255, 0.2); color: #ff00ff; }
+        .entity-level.prov { background: rgba(255, 107, 0, 0.2); color: #ff6b00; }
+        .entity-level.com { background: rgba(0, 255, 149, 0.2); color: #00ff95; }
+        
+        /* Canvas area */
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #networkCanvas, #mapCanvas {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        
+        #networkCanvas.active, #mapCanvas.active {
+            display: block;
+        }
+        
+        /* D3 Network styles */
+        .node {
+            cursor: pointer;
+        }
+        
+        .node circle {
+            stroke-width: 2px;
+            transition: all 0.2s;
+        }
+        
+        .node:hover circle {
+            stroke-width: 4px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        
+        .node text {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            fill: var(--text);
+            pointer-events: none;
+        }
+        
+        .link {
+            stroke-opacity: 0.4;
+            transition: all 0.2s;
+        }
+        
+        .link:hover {
+            stroke-opacity: 1;
+            stroke-width: 3px;
+        }
+        
+        .link.highlighted {
+            stroke-opacity: 1;
+            stroke-width: 3px;
+        }
+        
+        /* Map styles */
+        .province {
+            fill: var(--bg-card);
+            stroke: var(--border);
+            stroke-width: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .province:hover {
+            fill: var(--accent-dim);
+            stroke: var(--accent);
+            stroke-width: 2px;
+        }
+        
+        .province.selected {
+            fill: var(--accent-dim);
+            stroke: var(--accent);
+            stroke-width: 2px;
+        }
+        
+        .province-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            fill: var(--text-dim);
+            pointer-events: none;
+            text-anchor: middle;
+        }
+        
+        .map-marker {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .map-marker:hover {
+            transform: scale(1.3);
+        }
+        
+        /* Info panel */
+        .info-panel {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 320px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .info-panel.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .info-header {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-dim), rgba(0, 212, 255, 0.1));
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .info-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #000;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 20px var(--accent-dim);
+        }
+        
+        .info-title h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .info-title p {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        
+        .info-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .info-close:hover {
+            color: var(--accent);
+        }
+        
+        .info-body {
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .info-section {
+            margin-bottom: 1rem;
+        }
+        
+        .info-section-title {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.75rem;
+        }
+        
+        .info-row .label {
+            color: var(--text-dim);
+        }
+        
+        .info-row .value {
+            font-family: var(--font-mono);
+            color: var(--text);
+        }
+        
+        .info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        
+        .info-tag {
+            padding: 0.2rem 0.5rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.6rem;
+            color: var(--cyan);
+        }
+        
+        .info-connections {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        
+        .connection-item:hover {
+            background: var(--accent-dim);
+        }
+        
+        .connection-type {
+            font-size: 0.5rem;
+            padding: 0.1rem 0.3rem;
+            border-radius: 2px;
+            background: var(--border);
+            color: var(--text-dim);
+        }
+        
+        /* Score bars */
+        .score-bar {
+            margin-bottom: 0.5rem;
+        }
+        
+        .score-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .score-bar-track {
+            height: 4px;
+            background: var(--bg-dark);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s ease-out;
+        }
+        
+        .score-bar-fill.influence { background: linear-gradient(90deg, var(--cyan), var(--accent)); }
+        .score-bar-fill.accessibility { background: linear-gradient(90deg, var(--accent), var(--yellow)); }
+        .score-bar-fill.alignment { background: linear-gradient(90deg, var(--magenta), var(--red)); }
+        
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            z-index: 10;
+        }
+        
+        .legend-title {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.65rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .legend-color.eu { background: #00d4ff; }
+        .legend-color.fed { background: #ffcc00; }
+        .legend-color.reg { background: #ff00ff; }
+        .legend-color.prov { background: #ff6b00; }
+        .legend-color.com { background: #00ff95; }
+        
+        /* Controls overlay */
+        .controls-overlay {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Mini map */
+        .mini-map {
+            position: absolute;
+            bottom: 4rem;
+            right: 1rem;
+            width: 150px;
+            height: 100px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        .mini-map-viewport {
+            position: absolute;
+            border: 1px solid var(--accent);
+            background: var(--accent-dim);
+            pointer-events: none;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-panel);
+            border: 1px solid var(--accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar { width: 220px; }
+            .header-stats { display: none; }
+        }
+        
+        @media (max-width: 700px) {
+            .sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🔺</span>
+                <div>
+                    <div class="logo-text">PANOPTICON</div>
+                    <div class="logo-subtitle">Cartographie du Pouvoir</div>
+                </div>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="statNodes">0</div>
+                    <div class="stat-label">Entités</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statLinks">0</div>
+                    <div class="stat-label">Connexions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statClusters">0</div>
+                    <div class="stat-label">Clusters</div>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn" onclick="exportData()">📤 Export</button>
+                <button class="btn" onclick="importData()">📥 Import</button>
+                <button class="btn btn-primary" onclick="openAddModal()">➕ Ajouter</button>
+            </div>
+        </header>
+        
+        <!-- Main -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Vue</div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="network" onclick="setView('network')">🕸️ Réseau</button>
+                        <button class="view-btn" data-view="map" onclick="setView('map')">🗺️ Carte</button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Recherche</div>
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Nom, parti, fonction..." oninput="filterEntities()">
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Filtres</div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Niveau de pouvoir</span>
+                        <div class="filter-chips">
+                            <span class="filter-chip active" data-level="eu" onclick="toggleFilter(this)">🇪🇺 EU</span>
+                            <span class="filter-chip active" data-level="fed" onclick="toggleFilter(this)">🇧🇪 FED</span>
+                            <span class="filter-chip active" data-level="reg" onclick="toggleFilter(this)">🏛️ RÉG</span>
+                            <span class="filter-chip active" data-level="prov" onclick="toggleFilter(this)">📍 PROV</span>
+                            <span class="filter-chip active" data-level="com" onclick="toggleFilter(this)">🏘️ COM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Parti</span>
+                        <select class="filter-select" id="partyFilter" onchange="filterEntities()">
+                            <option value="">Tous les partis</option>
+                            <option value="MR">MR</option>
+                            <option value="PS">PS</option>
+                            <option value="Les Engagés">Les Engagés</option>
+                            <option value="Ecolo">Ecolo</option>
+                            <option value="PTB">PTB</option>
+                            <option value="N-VA">N-VA</option>
+                            <option value="CD&V">CD&V</option>
+                            <option value="Open VLD">Open VLD</option>
+                            <option value="Vooruit">Vooruit</option>
+                            <option value="Groen">Groen</option>
+                            <option value="PVDA">PVDA</option>
+                            <option value="Vlaams Belang">Vlaams Belang</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section" style="flex:1;border:none;overflow:hidden;display:flex;flex-direction:column;">
+                    <div class="sidebar-title">Entités (<span id="entityCount">0</span>)</div>
+                    <div class="entity-list" id="entityList"></div>
+                </div>
+            </aside>
+            
+            <!-- Canvas -->
+            <div class="canvas-area">
+                <svg id="networkCanvas" class="active"></svg>
+                <svg id="mapCanvas"></svg>
+                
+                <!-- Info Panel -->
+                <div class="info-panel" id="infoPanel">
+                    <button class="info-close" onclick="closeInfoPanel()">×</button>
+                    <div class="info-header">
+                        <div class="info-avatar" id="infoAvatar">?</div>
+                        <div class="info-title">
+                            <h3 id="infoName">—</h3>
+                            <p id="infoRole">—</p>
+                        </div>
+                    </div>
+                    <div class="info-body">
+                        <div class="info-section">
+                            <div class="info-section-title">Informations</div>
+                            <div class="info-row">
+                                <span class="label">Parti</span>
+                                <span class="value" id="infoParty">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Niveau</span>
+                                <span class="value" id="infoLevel">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Territoire</span>
+                                <span class="value" id="infoTerritory">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-section-title">Scores</div>
+                            <div class="score-bar">
+                                <div class="score-bar-label">
+                                    <span>Influence</span>
+                                    <span id="scoreInfluence">0/10</span>
+                                </div>
+                                <div class="score-bar-track">
+                                    <div class="score-bar-fill influence" id="barInfluence" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-label">
+                                    <span>Accessibilité</span>
+                                    <span id="scoreAccess">0/10</span>
+                                </div>
+                                <div class="score-bar-track">
+                                    <div class="score-bar-fill accessibility" id="barAccess" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-label">
+                                    <span>Alignement</span>
+                                    <span id="scoreAlign">0/10</span>
+                                </div>
+                                <div class="score-bar-track">
+                                    <div class="score-bar-fill alignment" id="barAlign" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-section-title">Tags</div>
+                            <div class="info-tags" id="infoTags"></div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-section-title">Connexions (<span id="connectionCount">0</span>)</div>
+                            <div class="info-connections" id="infoConnections"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Legend -->
+                <div class="legend" id="networkLegend">
+                    <div class="legend-title">Niveaux</div>
+                    <div class="legend-item"><span class="legend-color eu"></span> Européen</div>
+                    <div class="legend-item"><span class="legend-color fed"></span> Fédéral</div>
+                    <div class="legend-item"><span class="legend-color reg"></span> Régional</div>
+                    <div class="legend-item"><span class="legend-color prov"></span> Provincial</div>
+                    <div class="legend-item"><span class="legend-color com"></span> Communal</div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="controls-overlay">
+                    <button class="control-btn" onclick="zoomIn()" title="Zoom +">+</button>
+                    <button class="control-btn" onclick="zoomOut()" title="Zoom -">−</button>
+                    <button class="control-btn" onclick="resetView()" title="Reset">⟲</button>
+                    <button class="control-btn" onclick="togglePhysics()" title="Physique" id="physicsBtn">⚡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+const levelColors = {
+    eu: '#00d4ff',
+    fed: '#ffcc00',
+    reg: '#ff00ff',
+    prov: '#ff6b00',
+    com: '#00ff95'
+};
+
+const levelLabels = {
+    eu: 'Européen',
+    fed: 'Fédéral',
+    reg: 'Régional',
+    prov: 'Provincial',
+    com: 'Communal'
+};
+
+// Sample political data (Belgian)
+let entities = [
+    // EU Level
+    { id: 'e1', name: 'Sophie Wilmès', role: 'Eurodéputée', party: 'MR', level: 'eu', territory: 'Belgique', influence: 9, accessibility: 6, alignment: 7, tags: ['Ex-PM', 'Affaires étrangères'], lat: 50.85, lng: 4.35 },
+    { id: 'e2', name: 'Marc Botenga', role: 'Eurodéputé', party: 'PTB', level: 'eu', territory: 'Belgique', influence: 7, accessibility: 8, alignment: 9, tags: ['Gauche radicale', 'Syndicalisme'], lat: 50.85, lng: 4.35 },
+    { id: 'e3', name: 'Tom Vandenkendelaere', role: 'Eurodéputé', party: 'CD&V', level: 'eu', territory: 'Belgique', influence: 6, accessibility: 7, alignment: 5, tags: ['Démocrate-chrétien'], lat: 50.85, lng: 4.35 },
+    { id: 'e4', name: 'Assita Kanko', role: 'Eurodéputée', party: 'N-VA', level: 'eu', territory: 'Belgique', influence: 7, accessibility: 5, alignment: 4, tags: ['Droite', 'Migration'], lat: 50.85, lng: 4.35 },
+    
+    // Federal Level
+    { id: 'f1', name: 'Bart De Wever', role: 'Premier Ministre', party: 'N-VA', level: 'fed', territory: 'Belgique', influence: 10, accessibility: 3, alignment: 3, tags: ['Arizona', 'Nationaliste flamand'], lat: 51.22, lng: 4.40 },
+    { id: 'f2', name: 'David Clarinval', role: 'Vice-PM & Finances', party: 'MR', level: 'fed', territory: 'Belgique', influence: 9, accessibility: 5, alignment: 6, tags: ['Libéral', 'Budget'], lat: 50.85, lng: 4.35 },
+    { id: 'f3', name: 'Maxime Prévot', role: 'Vice-PM & Mobilité', party: 'Les Engagés', level: 'fed', territory: 'Belgique', influence: 8, accessibility: 7, alignment: 7, tags: ['Centre', 'Ex-bourgmestre Namur'], lat: 50.47, lng: 4.87 },
+    { id: 'f4', name: 'Frank Vandenbroucke', role: 'Ministre Santé', party: 'Vooruit', level: 'fed', territory: 'Belgique', influence: 8, accessibility: 6, alignment: 6, tags: ['Social-démocrate', 'COVID'], lat: 51.05, lng: 3.72 },
+    { id: 'f5', name: 'Annelies Verlinden', role: 'Ministre Intérieur', party: 'CD&V', level: 'fed', territory: 'Belgique', influence: 7, accessibility: 5, alignment: 5, tags: ['Sécurité', 'Police'], lat: 51.22, lng: 4.40 },
+    
+    // Regional - Wallonia
+    { id: 'r1', name: 'Adrien Dolimont', role: 'Ministre-Président Wallonie', party: 'MR', level: 'reg', territory: 'Wallonie', influence: 9, accessibility: 6, alignment: 7, tags: ['Libéral', 'Économie'], lat: 50.47, lng: 4.87 },
+    { id: 'r2', name: 'Yves Coppieters', role: 'Ministre Santé RW', party: 'Les Engagés', level: 'reg', territory: 'Wallonie', influence: 7, accessibility: 7, alignment: 7, tags: ['Épidémiologiste', 'Santé publique'], lat: 50.47, lng: 4.87 },
+    { id: 'r3', name: 'François Desquesnes', role: 'Ministre Budget RW', party: 'Les Engagés', level: 'reg', territory: 'Wallonie', influence: 7, accessibility: 6, alignment: 7, tags: ['Finances', 'Énergie'], lat: 50.47, lng: 4.87 },
+    
+    // Regional - Brussels
+    { id: 'r4', name: 'David Leisterh', role: 'Ministre-Président Bruxelles', party: 'MR', level: 'reg', territory: 'Bruxelles', influence: 8, accessibility: 6, alignment: 6, tags: ['Libéral', 'Capitale'], lat: 50.85, lng: 4.35 },
+    
+    // Regional - Flanders
+    { id: 'r5', name: 'Matthias Diependaele', role: 'Ministre-Président Flandre', party: 'N-VA', level: 'reg', territory: 'Flandre', influence: 9, accessibility: 4, alignment: 3, tags: ['Nationaliste', 'Autonomie'], lat: 51.05, lng: 3.72 },
+    
+    // Regional - German-speaking
+    { id: 'r6', name: 'Oliver Paasch', role: 'Ministre-Président DG', party: 'ProDG', level: 'reg', territory: 'Communauté germanophone', influence: 6, accessibility: 8, alignment: 6, tags: ['Minorité', 'Autonomie'], lat: 50.63, lng: 6.00 },
+    
+    // Provincial
+    { id: 'p1', name: 'Tanguy Auspert', role: 'Gouverneur Namur', party: 'Indépendant', level: 'prov', territory: 'Province de Namur', influence: 5, accessibility: 7, alignment: 6, tags: ['Administration'], lat: 50.47, lng: 4.87 },
+    { id: 'p2', name: 'Cathy Berx', role: 'Gouverneure Anvers', party: 'Indépendant', level: 'prov', territory: 'Province d\'Anvers', influence: 6, accessibility: 5, alignment: 5, tags: ['COVID', 'Sécurité'], lat: 51.22, lng: 4.40 },
+    
+    // Communal
+    { id: 'c1', name: 'Philippe Close', role: 'Bourgmestre Bruxelles-Ville', party: 'PS', level: 'com', territory: 'Bruxelles-Ville', influence: 8, accessibility: 6, alignment: 5, tags: ['Capitale', 'PS'], lat: 50.85, lng: 4.35 },
+    { id: 'c2', name: 'Willy Demeyer', role: 'Bourgmestre Liège', party: 'PS', level: 'com', territory: 'Liège', influence: 7, accessibility: 6, alignment: 5, tags: ['Grande ville', 'PS'], lat: 50.64, lng: 5.57 },
+    { id: 'c3', name: 'Charlotte Bazelaire', role: 'Bourgmestre Namur', party: 'Les Engagés', level: 'com', territory: 'Namur', influence: 6, accessibility: 7, alignment: 7, tags: ['Capitale wallonne'], lat: 50.47, lng: 4.87 },
+    { id: 'c4', name: 'Mathias De Clercq', role: 'Bourgmestre Gand', party: 'Open VLD', level: 'com', territory: 'Gand', influence: 7, accessibility: 6, alignment: 6, tags: ['Grande ville', 'Libéral'], lat: 51.05, lng: 3.72 }
+];
+
+let connections = [
+    // Coalition Arizona
+    { source: 'f1', target: 'f2', type: 'coalition', label: 'Arizona' },
+    { source: 'f1', target: 'f3', type: 'coalition', label: 'Arizona' },
+    { source: 'f1', target: 'f4', type: 'coalition', label: 'Arizona' },
+    { source: 'f1', target: 'f5', type: 'coalition', label: 'Arizona' },
+    { source: 'f2', target: 'f3', type: 'coalition', label: 'Arizona' },
+    
+    // Party links
+    { source: 'e1', target: 'f2', type: 'parti', label: 'MR' },
+    { source: 'e1', target: 'r1', type: 'parti', label: 'MR' },
+    { source: 'e1', target: 'r4', type: 'parti', label: 'MR' },
+    { source: 'f2', target: 'r1', type: 'parti', label: 'MR' },
+    { source: 'f2', target: 'r4', type: 'parti', label: 'MR' },
+    
+    { source: 'e4', target: 'f1', type: 'parti', label: 'N-VA' },
+    { source: 'f1', target: 'r5', type: 'parti', label: 'N-VA' },
+    
+    { source: 'f3', target: 'r2', type: 'parti', label: 'Les Engagés' },
+    { source: 'f3', target: 'r3', type: 'parti', label: 'Les Engagés' },
+    { source: 'f3', target: 'c3', type: 'parti', label: 'Les Engagés' },
+    { source: 'r2', target: 'r3', type: 'parti', label: 'Les Engagés' },
+    
+    { source: 'c1', target: 'c2', type: 'parti', label: 'PS' },
+    
+    { source: 'e3', target: 'f5', type: 'parti', label: 'CD&V' },
+    
+    // Regional coalitions
+    { source: 'r1', target: 'r2', type: 'coalition', label: 'Gouv. Wallon' },
+    { source: 'r1', target: 'r3', type: 'coalition', label: 'Gouv. Wallon' },
+    { source: 'r2', target: 'r3', type: 'coalition', label: 'Gouv. Wallon' },
+    
+    // Territorial
+    { source: 'p1', target: 'c3', type: 'territoire', label: 'Province Namur' },
+    { source: 'p2', target: 'f1', type: 'territoire', label: 'Anvers' },
+    
+    // Historical / Personal
+    { source: 'f3', target: 'c3', type: 'succession', label: 'Ex-bourgmestre' }
+];
+
+// ==================== STATE ====================
+let currentView = 'network';
+let selectedEntity = null;
+let activeFilters = { levels: ['eu', 'fed', 'reg', 'prov', 'com'], party: '' };
+let simulation = null;
+let svg, g, zoom;
+let physicsEnabled = true;
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    initNetwork();
+    initMap();
+    renderEntityList();
+    updateStats();
+});
+
+function loadData() {
+    const saved = localStorage.getItem('panopticon_data');
+    if (saved) {
+        const data = JSON.parse(saved);
+        if (data.entities) entities = data.entities;
+        if (data.connections) connections = data.connections;
+    }
+}
+
+function saveData() {
+    localStorage.setItem('panopticon_data', JSON.stringify({ entities, connections }));
+}
+
+// ==================== NETWORK GRAPH ====================
+function initNetwork() {
+    svg = d3.select('#networkCanvas');
+    const width = svg.node().getBoundingClientRect().width;
+    const height = svg.node().getBoundingClientRect().height;
+    
+    // Clear
+    svg.selectAll('*').remove();
+    
+    // Defs for gradients and filters
+    const defs = svg.append('defs');
+    
+    // Glow filter
+    const filter = defs.append('filter')
+        .attr('id', 'glow')
+        .attr('x', '-50%')
+        .attr('y', '-50%')
+        .attr('width', '200%')
+        .attr('height', '200%');
+    
+    filter.append('feGaussianBlur')
+        .attr('stdDeviation', '3')
+        .attr('result', 'coloredBlur');
+    
+    const feMerge = filter.append('feMerge');
+    feMerge.append('feMergeNode').attr('in', 'coloredBlur');
+    feMerge.append('feMergeNode').attr('in', 'SourceGraphic');
+    
+    // Main group for zoom/pan
+    g = svg.append('g');
+    
+    // Zoom behavior
+    zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
+    
+    svg.call(zoom);
+    
+    // Initial render
+    updateNetwork();
+}
+
+function updateNetwork() {
+    const width = svg.node().getBoundingClientRect().width;
+    const height = svg.node().getBoundingClientRect().height;
+    
+    // Filter data
+    const filteredEntities = entities.filter(e => {
+        if (!activeFilters.levels.includes(e.level)) return false;
+        if (activeFilters.party && e.party !== activeFilters.party) return false;
+        return true;
+    });
+    
+    const entityIds = new Set(filteredEntities.map(e => e.id));
+    const filteredConnections = connections.filter(c => 
+        entityIds.has(c.source.id || c.source) && entityIds.has(c.target.id || c.target)
+    );
+    
+    // Create links
+    const linkGroup = g.selectAll('.links').data([0]);
+    const links = linkGroup.enter().append('g').attr('class', 'links').merge(linkGroup);
+    
+    const link = links.selectAll('.link')
+        .data(filteredConnections, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
+    
+    link.exit().remove();
+    
+    const linkEnter = link.enter().append('line')
+        .attr('class', 'link')
+        .attr('stroke', d => {
+            if (d.type === 'coalition') return '#ffcc00';
+            if (d.type === 'parti') return '#00ff95';
+            if (d.type === 'territoire') return '#ff6b00';
+            return '#444';
+        })
+        .attr('stroke-width', d => d.type === 'coalition' ? 2 : 1)
+        .attr('stroke-dasharray', d => d.type === 'succession' ? '5,5' : 'none');
+    
+    const allLinks = linkEnter.merge(link);
+    
+    // Create nodes
+    const nodeGroup = g.selectAll('.nodes').data([0]);
+    const nodes = nodeGroup.enter().append('g').attr('class', 'nodes').merge(nodeGroup);
+    
+    const node = nodes.selectAll('.node')
+        .data(filteredEntities, d => d.id);
+    
+    node.exit().remove();
+    
+    const nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended))
+        .on('click', (event, d) => selectEntity(d))
+        .on('mouseover', (event, d) => highlightConnections(d, true))
+        .on('mouseout', (event, d) => highlightConnections(d, false));
+    
+    nodeEnter.append('circle')
+        .attr('r', d => 8 + d.influence)
+        .attr('fill', d => levelColors[d.level])
+        .attr('stroke', d => levelColors[d.level])
+        .attr('filter', 'url(#glow)');
+    
+    nodeEnter.append('text')
+        .attr('dy', d => 20 + d.influence)
+        .attr('text-anchor', 'middle')
+        .text(d => d.name.split(' ').pop());
+    
+    const allNodes = nodeEnter.merge(node);
+    
+    // Update circles for existing nodes
+    allNodes.select('circle')
+        .attr('r', d => 8 + d.influence)
+        .attr('fill', d => levelColors[d.level])
+        .attr('stroke', d => levelColors[d.level]);
+    
+    // Force simulation
+    if (simulation) simulation.stop();
+    
+    simulation = d3.forceSimulation(filteredEntities)
+        .force('link', d3.forceLink(filteredConnections)
+            .id(d => d.id)
+            .distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(d => 15 + d.influence))
+        .on('tick', () => {
+            allLinks
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y);
+            
+            allNodes.attr('transform', d => `translate(${d.x},${d.y})`);
+        });
+    
+    if (!physicsEnabled) {
+        simulation.stop();
+    }
+}
+
+function dragstarted(event, d) {
+    if (!event.active && physicsEnabled) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(event, d) {
+    d.fx = event.x;
+    d.fy = event.y;
+}
+
+function dragended(event, d) {
+    if (!event.active && physicsEnabled) simulation.alphaTarget(0);
+    if (physicsEnabled) {
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
+function highlightConnections(entity, highlight) {
+    const connectedIds = new Set();
+    connections.forEach(c => {
+        const sourceId = c.source.id || c.source;
+        const targetId = c.target.id || c.target;
+        if (sourceId === entity.id) connectedIds.add(targetId);
+        if (targetId === entity.id) connectedIds.add(sourceId);
+    });
+    
+    g.selectAll('.link')
+        .classed('highlighted', d => {
+            if (!highlight) return false;
+            const sourceId = d.source.id || d.source;
+            const targetId = d.target.id || d.target;
+            return sourceId === entity.id || targetId === entity.id;
+        });
+    
+    g.selectAll('.node')
+        .style('opacity', d => {
+            if (!highlight) return 1;
+            return d.id === entity.id || connectedIds.has(d.id) ? 1 : 0.2;
+        });
+}
+
+// ==================== MAP ====================
+function initMap() {
+    const mapSvg = d3.select('#mapCanvas');
+    const width = 800;
+    const height = 600;
+    
+    mapSvg.attr('viewBox', `0 0 ${width} ${height}`);
+    
+    // Belgium provinces paths (simplified)
+    const provinces = [
+        { id: 'bru', name: 'Bruxelles', path: 'M380,250 L400,240 L420,250 L420,280 L400,290 L380,280 Z', cx: 400, cy: 265 },
+        { id: 'vlb', name: 'Brabant flamand', path: 'M350,200 L450,180 L480,220 L450,280 L420,280 L420,250 L400,240 L380,250 L380,280 L350,270 Z', cx: 420, cy: 230 },
+        { id: 'wbr', name: 'Brabant wallon', path: 'M350,270 L380,280 L400,290 L420,280 L450,280 L450,330 L380,350 L350,320 Z', cx: 400, cy: 310 },
+        { id: 'ant', name: 'Anvers', path: 'M350,100 L450,90 L500,130 L480,180 L450,180 L350,200 L320,160 Z', cx: 400, cy: 145 },
+        { id: 'lim', name: 'Limbourg', path: 'M480,130 L550,100 L600,150 L580,220 L530,250 L480,220 L500,130 Z', cx: 540, cy: 170 },
+        { id: 'lie', name: 'Liège', path: 'M480,220 L530,250 L580,220 L620,280 L600,380 L500,400 L450,330 L450,280 Z', cx: 530, cy: 310 },
+        { id: 'nam', name: 'Namur', path: 'M350,320 L380,350 L450,330 L500,400 L450,480 L350,450 L320,380 Z', cx: 400, cy: 400 },
+        { id: 'hai', name: 'Hainaut', path: 'M150,300 L280,280 L350,320 L320,380 L350,450 L280,500 L150,480 L120,380 Z', cx: 230, cy: 390 },
+        { id: 'lux', name: 'Luxembourg', path: 'M350,450 L450,480 L500,550 L450,600 L320,580 L300,500 Z', cx: 400, cy: 530 },
+        { id: 'ovl', name: 'Flandre orientale', path: 'M200,150 L320,160 L350,200 L350,270 L280,280 L200,250 L180,200 Z', cx: 260, cy: 210 },
+        { id: 'wvl', name: 'Flandre occidentale', path: 'M50,150 L150,130 L200,150 L180,200 L200,250 L150,300 L80,280 L50,200 Z', cx: 120, cy: 210 }
+    ];
+    
+    const mapG = mapSvg.append('g').attr('class', 'map-group');
+    
+    // Draw provinces
+    provinces.forEach(prov => {
+        mapG.append('path')
+            .attr('class', 'province')
+            .attr('d', prov.path)
+            .attr('data-id', prov.id)
+            .on('click', () => selectProvince(prov))
+            .on('mouseover', function() {
+                d3.select(this).classed('selected', true);
+            })
+            .on('mouseout', function() {
+                d3.select(this).classed('selected', false);
+            });
+        
+        mapG.append('text')
+            .attr('class', 'province-label')
+            .attr('x', prov.cx)
+            .attr('y', prov.cy)
+            .text(prov.name);
+    });
+    
+    // Add markers for entities
+    updateMapMarkers();
+}
+
+function updateMapMarkers() {
+    const mapSvg = d3.select('#mapCanvas');
+    const mapG = mapSvg.select('.map-group');
+    
+    // Remove old markers
+    mapG.selectAll('.map-marker').remove();
+    
+    // Group entities by approximate location
+    const locationGroups = {};
+    entities.forEach(e => {
+        if (!e.lat || !e.lng) return;
+        const key = `${Math.round(e.lat * 10)}-${Math.round(e.lng * 10)}`;
+        if (!locationGroups[key]) locationGroups[key] = [];
+        locationGroups[key].push(e);
+    });
+    
+    // Project coordinates (simple mercator-like)
+    const projectX = lng => 50 + (lng - 2.5) * 150;
+    const projectY = lat => 650 - (lat - 49.5) * 250;
+    
+    Object.values(locationGroups).forEach(group => {
+        const e = group[0];
+        const x = projectX(e.lng);
+        const y = projectY(e.lat);
+        
+        const marker = mapG.append('g')
+            .attr('class', 'map-marker')
+            .attr('transform', `translate(${x}, ${y})`)
+            .on('click', () => {
+                if (group.length === 1) {
+                    selectEntity(group[0]);
+                } else {
+                    showEntityGroup(group, x, y);
+                }
+            });
+        
+        marker.append('circle')
+            .attr('r', 8 + group.length * 2)
+            .attr('fill', levelColors[e.level])
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 2)
+            .attr('filter', 'url(#glow)');
+        
+        if (group.length > 1) {
+            marker.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 4)
+                .attr('fill', '#000')
+                .attr('font-size', '10px')
+                .attr('font-weight', 'bold')
+                .text(group.length);
+        }
+    });
+}
+
+function selectProvince(prov) {
+    const provinceEntities = entities.filter(e => 
+        e.territory && e.territory.toLowerCase().includes(prov.name.toLowerCase())
+    );
+    
+    if (provinceEntities.length > 0) {
+        showToast(`${prov.name}: ${provinceEntities.length} entité(s)`);
+    }
+}
+
+function showEntityGroup(group, x, y) {
+    // For now, select the first one
+    selectEntity(group[0]);
+    showToast(`${group.length} entités à cet emplacement`);
+}
+
+// ==================== UI ====================
+function setView(view) {
+    currentView = view;
+    
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+    });
+    
+    document.getElementById('networkCanvas').classList.toggle('active', view === 'network');
+    document.getElementById('mapCanvas').classList.toggle('active', view === 'map');
+    document.getElementById('networkLegend').style.display = view === 'network' ? 'block' : 'none';
+    
+    if (view === 'network') {
+        updateNetwork();
+    } else {
+        updateMapMarkers();
+    }
+}
+
+function toggleFilter(chip) {
+    const level = chip.dataset.level;
+    chip.classList.toggle('active');
+    
+    if (chip.classList.contains('active')) {
+        if (!activeFilters.levels.includes(level)) {
+            activeFilters.levels.push(level);
+        }
+    } else {
+        activeFilters.levels = activeFilters.levels.filter(l => l !== level);
+    }
+    
+    filterEntities();
+}
+
+function filterEntities() {
+    activeFilters.party = document.getElementById('partyFilter').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    
+    renderEntityList(search);
+    updateNetwork();
+    updateStats();
+}
+
+function renderEntityList(search = '') {
+    const list = document.getElementById('entityList');
+    
+    const filtered = entities.filter(e => {
+        if (!activeFilters.levels.includes(e.level)) return false;
+        if (activeFilters.party && e.party !== activeFilters.party) return false;
+        if (search) {
+            const searchStr = `${e.name} ${e.party} ${e.role} ${e.territory}`.toLowerCase();
+            if (!searchStr.includes(search)) return false;
+        }
+        return true;
+    });
+    
+    document.getElementById('entityCount').textContent = filtered.length;
+    
+    list.innerHTML = filtered.map(e => `
+        <div class="entity-item ${selectedEntity?.id === e.id ? 'selected' : ''}" onclick="selectEntity(entities.find(x => x.id === '${e.id}'))">
+            <div class="entity-avatar">${e.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
+            <div class="entity-info">
+                <div class="entity-name">${e.name}</div>
+                <div class="entity-role">${e.party} • ${e.role}</div>
+            </div>
+            <span class="entity-level ${e.level}">${e.level.toUpperCase()}</span>
+        </div>
+    `).join('');
+}
+
+function selectEntity(entity) {
+    selectedEntity = entity;
+    renderEntityList(document.getElementById('searchInput').value.toLowerCase());
+    showInfoPanel(entity);
+    
+    // Highlight in network
+    if (currentView === 'network') {
+        g.selectAll('.node circle')
+            .attr('stroke-width', d => d.id === entity.id ? 4 : 2);
+    }
+}
+
+function showInfoPanel(entity) {
+    const panel = document.getElementById('infoPanel');
+    
+    document.getElementById('infoAvatar').textContent = entity.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+    document.getElementById('infoName').textContent = entity.name;
+    document.getElementById('infoRole').textContent = entity.role;
+    document.getElementById('infoParty').textContent = entity.party;
+    document.getElementById('infoLevel').textContent = levelLabels[entity.level];
+    document.getElementById('infoTerritory').textContent = entity.territory;
+    
+    // Scores
+    document.getElementById('scoreInfluence').textContent = `${entity.influence}/10`;
+    document.getElementById('barInfluence').style.width = `${entity.influence * 10}%`;
+    document.getElementById('scoreAccess').textContent = `${entity.accessibility}/10`;
+    document.getElementById('barAccess').style.width = `${entity.accessibility * 10}%`;
+    document.getElementById('scoreAlign').textContent = `${entity.alignment}/10`;
+    document.getElementById('barAlign').style.width = `${entity.alignment * 10}%`;
+    
+    // Tags
+    document.getElementById('infoTags').innerHTML = entity.tags.map(t => 
+        `<span class="info-tag">${t}</span>`
+    ).join('');
+    
+    // Connections
+    const entityConnections = connections.filter(c => {
+        const sourceId = c.source.id || c.source;
+        const targetId = c.target.id || c.target;
+        return sourceId === entity.id || targetId === entity.id;
+    });
+    
+    document.getElementById('connectionCount').textContent = entityConnections.length;
+    
+    document.getElementById('infoConnections').innerHTML = entityConnections.map(c => {
+        const sourceId = c.source.id || c.source;
+        const targetId = c.target.id || c.target;
+        const otherId = sourceId === entity.id ? targetId : sourceId;
+        const other = entities.find(e => e.id === otherId);
+        if (!other) return '';
+        
+        return `
+            <div class="connection-item" onclick="selectEntity(entities.find(e => e.id === '${other.id}'))">
+                <span class="connection-type">${c.type}</span>
+                <span>${other.name}</span>
+            </div>
+        `;
+    }).join('');
+    
+    panel.classList.add('show');
+}
+
+function closeInfoPanel() {
+    document.getElementById('infoPanel').classList.remove('show');
+    selectedEntity = null;
+    renderEntityList(document.getElementById('searchInput').value.toLowerCase());
+    
+    g.selectAll('.node circle').attr('stroke-width', 2);
+}
+
+function updateStats() {
+    const filtered = entities.filter(e => activeFilters.levels.includes(e.level));
+    document.getElementById('statNodes').textContent = filtered.length;
+    
+    const entityIds = new Set(filtered.map(e => e.id));
+    const linkCount = connections.filter(c => {
+        const sourceId = c.source.id || c.source;
+        const targetId = c.target.id || c.target;
+        return entityIds.has(sourceId) && entityIds.has(targetId);
+    }).length;
+    document.getElementById('statLinks').textContent = linkCount;
+    
+    const parties = new Set(filtered.map(e => e.party));
+    document.getElementById('statClusters').textContent = parties.size;
+}
+
+// ==================== CONTROLS ====================
+function zoomIn() {
+    svg.transition().call(zoom.scaleBy, 1.3);
+}
+
+function zoomOut() {
+    svg.transition().call(zoom.scaleBy, 0.7);
+}
+
+function resetView() {
+    svg.transition().call(zoom.transform, d3.zoomIdentity);
+    if (simulation && physicsEnabled) {
+        simulation.alpha(1).restart();
+    }
+}
+
+function togglePhysics() {
+    physicsEnabled = !physicsEnabled;
+    document.getElementById('physicsBtn').style.color = physicsEnabled ? 'var(--accent)' : 'var(--text-dim)';
+    
+    if (physicsEnabled && simulation) {
+        // Release fixed positions
+        entities.forEach(e => {
+            e.fx = null;
+            e.fy = null;
+        });
+        simulation.alpha(1).restart();
+    } else if (simulation) {
+        simulation.stop();
+    }
+    
+    showToast(physicsEnabled ? '⚡ Physique activée' : '⚡ Physique désactivée');
+}
+
+// ==================== IMPORT/EXPORT ====================
+function exportData() {
+    const data = { entities, connections, exported: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'panopticon-export.json';
+    a.click();
+    showToast('📤 Données exportées');
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (data.entities) entities = data.entities;
+                if (data.connections) connections = data.connections;
+                saveData();
+                initNetwork();
+                renderEntityList();
+                updateStats();
+                showToast('📥 Données importées');
+            } catch (err) {
+                showToast('❌ Erreur d\'import');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function openAddModal() {
+    showToast('➕ Utilisez KERN::DOSSIERS pour ajouter des entités');
+}
+
+// ==================== UTILS ====================
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Sync with KERN Dossiers
+function syncWithDossiers() {
+    const dossiers = localStorage.getItem('kern_dossiers');
+    if (dossiers) {
+        try {
+            const data = JSON.parse(dossiers);
+            // Merge dossiers into entities
+            data.forEach(d => {
+                const existing = entities.find(e => e.name === d.name);
+                if (!existing) {
+                    entities.push({
+                        id: d.id || 'd_' + Date.now(),
+                        name: d.name,
+                        role: d.fonction,
+                        party: d.parti,
+                        level: d.niveau,
+                        territory: d.territoire,
+                        influence: d.scores?.influence || 5,
+                        accessibility: d.scores?.accessibilite || 5,
+                        alignment: d.scores?.alignement || 5,
+                        tags: d.tags || [],
+                        lat: 50.85,
+                        lng: 4.35
+                    });
+                }
+            });
+            saveData();
+            showToast('🔄 Sync KERN::DOSSIERS');
+        } catch (e) {}
+    }
+}
+
+// Auto-sync on load
+setTimeout(syncWithDossiers, 1000);
+</script>
+</body>
+</html>
