@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0062)https://ouaisfieu.github.io/kernel/woke/2/08-forge-studio.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript" src="./⚡ FORGE — Studio de Création Autonome_files/zWzRfyRbbWcs_4qhvocqOwY8zQsfKqCc2KpauV9bm-D4wMOtaT3_omFoEzt8FFE57T5eCWzvY2WTN1OTAzj383xYNbqJohRaVWskSIFllnKOqITeNgiIbgSLlkv-63yfhcJ4ZbdCgvfluw99tMRKZMVzY4q1XzjbvBnHLrOMyqHDE9mZ31jfLFf9Lo0jAN"></script>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ FORGE — Studio de Création Autonome v2</title>
+    <title>⚡ FORGE — Studio de Création Autonome</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
         
@@ -23,8 +23,6 @@
             --yellow: #fbbf24;
             --text: #e2e8f0;
             --text-dim: #64748b;
-            --md-color: #22d3ee;
-            --html-color: #fb923c;
             --font-ui: 'Inter', system-ui, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
@@ -103,15 +101,6 @@
         .doc-tab:hover { background: var(--bg-input); color: var(--text); }
         .doc-tab.active { background: var(--accent-dim); color: var(--accent); }
         
-        .doc-tab .type-badge {
-            font-size: 0.5rem;
-            padding: 0.1rem 0.25rem;
-            border-radius: 3px;
-            font-weight: 700;
-        }
-        .doc-tab .type-badge.md { background: var(--md-color); color: #000; }
-        .doc-tab .type-badge.html { background: var(--html-color); color: #000; }
-        
         .doc-tab-name {
             white-space: nowrap;
             overflow: hidden;
@@ -159,8 +148,8 @@
         }
         
         .action-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
-        .action-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
-        .action-btn.primary:hover { filter: brightness(1.1); }
+        .action-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+        .action-btn.primary:hover { background: var(--cyan); border-color: var(--cyan); }
         
         /* Toolbar */
         .toolbar {
@@ -168,10 +157,9 @@
             border-bottom: 1px solid var(--border);
             padding: 0.4rem 1rem;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
             flex-shrink: 0;
-            flex-wrap: wrap;
         }
         
         .toolbar-group {
@@ -179,81 +167,53 @@
             gap: 0.25rem;
         }
         
-        .tool-divider {
-            width: 1px;
-            height: 20px;
-            background: var(--border);
-            margin: 0 0.3rem;
-        }
-        
         .tool-btn {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 32px;
+            height: 28px;
             background: transparent;
             border: 1px solid transparent;
             border-radius: 4px;
             color: var(--text-dim);
-            font-size: 0.8rem;
-            font-family: var(--font-mono);
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .tool-btn:hover {
-            background: var(--bg-input);
-            border-color: var(--border);
-            color: var(--text);
+        .tool-btn:hover { background: var(--bg-input); border-color: var(--border); color: var(--text); }
+        .tool-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+        
+        .tool-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 0.5rem;
         }
         
-        .tool-btn.active {
-            background: var(--accent-dim);
-            border-color: var(--accent);
-            color: var(--accent);
+        .mode-toggle {
+            display: flex;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            padding: 0.2rem;
         }
         
         .mode-btn {
             padding: 0.3rem 0.6rem;
-            font-size: 0.7rem;
-        }
-        
-        .mode-indicator {
-            padding: 0.25rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-        }
-        .mode-indicator.md { background: rgba(34,211,238,0.2); color: var(--md-color); border: 1px solid var(--md-color); }
-        .mode-indicator.html { background: rgba(251,146,60,0.2); color: var(--html-color); border: 1px solid var(--html-color); }
-        
-        .view-btns {
-            margin-left: auto;
-            display: flex;
-            gap: 0.25rem;
-            background: var(--bg-dark);
-            padding: 0.2rem;
-            border-radius: 4px;
-        }
-        
-        .view-btn {
-            padding: 0.3rem 0.6rem;
             background: transparent;
             border: none;
-            border-radius: 3px;
+            border-radius: 4px;
             color: var(--text-dim);
             font-size: 0.7rem;
             font-family: var(--font-ui);
             cursor: pointer;
         }
         
-        .view-btn:hover { color: var(--text); }
-        .view-btn.active { background: var(--accent-dim); color: var(--accent); }
+        .mode-btn:hover { color: var(--text); }
+        .mode-btn.active { background: var(--accent); color: white; }
         
-        /* Main */
-        .main-container {
+        /* Main Content */
+        .main-content {
             flex: 1;
             display: flex;
             overflow: hidden;
@@ -261,86 +221,89 @@
         
         /* Sidebar */
         .sidebar {
-            width: 220px;
+            width: 240px;
             background: var(--bg-panel);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
             overflow: hidden;
         }
         
         .sidebar-section {
-            padding: 0.75rem;
             border-bottom: 1px solid var(--border);
         }
         
-        .sidebar-title {
+        .sidebar-header {
+            padding: 0.6rem 0.75rem;
             font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-weight: 600;
+            letter-spacing: 0.08em;
             color: var(--text-dim);
-            margin-bottom: 0.5rem;
-        }
-        
-        .project-list {
             display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            max-height: 180px;
-            overflow-y: auto;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
         }
         
+        .sidebar-header:hover { background: var(--bg-input); }
+        
+        .sidebar-content {
+            padding: 0.5rem;
+        }
+        
+        .template-item {
+            padding: 0.5rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .template-item:hover { background: var(--bg-input); }
+        
+        .template-icon { font-size: 1rem; }
+        
+        .template-info { flex: 1; min-width: 0; }
+        .template-name { font-size: 0.75rem; font-weight: 500; }
+        .template-desc { font-size: 0.6rem; color: var(--text-dim); }
+        
+        /* Projects list */
         .project-item {
             padding: 0.5rem 0.6rem;
-            background: var(--bg-input);
-            border: 1px solid transparent;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            transition: all 0.15s;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+            border: 1px solid transparent;
         }
         
-        .project-item:hover { border-color: var(--border); }
-        .project-item.active { border-color: var(--accent); background: var(--accent-dim); }
+        .project-item:hover { background: var(--bg-input); border-color: var(--border); }
+        .project-item.active { background: var(--accent-dim); border-color: var(--accent); }
         
-        .project-type {
-            font-size: 0.5rem;
-            padding: 0.1rem 0.25rem;
-            border-radius: 2px;
-            font-weight: 700;
-        }
-        .project-type.md { background: var(--md-color); color: #000; }
-        .project-type.html { background: var(--html-color); color: #000; }
+        .project-icon { font-size: 0.9rem; }
+        .project-name { font-size: 0.75rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .project-type { font-size: 0.55rem; color: var(--text-dim); padding: 0.1rem 0.3rem; background: var(--bg-dark); border-radius: 3px; }
         
-        /* Snippets */
-        .snippets-list {
+        /* Editor Area */
+        .editor-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
-            max-height: 200px;
-            overflow-y: auto;
+            overflow: hidden;
         }
         
-        .snippet-item {
-            padding: 0.4rem 0.5rem;
-            background: var(--bg-input);
-            border: 1px solid transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.7rem;
+        .editor-container {
+            flex: 1;
             display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            overflow: hidden;
         }
-        .snippet-item:hover { border-color: var(--accent); }
-        .snippet-item code { font-family: var(--font-mono); color: var(--cyan); font-size: 0.6rem; }
         
-        /* Editor */
-        .editor-area {
+        /* Split view */
+        .split-view {
             flex: 1;
             display: flex;
             overflow: hidden;
@@ -351,6 +314,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
         }
         
         .editor-pane {
@@ -358,20 +322,47 @@
         }
         
         .pane-header {
-            padding: 0.5rem 0.75rem;
-            background: var(--bg-editor);
+            padding: 0.4rem 0.75rem;
+            background: var(--bg-panel);
             border-bottom: 1px solid var(--border);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
             color: var(--text-dim);
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
         }
         
+        .pane-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .pane-btn {
+            padding: 0.2rem 0.4rem;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .pane-btn:hover { background: var(--bg-input); color: var(--text); }
+        
+        /* Code editor */
         .code-editor {
             flex: 1;
-            width: 100%;
             background: var(--bg-editor);
+            overflow: auto;
+            position: relative;
+        }
+        
+        .code-textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
             border: none;
             color: var(--text);
             font-family: var(--font-mono);
@@ -380,12 +371,22 @@
             padding: 1rem;
             resize: none;
             outline: none;
+            tab-size: 2;
+        }
+        
+        .code-textarea::placeholder { color: var(--text-dim); }
+        
+        /* Preview */
+        .preview-content {
+            flex: 1;
+            background: white;
+            overflow: auto;
         }
         
         .preview-frame {
-            flex: 1;
+            width: 100%;
+            height: 100%;
             border: none;
-            background: white;
         }
         
         /* Status bar */
@@ -395,6 +396,7 @@
             padding: 0.3rem 1rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 0.65rem;
             color: var(--text-dim);
             flex-shrink: 0;
@@ -429,8 +431,8 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             width: 90%;
-            max-width: 700px;
-            max-height: 85vh;
+            max-width: 500px;
+            max-height: 80vh;
             overflow: hidden;
         }
         
@@ -448,7 +450,6 @@
         .modal-body {
             padding: 1.25rem;
             overflow-y: auto;
-            max-height: 60vh;
         }
         
         .form-group { margin-bottom: 1rem; }
@@ -468,54 +469,7 @@
         
         .form-input:focus, .form-select:focus { border-color: var(--accent); }
         
-        /* Format selector */
-        .format-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        .format-tab {
-            flex: 1;
-            padding: 1rem;
-            background: var(--bg-input);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        .format-tab:hover { border-color: var(--text-dim); }
-        .format-tab.active.md { border-color: var(--md-color); background: rgba(34,211,238,0.1); }
-        .format-tab.active.html { border-color: var(--html-color); background: rgba(251,146,60,0.1); }
-        .format-tab .icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
-        .format-tab .name { font-weight: 700; font-size: 0.9rem; }
-        .format-tab.md .name { color: var(--md-color); }
-        .format-tab.html .name { color: var(--html-color); }
-        .format-tab .desc { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.25rem; }
-        
-        /* Template grid */
-        .template-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-        }
-        
-        .template-card {
-            padding: 0.75rem;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        
-        .template-card:hover { border-color: var(--accent); background: var(--accent-dim); }
-        .template-card.selected { border-color: var(--accent); background: var(--accent-dim); }
-        
-        .template-card-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
-        .template-card-name { font-size: 0.75rem; font-weight: 500; margin-bottom: 0.15rem; }
-        .template-card-desc { font-size: 0.6rem; color: var(--text-dim); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         
         .modal-footer {
             padding: 1rem 1.25rem;
@@ -524,6 +478,30 @@
             justify-content: flex-end;
             gap: 0.5rem;
         }
+        
+        /* Template cards in modal */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .template-card {
+            padding: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .template-card:hover { border-color: var(--accent); background: var(--accent-dim); }
+        .template-card.selected { border-color: var(--accent); background: var(--accent-dim); }
+        
+        .template-card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .template-card-name { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; }
+        .template-card-desc { font-size: 0.7rem; color: var(--text-dim); }
         
         /* Export options */
         .export-options {
@@ -575,16 +553,9 @@
         .editor-area[data-view="split"] .editor-pane,
         .editor-area[data-view="split"] .preview-pane { display: flex; }
         
-        /* Toolbar visibility by mode */
-        .toolbar-md { display: none; }
-        .toolbar-html { display: none; }
-        body[data-mode="markdown"] .toolbar-md { display: flex; }
-        body[data-mode="html"] .toolbar-html { display: flex; }
-        
         /* Responsive */
         @media (max-width: 900px) {
             .sidebar { display: none; }
-            .template-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
         /* Scrollbar */
@@ -594,7 +565,7 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
     </style>
 </head>
-<body data-mode="html">
+<body>
     <!-- Header -->
     <header class="header">
         <div class="header-left">
@@ -616,121 +587,185 @@
     
     <!-- Toolbar -->
     <div class="toolbar">
-        <!-- Mode indicator -->
-        <div class="mode-indicator html" id="modeIndicator">HTML</div>
-        
-        <div class="tool-divider"></div>
-        
-        <!-- MARKDOWN TOOLBAR -->
-        <div class="toolbar-group toolbar-md">
-            <button class="tool-btn" onclick="insertMd('**','**')" title="Gras (Ctrl+B)">𝐁</button>
-            <button class="tool-btn" onclick="insertMd('*','*')" title="Italique (Ctrl+I)">𝐼</button>
-            <button class="tool-btn" onclick="insertMd('~~','~~')" title="Barré">S̶</button>
-            <button class="tool-btn" onclick="insertMd('`','`')" title="Code">`</button>
+        <div class="toolbar-group">
+            <button class="tool-btn" onclick="insertMd(&#39;**&#39;, &#39;**&#39;)" title="Gras">𝐁</button>
+            <button class="tool-btn" onclick="insertMd(&#39;*&#39;, &#39;*&#39;)" title="Italique">𝐼</button>
+            <button class="tool-btn" onclick="insertMd(&#39;~~&#39;, &#39;~~&#39;)" title="Barré">S̶</button>
+            <button class="tool-btn" onclick="insertMd(&#39;`&#39;, &#39;`&#39;)" title="Code">&lt;/&gt;</button>
+            
             <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertMd('# ','')" title="H1">H1</button>
-            <button class="tool-btn" onclick="insertMd('## ','')" title="H2">H2</button>
-            <button class="tool-btn" onclick="insertMd('### ','')" title="H3">H3</button>
+            
+            <button class="tool-btn" onclick="insertMd(&#39;# &#39;, &#39;&#39;)" title="Titre 1">H1</button>
+            <button class="tool-btn" onclick="insertMd(&#39;## &#39;, &#39;&#39;)" title="Titre 2">H2</button>
+            <button class="tool-btn" onclick="insertMd(&#39;### &#39;, &#39;&#39;)" title="Titre 3">H3</button>
+            
             <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertMd('- ','')" title="Liste">•</button>
-            <button class="tool-btn" onclick="insertMd('1. ','')" title="Liste num.">1.</button>
-            <button class="tool-btn" onclick="insertMd('> ','')" title="Citation">❝</button>
-            <button class="tool-btn" onclick="insertMd('[','](url)')" title="Lien">🔗</button>
-            <button class="tool-btn" onclick="insertMd('![alt](',')')" title="Image">🖼</button>
+            
+            <button class="tool-btn" onclick="insertMd(&#39;- &#39;, &#39;&#39;)" title="Liste">☰</button>
+            <button class="tool-btn" onclick="insertMd(&#39;1. &#39;, &#39;&#39;)" title="Liste numérotée">1.</button>
+            <button class="tool-btn" onclick="insertMd(&#39;&gt; &#39;, &#39;&#39;)" title="Citation">❝</button>
+            <button class="tool-btn" onclick="insertMd(&#39;[&#39;, &#39;](url)&#39;)" title="Lien">🔗</button>
+            <button class="tool-btn" onclick="insertMd(&#39;![alt](&#39;, &#39;)&#39;)" title="Image">🖼️</button>
+            
             <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertMd('```\\n','\\n```')" title="Code block">{ }</button>
-            <button class="tool-btn" onclick="insertMd('---\\n','')" title="Ligne">—</button>
-            <button class="tool-btn" onclick="insertMd('- [ ] ','')" title="Checkbox">☐</button>
+            
+            <button class="tool-btn" onclick="insertMd(&#39;\n---\n&#39;, &#39;&#39;)" title="Séparateur">―</button>
+            <button class="tool-btn" onclick="insertMd(&#39;\n```\n&#39;, &#39;\n```&#39;)" title="Bloc code">{ }</button>
+            <button class="tool-btn" onclick="insertMd(&#39;\n| Col1 | Col2 |\n|------|------|\n| &#39;, &#39; |  |&#39;)" title="Tableau">▦</button>
         </div>
         
-        <!-- HTML TOOLBAR -->
-        <div class="toolbar-group toolbar-html">
-            <button class="tool-btn" onclick="insertHtml('&lt;strong&gt;','&lt;/strong&gt;')" title="Gras">𝐁</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;em&gt;','&lt;/em&gt;')" title="Italique">𝐼</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;del&gt;','&lt;/del&gt;')" title="Barré">S̶</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;code&gt;','&lt;/code&gt;')" title="Code">`</button>
+        <div class="toolbar-group">
+            <div class="mode-toggle">
+                <button class="mode-btn" data-mode="markdown" onclick="setEditorMode(&#39;markdown&#39;)">Markdown</button>
+                <button class="mode-btn active" data-mode="html" onclick="setEditorMode(&#39;html&#39;)">HTML</button>
+            </div>
+            
             <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertHtml('&lt;h1&gt;','&lt;/h1&gt;')" title="H1">H1</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;h2&gt;','&lt;/h2&gt;')" title="H2">H2</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;h3&gt;','&lt;/h3&gt;')" title="H3">H3</button>
-            <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertHtml('&lt;p&gt;','&lt;/p&gt;')" title="Paragraphe">¶</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;ul&gt;\\n  &lt;li&gt;','&lt;/li&gt;\\n&lt;/ul&gt;')" title="Liste">•</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;blockquote&gt;','&lt;/blockquote&gt;')" title="Citation">❝</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;a href=&quot;&quot;&gt;','&lt;/a&gt;')" title="Lien">🔗</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;img src=&quot;&quot; alt=&quot;','&quot;/&gt;')" title="Image">🖼</button>
-            <div class="tool-divider"></div>
-            <button class="tool-btn" onclick="insertHtml('&lt;div class=&quot;&quot;&gt;','&lt;/div&gt;')" title="Div">☐</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;span&gt;','&lt;/span&gt;')" title="Span">▭</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;br&gt;','')" title="Saut">↵</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;hr&gt;','')" title="Ligne">—</button>
-            <button class="tool-btn" onclick="insertHtml('&lt;style&gt;\\n','\\n&lt;/style&gt;')" title="Style">🎨</button>
-        </div>
-        
-        <div class="view-btns">
-            <button class="view-btn active" data-view="split" onclick="setView('split')">Split</button>
-            <button class="view-btn" data-view="editor" onclick="setView('editor')">Code</button>
-            <button class="view-btn" data-view="preview" onclick="setView('preview')">Preview</button>
+            
+            <div class="mode-toggle">
+                <button class="mode-btn" data-view="editor" onclick="setView(&#39;editor&#39;)">Code</button>
+                <button class="mode-btn active" data-view="split" onclick="setView(&#39;split&#39;)">Split</button>
+                <button class="mode-btn" data-view="preview" onclick="setView(&#39;preview&#39;)">Preview</button>
+            </div>
         </div>
     </div>
     
-    <!-- Main -->
-    <div class="main-container">
+    <!-- Main Content -->
+    <div class="main-content">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-section">
-                <div class="sidebar-title">📁 Documents</div>
-                <div class="project-list" id="projectsList"></div>
+                <div class="sidebar-header">
+                    <span>📁 MES PROJETS</span>
+                    <span>▼</span>
+                </div>
+                <div class="sidebar-content" id="projectsList">
+                <div class="project-item " onclick="openProject(&#39;mk1mg7bq&#39;)">
+                    <span class="project-icon">🌐</span>
+                    <span class="project-name">Mon premier document</span>
+                    <span class="project-type">landing</span>
+                </div>
+            </div>
             </div>
             
             <div class="sidebar-section">
-                <div class="sidebar-title">⚡ Snippets rapides</div>
-                <div class="snippets-list" id="snippetsList"></div>
+                <div class="sidebar-header">
+                    <span>📋 TEMPLATES</span>
+                    <span>▼</span>
+                </div>
+                <div class="sidebar-content">
+                    <div class="template-item" onclick="loadTemplate(&#39;tract&#39;)">
+                        <span class="template-icon">📄</span>
+                        <div class="template-info">
+                            <div class="template-name">Tract / Flyer</div>
+                            <div class="template-desc">Distribution terrain</div>
+                        </div>
+                    </div>
+                    <div class="template-item" onclick="loadTemplate(&#39;communique&#39;)">
+                        <span class="template-icon">📰</span>
+                        <div class="template-info">
+                            <div class="template-name">Communiqué</div>
+                            <div class="template-desc">Presse &amp; médias</div>
+                        </div>
+                    </div>
+                    <div class="template-item" onclick="loadTemplate(&#39;lettre&#39;)">
+                        <span class="template-icon">✉️</span>
+                        <div class="template-info">
+                            <div class="template-name">Lettre ouverte</div>
+                            <div class="template-desc">Interpellation publique</div>
+                        </div>
+                    </div>
+                    <div class="template-item" onclick="loadTemplate(&#39;petition&#39;)">
+                        <span class="template-icon">✍️</span>
+                        <div class="template-info">
+                            <div class="template-name">Pétition</div>
+                            <div class="template-desc">Collecte signatures</div>
+                        </div>
+                    </div>
+                    <div class="template-item" onclick="loadTemplate(&#39;landing&#39;)">
+                        <span class="template-icon">🌐</span>
+                        <div class="template-info">
+                            <div class="template-name">Page web</div>
+                            <div class="template-desc">Site one-page</div>
+                        </div>
+                    </div>
+                    <div class="template-item" onclick="loadTemplate(&#39;blog&#39;)">
+                        <span class="template-icon">📝</span>
+                        <div class="template-info">
+                            <div class="template-name">Article blog</div>
+                            <div class="template-desc">Publication longue</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="sidebar-section" style="flex:1;border:none;">
-                <div class="sidebar-title">💡 Raccourcis</div>
-                <div style="font-size:0.65rem;color:var(--text-dim);line-height:1.6">
-                    <div><code>Ctrl+S</code> Sauver</div>
-                    <div><code>Ctrl+E</code> Exporter</div>
-                    <div><code>Ctrl+B</code> Gras</div>
-                    <div><code>Ctrl+I</code> Italique</div>
-                    <div><code>Tab</code> Indenter</div>
+            <div class="sidebar-section" style="flex:1;">
+                <div class="sidebar-header">
+                    <span>💡 AIDE RAPIDE</span>
+                </div>
+                <div class="sidebar-content" style="font-size:0.7rem; color:var(--text-dim); line-height:1.5;">
+                    <p><strong>Markdown :</strong></p>
+                    <p>**gras** → <strong>gras</strong></p>
+                    <p>*italique* → <em>italique</em></p>
+                    <p># Titre → Titre H1</p>
+                    <p>[lien](url) → lien</p>
+                    <p style="margin-top:0.5rem;"><strong>Raccourcis :</strong></p>
+                    <p>Ctrl+S → Sauver</p>
+                    <p>Ctrl+E → Exporter</p>
+                    <p>Ctrl+P → Preview</p>
                 </div>
             </div>
         </aside>
         
         <!-- Editor -->
         <div class="editor-area" id="editorArea" data-view="split">
-            <div class="editor-pane">
-                <div class="pane-header">
-                    <span id="paneLabel">📝 Éditeur</span>
+            <div class="split-view">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <span>✏️ ÉDITEUR</span>
+                        <div class="pane-actions">
+                            <button class="pane-btn" onclick="formatCode()">🧹 Format</button>
+                            <button class="pane-btn" onclick="copyCode()">📋 Copier</button>
+                        </div>
+                    </div>
+                    <div class="code-editor">
+                        <textarea class="code-textarea" id="codeEditor" placeholder="Commencez à écrire...
+
+# Mon Document
+
+Écrivez en **Markdown** ou en HTML.
+
+Le preview se met à jour automatiquement."></textarea>
+                    </div>
                 </div>
-                <textarea class="code-editor" id="codeEditor" spellcheck="false" placeholder="Commencez à écrire..."></textarea>
-            </div>
-            
-            <div class="preview-pane">
-                <div class="pane-header">
-                    <span>👁️ Aperçu</span>
-                    <button style="margin-left:auto;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem" onclick="refreshPreview()">🔄</button>
-                    <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem" onclick="openInNewTab()">↗️</button>
+                
+                <div class="preview-pane">
+                    <div class="pane-header">
+                        <span>👁️ APERÇU</span>
+                        <div class="pane-actions">
+                            <button class="pane-btn" onclick="refreshPreview()">🔄 Refresh</button>
+                            <button class="pane-btn" onclick="openInNewTab()">↗️ Ouvrir</button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <iframe class="preview-frame" id="previewFrame" src="./⚡ FORGE — Studio de Création Autonome_files/saved_resource.html"></iframe>
+                    </div>
                 </div>
-                <iframe class="preview-frame" id="previewFrame"></iframe>
             </div>
         </div>
     </div>
     
-    <!-- Status bar -->
+    <!-- Status Bar -->
     <div class="status-bar">
         <div class="status-left">
             <span class="status-item" id="statusMode">📝 HTML</span>
-            <span class="status-item" id="statusChars">0 caractères</span>
-            <span class="status-item" id="statusWords">0 mots</span>
-            <span class="status-item" id="statusLines">0 lignes</span>
+            <span class="status-item" id="statusChars">3539 caractères</span>
+            <span class="status-item" id="statusWords">279 mots</span>
+            <span class="status-item" id="statusLines">128 lignes</span>
         </div>
         <div class="status-right">
-            <span class="status-item" id="statusSaved">💾 Sauvegardé</span>
-            <span class="status-item" id="statusTime">--:--</span>
+            <span class="status-item" id="statusSaved">⚠️ Non sauvegardé</span>
+            <span class="status-item" id="statusTime">22:18</span>
         </div>
     </div>
     
@@ -738,38 +773,42 @@
     <div class="modal-overlay" id="newDocModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>📄 Nouveau Document</h3>
-                <button class="modal-close" onclick="closeModal('newDocModal')">×</button>
+                <h3>📄 Nouveau document</h3>
+                <button class="modal-close" onclick="closeModal(&#39;newDocModal&#39;)">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Nom du document</label>
                     <input type="text" class="form-input" id="newDocName" placeholder="Mon document">
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">Format</label>
-                    <div class="format-tabs">
-                        <div class="format-tab html active" data-format="html" onclick="selectFormat('html')">
-                            <div class="icon">🌐</div>
-                            <div class="name">HTML</div>
-                            <div class="desc">Pages web, styles CSS, contrôle total</div>
-                        </div>
-                        <div class="format-tab md" data-format="markdown" onclick="selectFormat('markdown')">
-                            <div class="icon">📝</div>
-                            <div class="name">MARKDOWN</div>
-                            <div class="desc">Syntaxe simple, articles, notes</div>
-                        </div>
-                    </div>
+                    <label class="form-label">Type</label>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Modèle</label>
-                    <div class="template-grid" id="templateGrid"></div>
+                <div class="template-grid" id="templateSelector">
+                    <div class="template-card" data-template="blank" onclick="selectTemplate(&#39;blank&#39;)">
+                        <div class="template-card-icon">📄</div>
+                        <div class="template-card-name">Vierge</div>
+                        <div class="template-card-desc">Page blanche</div>
+                    </div>
+                    <div class="template-card" data-template="tract" onclick="selectTemplate(&#39;tract&#39;)">
+                        <div class="template-card-icon">📢</div>
+                        <div class="template-card-name">Tract</div>
+                        <div class="template-card-desc">Flyer A5</div>
+                    </div>
+                    <div class="template-card" data-template="landing" onclick="selectTemplate(&#39;landing&#39;)">
+                        <div class="template-card-icon">🌐</div>
+                        <div class="template-card-name">Site web</div>
+                        <div class="template-card-desc">Landing page</div>
+                    </div>
+                    <div class="template-card" data-template="communique" onclick="selectTemplate(&#39;communique&#39;)">
+                        <div class="template-card-icon">📰</div>
+                        <div class="template-card-name">Communiqué</div>
+                        <div class="template-card-desc">Pour la presse</div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="action-btn" onclick="closeModal('newDocModal')">Annuler</button>
+                <button class="action-btn" onclick="closeModal(&#39;newDocModal&#39;)">Annuler</button>
                 <button class="action-btn primary" onclick="createNewDoc()">Créer</button>
             </div>
         </div>
@@ -780,32 +819,32 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>📤 Exporter</h3>
-                <button class="modal-close" onclick="closeModal('exportModal')">×</button>
+                <button class="modal-close" onclick="closeModal(&#39;exportModal&#39;)">×</button>
             </div>
             <div class="modal-body">
                 <div class="export-options">
-                    <div class="export-option" onclick="exportAs('html')">
+                    <div class="export-option" onclick="exportAs(&#39;html&#39;)">
                         <span class="export-icon">🌐</span>
                         <div class="export-info">
                             <div class="export-name">HTML standalone</div>
                             <div class="export-desc">Fichier .html complet, ouvrable partout</div>
                         </div>
                     </div>
-                    <div class="export-option" onclick="exportAs('markdown')">
+                    <div class="export-option" onclick="exportAs(&#39;markdown&#39;)">
                         <span class="export-icon">📝</span>
                         <div class="export-info">
                             <div class="export-name">Markdown</div>
                             <div class="export-desc">Fichier .md pour édition future</div>
                         </div>
                     </div>
-                    <div class="export-option" onclick="exportAs('pdf')">
+                    <div class="export-option" onclick="exportAs(&#39;pdf&#39;)">
                         <span class="export-icon">📑</span>
                         <div class="export-info">
                             <div class="export-name">PDF (impression)</div>
                             <div class="export-desc">Ouvre la boîte de dialogue d'impression</div>
                         </div>
                     </div>
-                    <div class="export-option" onclick="exportAs('json')">
+                    <div class="export-option" onclick="exportAs(&#39;json&#39;)">
                         <span class="export-icon">💾</span>
                         <div class="export-info">
                             <div class="export-name">Projet JSON</div>
@@ -822,28 +861,28 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>🚀 Publier en ligne</h3>
-                <button class="modal-close" onclick="closeModal('publishModal')">×</button>
+                <button class="modal-close" onclick="closeModal(&#39;publishModal&#39;)">×</button>
             </div>
             <div class="modal-body">
-                <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1rem;">
-                    Générez un fichier HTML prêt à héberger :
+                <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:1rem;">
+                    Générez un fichier HTML prêt à héberger sur n'importe quel service gratuit :
                 </p>
                 <div class="export-options">
-                    <div class="export-option" onclick="publishTo('github')">
+                    <div class="export-option" onclick="publishTo(&#39;github&#39;)">
                         <span class="export-icon">💻</span>
                         <div class="export-info">
                             <div class="export-name">GitHub Pages</div>
                             <div class="export-desc">Gratuit, fiable, personnalisable</div>
                         </div>
                     </div>
-                    <div class="export-option" onclick="publishTo('netlify')">
+                    <div class="export-option" onclick="publishTo(&#39;netlify&#39;)">
                         <span class="export-icon">🔷</span>
                         <div class="export-info">
                             <div class="export-name">Netlify Drop</div>
                             <div class="export-desc">Glissez-déposez pour publier</div>
                         </div>
                     </div>
-                    <div class="export-option" onclick="publishTo('zip')">
+                    <div class="export-option" onclick="publishTo(&#39;zip&#39;)">
                         <span class="export-icon">📦</span>
                         <div class="export-info">
                             <div class="export-name">Télécharger ZIP</div>
@@ -851,46 +890,33 @@
                         </div>
                     </div>
                 </div>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:1rem;">
+                    💡 Conseil : GitHub Pages est idéal pour un site permanent et gratuit.
+                </p>
             </div>
         </div>
     </div>
     
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast">📋 Template "Tract / Flyer" chargé</div>
 
-<script>
-// ==================== STATE ====================
-let projects = [];
-let currentProject = null;
-let selectedFormat = 'html';
-let selectedTemplate = 'blank';
-let hasUnsavedChanges = false;
-
-// ==================== TEMPLATES ====================
-const templates = {
-    html: {
-        blank: { name: 'Vierge', icon: '📄', desc: 'Document vide', content: `<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon document</title>
-    <style>
-        body {
-            font-family: system-ui, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            line-height: 1.6;
-        }
-    </style>
-</head>
-<body>
-    <h1>Titre</h1>
-    <p>Votre contenu ici...</p>
-</body>
-</html>` },
-
-        tract: { name: 'Tract/Flyer', icon: '📢', desc: 'Format A5', content: `<!DOCTYPE html>
+    <script>
+        // ==================== STATE ====================
+        let projects = [];
+        let currentProject = null;
+        let currentDoc = null;
+        let editorMode = 'html'; // 'html' or 'markdown'
+        let selectedTemplate = 'blank';
+        let hasUnsavedChanges = false;
+        
+        // ==================== TEMPLATES ====================
+        const templates = {
+            blank: {
+                name: 'Document vierge',
+                content: ''
+            },
+            tract: {
+                name: 'Tract / Flyer',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -900,7 +926,7 @@ const templates = {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, sans-serif;
-            max-width: 148mm;
+            max-width: 148mm; /* A5 */
             margin: 0 auto;
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -920,17 +946,32 @@ const templates = {
             letter-spacing: 0.05em;
             margin-bottom: 10px;
         }
-        .tagline { font-size: 1.1rem; opacity: 0.9; }
-        .content { padding: 0 20px; }
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 0 20px;
+        }
         .point {
             display: flex;
             align-items: flex-start;
             gap: 15px;
             margin-bottom: 20px;
         }
-        .point-icon { font-size: 2rem; flex-shrink: 0; }
-        .point-text h3 { font-size: 1rem; margin-bottom: 5px; }
-        .point-text p { font-size: 0.85rem; opacity: 0.9; line-height: 1.4; }
+        .point-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .point-text h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        .point-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
         .cta {
             text-align: center;
             margin-top: 30px;
@@ -938,8 +979,14 @@ const templates = {
             background: rgba(255,255,255,0.15);
             border-radius: 15px;
         }
-        .cta h2 { font-size: 1.3rem; margin-bottom: 15px; }
-        .cta-info { font-size: 0.9rem; line-height: 1.6; }
+        .cta h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .cta-info {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
         .footer {
             text-align: center;
             margin-top: 25px;
@@ -984,17 +1031,20 @@ const templates = {
         <h2>📅 Prochaine réunion publique</h2>
         <p class="cta-info">
             <strong>Mardi 15 janvier à 19h</strong><br>
-            Salle communale - Entrée libre
+            Salle communale - Entrée libre<br>
+            Venez nombreux·ses !
         </p>
     </div>
     
     <div class="footer">
-        <p>Collectif Citoyen • contact@exemple.be</p>
+        <p>Collectif Citoyen • contact@exemple.be • www.exemple.be</p>
     </div>
 </body>
-</html>` },
-
-        communique: { name: 'Communiqué', icon: '📰', desc: 'Presse', content: `<!DOCTYPE html>
+</html>`
+            },
+            communique: {
+                name: 'Communiqué de presse',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1014,7 +1064,11 @@ const templates = {
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
-        .org-name { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
+        .org-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
         .doc-type {
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -1022,8 +1076,16 @@ const templates = {
             color: #666;
             margin-top: 5px;
         }
-        .meta { font-size: 0.85rem; color: #666; margin-bottom: 25px; }
-        h1 { font-size: 1.8rem; line-height: 1.3; margin-bottom: 25px; }
+        .meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            line-height: 1.3;
+            margin-bottom: 25px;
+        }
         .chapeau {
             font-size: 1.1rem;
             font-weight: bold;
@@ -1053,7 +1115,10 @@ const templates = {
             border-top: 1px solid #ddd;
             font-size: 0.85rem;
         }
-        .contact h4 { margin-bottom: 10px; color: #666; }
+        .contact h4 {
+            margin-bottom: 10px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -1072,29 +1137,46 @@ const templates = {
         [Chapeau : résumez l'essentiel en 2-3 lignes. Qui, quoi, quand, où, pourquoi.]
     </p>
     
-    <p>[Premier paragraphe : développez l'information principale.]</p>
+    <p>
+        [Premier paragraphe : développez l'information principale. Donnez les détails 
+        les plus importants. Restez factuel.]
+    </p>
     
-    <p>[Deuxième paragraphe : contexte et enjeux.]</p>
+    <p>
+        [Deuxième paragraphe : contexte et enjeux. Pourquoi c'est important ? 
+        Quelle est la situation actuelle ?]
+    </p>
     
     <blockquote>
-        « [Citation d'un·e représentant·e du collectif] »
+        « [Citation d'un·e représentant·e du collectif qui exprime une position 
+        ou une réaction.] »
         <cite>— [Prénom Nom], [fonction]</cite>
     </blockquote>
     
-    <p>[Troisième paragraphe : demandes concrètes ou prochaines étapes.]</p>
+    <p>
+        [Troisième paragraphe : les demandes concrètes ou les prochaines étapes. 
+        Que demandez-vous ? Que va-t-il se passer ensuite ?]
+    </p>
+    
+    <p>
+        [Conclusion : rappel de la position du collectif et invitation à suivre l'actualité.]
+    </p>
     
     <div class="contact">
         <h4>Contact presse</h4>
         <p>
             <strong>[Prénom Nom]</strong><br>
+            Porte-parole du Collectif Citoyen<br>
             📧 presse@exemple.be<br>
             📱 0400 00 00 00
         </p>
     </div>
 </body>
-</html>` },
-
-        lettre: { name: 'Lettre ouverte', icon: '✉️', desc: 'Formelle', content: `<!DOCTYPE html>
+</html>`
+            },
+            lettre: {
+                name: 'Lettre ouverte',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1115,25 +1197,45 @@ const templates = {
             font-size: 0.9rem;
             color: #666;
         }
-        .destinataire { margin-bottom: 30px; }
-        .destinataire strong { display: block; font-size: 1.1rem; }
+        .destinataire {
+            margin-bottom: 30px;
+        }
+        .destinataire strong {
+            display: block;
+            font-size: 1.1rem;
+        }
         h1 {
             font-size: 1.5rem;
             text-align: center;
             margin: 40px 0;
             font-style: italic;
         }
-        .salutation { margin-bottom: 20px; }
+        .salutation {
+            margin-bottom: 20px;
+        }
         p { margin-bottom: 15px; text-align: justify; }
-        .signature { margin-top: 40px; text-align: right; }
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+        }
         .signataires {
             margin-top: 50px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
         }
-        .signataires h4 { margin-bottom: 15px; color: #666; }
-        .signataires ul { columns: 2; list-style: none; padding: 0; }
-        .signataires li { margin-bottom: 8px; font-size: 0.9rem; }
+        .signataires h4 {
+            margin-bottom: 15px;
+            color: #666;
+        }
+        .signataires ul {
+            columns: 2;
+            list-style: none;
+            padding: 0;
+        }
+        .signataires li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -1144,25 +1246,49 @@ const templates = {
     <div class="destinataire">
         <strong>À l'attention de [Titre] [Prénom Nom]</strong>
         [Fonction]<br>
-        [Institution]
+        [Institution]<br>
+        [Adresse]
     </div>
     
-    <h1>Lettre ouverte : [Sujet]</h1>
+    <h1>Lettre ouverte : [Sujet de l'interpellation]</h1>
     
-    <p class="salutation">Madame/Monsieur,</p>
+    <p class="salutation">Madame/Monsieur [Titre],</p>
     
-    <p>[Introduction : contexte et raison de cette lettre.]</p>
+    <p>
+        [Introduction : exposez le contexte et la raison de cette lettre ouverte. 
+        Pourquoi vous adressez-vous publiquement à cette personne ?]
+    </p>
     
-    <p>[Développement : faits, problèmes, enjeux.]</p>
+    <p>
+        [Développement : présentez les faits, les problèmes constatés, les enjeux. 
+        Soyez précis, factuel, documenté.]
+    </p>
     
-    <p>[Arguments : votre position, données, témoignages.]</p>
+    <p>
+        [Arguments : développez votre position. Quels sont vos arguments ? 
+        Appuyez-vous sur des données, des témoignages, des précédents.]
+    </p>
     
-    <p>[Demandes : que souhaitez-vous ?]</p>
+    <p>
+        [Demandes : formulez clairement vos demandes ou vos questions. 
+        Que souhaitez-vous que le/la destinataire fasse ?]
+    </p>
     
-    <p>Dans l'attente de votre réponse, nous vous prions d'agréer l'expression de notre considération citoyenne.</p>
+    <p>
+        [Conclusion : réaffirmez votre engagement et votre vigilance. 
+        Annoncez éventuellement les suites que vous donnerez.]
+    </p>
+    
+    <p>
+        Dans l'attente de votre réponse, nous vous prions d'agréer, 
+        [Titre], l'expression de notre considération citoyenne.
+    </p>
     
     <div class="signature">
-        <p><strong>Le Collectif Citoyen</strong></p>
+        <p>
+            <strong>Le Collectif Citoyen de [Commune]</strong><br>
+            <em>[Nombre] signataires</em>
+        </p>
     </div>
     
     <div class="signataires">
@@ -1171,12 +1297,16 @@ const templates = {
             <li>[Prénom Nom]</li>
             <li>[Prénom Nom]</li>
             <li>[Prénom Nom]</li>
+            <li>[Prénom Nom]</li>
+            <li>...</li>
         </ul>
     </div>
 </body>
-</html>` },
-
-        petition: { name: 'Pétition', icon: '✍️', desc: 'Mobilisation', content: `<!DOCTYPE html>
+</html>`
+            },
+            petition: {
+                name: 'Pétition',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1200,23 +1330,44 @@ const templates = {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .hero p { font-size: 1.2rem; opacity: 0.9; }
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
         .stats {
             display: flex;
             justify-content: center;
             gap: 40px;
             margin-top: 30px;
         }
-        .stat { text-align: center; }
-        .stat-value { font-size: 2.5rem; font-weight: 800; color: #22d3ee; }
-        .stat-label { font-size: 0.9rem; opacity: 0.8; }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #22d3ee;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
         .content {
             max-width: 800px;
             margin: 0 auto;
             padding: 50px 20px;
         }
-        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
         p { margin-bottom: 15px; }
         .demands {
             background: white;
@@ -1225,10 +1376,16 @@ const templates = {
             margin: 30px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .demands h3 { margin-bottom: 20px; color: #1e3a5f; }
-        .demands ul { list-style: none; }
+        .demands h3 {
+            margin-bottom: 20px;
+            color: #1e3a5f;
+        }
+        .demands ul {
+            list-style: none;
+        }
         .demands li {
-            padding: 12px 0 12px 35px;
+            padding: 12px 0;
+            padding-left: 35px;
             position: relative;
             border-bottom: 1px solid #e2e8f0;
         }
@@ -1239,6 +1396,7 @@ const templates = {
             left: 0;
             color: #22c55e;
             font-weight: bold;
+            font-size: 1.2rem;
         }
         .cta-section {
             background: #1e3a5f;
@@ -1248,7 +1406,14 @@ const templates = {
             border-radius: 16px;
             margin: 40px 0;
         }
-        .cta-section h2 { color: white; margin-bottom: 10px; }
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        .cta-section p {
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
         .cta-btn {
             display: inline-block;
             background: #22d3ee;
@@ -1258,14 +1423,22 @@ const templates = {
             font-weight: 700;
             border-radius: 50px;
             text-decoration: none;
-            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .cta-btn:hover { transform: scale(1.05); }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
     <div class="hero">
         <h1>🔥 [Titre de la pétition]</h1>
-        <p>[Sous-titre résumant l'objectif]</p>
+        <p>[Sous-titre qui résume l'objectif en une phrase]</p>
+        
         <div class="stats">
             <div class="stat">
                 <div class="stat-value">[X]</div>
@@ -1280,40 +1453,62 @@ const templates = {
     
     <div class="content">
         <h2>Pourquoi cette pétition ?</h2>
-        <p>[Contexte et problème...]</p>
+        <p>
+            [Expliquez le contexte et le problème. Qu'est-ce qui vous a poussé 
+            à lancer cette pétition ? Quels sont les enjeux ?]
+        </p>
+        <p>
+            [Développez avec des faits, des chiffres, des exemples concrets. 
+            Rendez le problème tangible et urgent.]
+        </p>
         
         <div class="demands">
             <h3>📋 Nos demandes</h3>
             <ul>
-                <li>[Première demande]</li>
+                <li>[Première demande concrète et réalisable]</li>
                 <li>[Deuxième demande]</li>
                 <li>[Troisième demande]</li>
+                <li>[Quatrième demande]</li>
             </ul>
         </div>
         
+        <h2>Qui sommes-nous ?</h2>
+        <p>
+            [Présentez brièvement le collectif ou les personnes à l'origine 
+            de cette pétition. Pourquoi êtes-vous légitimes sur ce sujet ?]
+        </p>
+        
         <div class="cta-section">
             <h2>Signez la pétition</h2>
-            <p>Chaque signature compte.</p>
+            <p>Chaque signature compte. Ensemble, nous pouvons faire bouger les choses.</p>
             <a href="#" class="cta-btn">✍️ Je signe</a>
         </div>
     </div>
+    
+    <div class="footer">
+        <p>Pétition lancée par [Nom du collectif] • Contact : [email]</p>
+    </div>
 </body>
-</html>` },
-
-        landing: { name: 'Site web', icon: '🌐', desc: 'Landing page', content: `<!DOCTYPE html>
+</html>`
+            },
+            landing: {
+                name: 'Page web / Landing',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[Nom du Collectif]</title>
+    <title>[Nom du Collectif] — Citoyens engagés</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: system-ui, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: #0f172a;
             color: #e2e8f0;
             line-height: 1.6;
         }
+        
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -1326,11 +1521,27 @@ const templates = {
             justify-content: space-between;
             align-items: center;
             z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-logo { font-weight: 700; font-size: 1.2rem; color: #22d3ee; }
-        .nav-links { display: flex; gap: 25px; list-style: none; }
-        .nav-links a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #22d3ee;
+        }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
         .nav-links a:hover { color: #22d3ee; }
+        
+        /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -1338,97 +1549,218 @@ const templates = {
             justify-content: center;
             text-align: center;
             padding: 100px 20px;
-            background: radial-gradient(ellipse at top, rgba(34, 211, 238, 0.15), transparent 50%);
+            background: 
+                radial-gradient(ellipse at top, rgba(34, 211, 238, 0.15), transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.1), transparent 50%);
         }
+        .hero-content { max-width: 800px; }
         .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
+            line-height: 1.1;
             margin-bottom: 20px;
             background: linear-gradient(135deg, #fff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .hero p { font-size: 1.25rem; color: #94a3b8; margin-bottom: 35px; }
+        .hero p {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            margin-bottom: 35px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
         .btn {
             padding: 14px 30px;
             border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
-            display: inline-block;
-            margin: 5px;
+            transition: all 0.2s;
         }
-        .btn-primary { background: #22d3ee; color: #0f172a; }
-        .btn-secondary { border: 1px solid #475569; color: #e2e8f0; }
-        section { padding: 100px 20px; max-width: 1100px; margin: 0 auto; }
-        .section-header { text-align: center; margin-bottom: 60px; }
-        .section-header h2 { font-size: 2.5rem; margin-bottom: 15px; }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .btn-primary {
+            background: #22d3ee;
+            color: #0f172a;
+        }
+        .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+        .btn-secondary {
+            background: transparent;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        .btn-secondary:hover { border-color: #22d3ee; color: #22d3ee; }
+        
+        /* Section */
+        section {
+            padding: 100px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .section-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
         .card {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 30px;
+            transition: all 0.3s;
         }
-        .card-icon { font-size: 2.5rem; margin-bottom: 20px; }
-        .card h3 { font-size: 1.25rem; margin-bottom: 10px; }
-        .card p { color: #94a3b8; }
+        .card:hover {
+            border-color: rgba(34, 211, 238, 0.3);
+            transform: translateY(-5px);
+        }
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        
+        /* CTA */
+        .cta {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 20px;
+            padding: 60px 30px;
+            margin: 50px 0;
+        }
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .cta p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        
+        /* Footer */
         footer {
             border-top: 1px solid rgba(255,255,255,0.1);
             padding: 40px 20px;
             text-align: center;
             color: #64748b;
+            font-size: 0.9rem;
         }
+        footer a { color: #94a3b8; }
     </style>
 </head>
 <body>
     <nav>
         <div class="nav-logo">⚡ [Collectif]</div>
         <ul class="nav-links">
-            <li><a href="#mission">Mission</a></li>
-            <li><a href="#actions">Actions</a></li>
-            <li><a href="#rejoindre">Rejoindre</a></li>
+            <li><a href="#mission">Notre mission</a></li>
+            <li><a href="#actions">Nos actions</a></li>
+            <li><a href="#rejoindre">Nous rejoindre</a></li>
         </ul>
     </nav>
     
     <section class="hero">
-        <div>
-            <h1>[Slogan principal]</h1>
-            <p>[Description de ce que fait le collectif]</p>
-            <a href="#rejoindre" class="btn btn-primary">Rejoindre</a>
-            <a href="#mission" class="btn btn-secondary">En savoir plus</a>
+        <div class="hero-content">
+            <h1>[Slogan principal accrocheur]</h1>
+            <p>[Description en une ou deux phrases de ce que fait le collectif et pourquoi c'est important]</p>
+            <div class="hero-buttons">
+                <a href="#rejoindre" class="btn btn-primary">Rejoindre le mouvement</a>
+                <a href="#mission" class="btn btn-secondary">En savoir plus</a>
+            </div>
         </div>
     </section>
     
     <section id="mission">
         <div class="section-header">
             <h2>Notre mission</h2>
+            <p>Ce pour quoi nous nous battons au quotidien</p>
         </div>
         <div class="cards">
             <div class="card">
                 <div class="card-icon">👁️</div>
                 <h3>Transparence</h3>
-                <p>Accès aux documents publics et processus de décision.</p>
+                <p>Nous exigeons un accès complet aux documents publics et aux processus de décision.</p>
             </div>
             <div class="card">
                 <div class="card-icon">🗣️</div>
                 <h3>Participation</h3>
-                <p>Espaces pour que chaque citoyen puisse s'exprimer.</p>
+                <p>Nous créons des espaces pour que chaque citoyen puisse s'exprimer et être entendu.</p>
             </div>
             <div class="card">
                 <div class="card-icon">⚖️</div>
                 <h3>Justice</h3>
-                <p>Répartition équitable des ressources.</p>
+                <p>Nous défendons une répartition équitable des ressources et des opportunités.</p>
             </div>
         </div>
     </section>
     
+    <section id="actions">
+        <div class="section-header">
+            <h2>Nos actions</h2>
+            <p>Ce que nous faisons concrètement</p>
+        </div>
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Veille citoyenne</h3>
+                <p>Suivi des conseils communaux, analyse des budgets, monitoring des promesses.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📢</div>
+                <h3>Mobilisation</h3>
+                <p>Organisation de réunions publiques, pétitions, actions de sensibilisation.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🤝</div>
+                <h3>Mise en réseau</h3>
+                <p>Connexion des citoyens engagés, partage d'expériences et de ressources.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="rejoindre">
+        <div class="cta">
+            <h2>Rejoignez le mouvement</h2>
+            <p>Ensemble, nous pouvons faire la différence. Chaque voix compte.</p>
+            <a href="mailto:contact@exemple.be" class="btn btn-primary">Nous contacter</a>
+        </div>
+    </section>
+    
     <footer>
-        <p>[Nom du Collectif] — contact@exemple.be</p>
+        <p>[Nom du Collectif] — Citoyens de [Commune]</p>
+        <p>Contact : <a href="mailto:contact@exemple.be">contact@exemple.be</a></p>
     </footer>
 </body>
-</html>` },
-
-        blog: { name: 'Article blog', icon: '📝', desc: 'Publication', content: `<!DOCTYPE html>
+</html>`
+            },
+            blog: {
+                name: 'Article de blog',
+                content: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1451,15 +1783,23 @@ const templates = {
             margin-bottom: 30px;
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
         }
-        h1 { font-size: 2.5rem; line-height: 1.2; margin-bottom: 20px; }
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
         .lead {
             font-size: 1.25rem;
             color: #444;
             margin-bottom: 30px;
             font-style: italic;
         }
-        h2 { font-size: 1.5rem; margin: 40px 0 20px; }
+        h2 {
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+        }
         p { margin-bottom: 20px; }
         blockquote {
             padding: 20px 30px;
@@ -1468,10 +1808,17 @@ const templates = {
             margin: 30px 0;
             font-style: italic;
         }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
         .tags {
             margin-top: 50px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
+            font-family: system-ui, sans-serif;
+            font-size: 0.85rem;
         }
         .tags a {
             display: inline-block;
@@ -1481,6 +1828,7 @@ const templates = {
             border-radius: 20px;
             text-decoration: none;
             margin-right: 8px;
+            margin-bottom: 8px;
         }
         .author {
             margin-top: 40px;
@@ -1490,6 +1838,7 @@ const templates = {
             display: flex;
             gap: 20px;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         .author-avatar {
             width: 60px;
@@ -1501,715 +1850,542 @@ const templates = {
             justify-content: center;
             font-size: 1.5rem;
         }
+        .author-info h4 { margin-bottom: 5px; }
+        .author-info p { margin: 0; font-size: 0.9rem; color: #666; }
     </style>
 </head>
 <body>
-    <h1>[Titre de votre article]</h1>
-    
-    <div class="meta">
-        <span>📅 [Date]</span>
-        <span>✍️ [Auteur]</span>
-        <span>📖 X min</span>
-    </div>
-    
-    <p class="lead">[Chapeau accrocheur en 2-3 phrases.]</p>
-    
-    <p>[Introduction : contexte.]</p>
-    
-    <h2>Première partie</h2>
-    <p>[Développement...]</p>
-    
-    <blockquote>
-        « [Citation pertinente] »
-    </blockquote>
-    
-    <h2>Deuxième partie</h2>
-    <p>[Suite du développement...]</p>
-    
-    <h2>Conclusion</h2>
-    <p>[Résumé et ouverture...]</p>
-    
-    <div class="tags">
-        <strong>Tags :</strong>
-        <a href="#">#politique</a>
-        <a href="#">#citoyenneté</a>
-    </div>
-    
-    <div class="author">
-        <div class="author-avatar">👤</div>
-        <div>
-            <strong>[Prénom Nom]</strong>
-            <p style="margin:0;font-size:0.9rem;color:#666">[Bio courte]</p>
+    <article>
+        <h1>[Titre de votre article]</h1>
+        
+        <div class="meta">
+            <span>📅 [Date]</span>
+            <span>✍️ [Auteur·ice]</span>
+            <span>📖 X min de lecture</span>
         </div>
-    </div>
+        
+        <p class="lead">
+            [Chapeau : résumez l'essentiel de l'article en 2-3 phrases accrocheuses. 
+            Donnez envie de lire la suite.]
+        </p>
+        
+        <p>
+            [Introduction : posez le contexte. De quoi allez-vous parler ? 
+            Pourquoi c'est important ? Pourquoi maintenant ?]
+        </p>
+        
+        <h2>Première partie : [Sous-titre]</h2>
+        
+        <p>
+            [Développez votre premier point. Utilisez des exemples concrets, 
+            des chiffres, des anecdotes pour rendre votre propos vivant.]
+        </p>
+        
+        <p>
+            [Continuez à développer. N'hésitez pas à structurer avec des paragraphes 
+            courts pour faciliter la lecture.]
+        </p>
+        
+        <blockquote>
+            « [Une citation pertinente qui illustre votre propos ou apporte 
+            une perspective différente.] »
+        </blockquote>
+        
+        <h2>Deuxième partie : [Sous-titre]</h2>
+        
+        <p>
+            [Développez votre deuxième point. Faites des liens avec la partie 
+            précédente pour créer une progression logique.]
+        </p>
+        
+        <p>
+            [Appuyez votre argumentation sur des faits vérifiables, des sources 
+            fiables, des témoignages.]
+        </p>
+        
+        <h2>Conclusion</h2>
+        
+        <p>
+            [Résumez les points clés. Ouvrez sur une perspective, une question, 
+            un appel à l'action. Laissez le lecteur avec quelque chose à penser.]
+        </p>
+        
+        <div class="tags">
+            <strong>Tags :</strong>
+            <a href="#">#politique</a>
+            <a href="#">#citoyenneté</a>
+            <a href="#">#démocratie</a>
+        </div>
+        
+        <div class="author">
+            <div class="author-avatar">👤</div>
+            <div class="author-info">
+                <h4>[Prénom Nom]</h4>
+                <p>[Courte bio de l'auteur·ice en une ligne]</p>
+            </div>
+        </div>
+    </article>
 </body>
-</html>` }
-    },
-    
-    markdown: {
-        blank: { name: 'Vierge', icon: '📄', desc: 'Document vide', content: `# Titre
-
-Votre contenu ici...
-` },
-
-        article: { name: 'Article', icon: '📰', desc: 'Publication', content: `# Titre de l'article
-
-*Publié le [date] par [auteur]*
-
-## Introduction
-
-Votre introduction ici...
-
-## Première partie
-
-Développez votre premier point...
-
-> Une citation pertinente pour illustrer votre propos.
-
-## Deuxième partie
-
-Continuez votre développement...
-
-- Point clé 1
-- Point clé 2
-- Point clé 3
-
-## Conclusion
-
-Résumez et ouvrez sur une perspective...
-
----
-
-**Tags:** #tag1 #tag2 #tag3
-` },
-
-        notes: { name: 'Notes', icon: '📝', desc: 'Réunion', content: `# Notes de réunion
-
-**Date:** [date]  
-**Participants:** [noms]  
-**Lieu:** [lieu]
-
----
-
-## Ordre du jour
-
-1. Point 1
-2. Point 2
-3. Point 3
-
-## Discussions
-
-### Point 1 : [Titre]
-
-- Discussion principale...
-- Décision prise...
-
-### Point 2 : [Titre]
-
-- Discussion principale...
-- Décision prise...
-
-## Actions à suivre
-
-- [ ] Action 1 — Responsable — Deadline
-- [ ] Action 2 — Responsable — Deadline
-- [ ] Action 3 — Responsable — Deadline
-
-## Prochaine réunion
-
-**Date:** [date]  
-**Ordre du jour prévu:** [sujets]
-` },
-
-        lettre: { name: 'Lettre', icon: '✉️', desc: 'Correspondance', content: `[Ville], le [date]
-
-**À l'attention de [Destinataire]**  
-[Fonction]  
-[Adresse]
-
----
-
-## Objet : [Sujet de la lettre]
-
-Madame/Monsieur,
-
-[Introduction : contexte et objet de la lettre]
-
-[Développement : arguments, faits, demandes]
-
-[Conclusion : résumé et attentes]
-
-Dans l'attente de votre réponse, je vous prie d'agréer, Madame/Monsieur, l'expression de mes salutations distinguées.
-
-**[Signature]**  
-[Nom]  
-[Contact]
-` },
-
-        communique: { name: 'Communiqué', icon: '📢', desc: 'Presse', content: `# COMMUNIQUÉ DE PRESSE
-
-**Pour diffusion immédiate**  
-[Ville], le [date]
-
----
-
-## [Titre accrocheur]
-
-**[Chapeau : résumé en 2-3 lignes]**
-
-[Premier paragraphe : les faits principaux - Qui, Quoi, Quand, Où, Pourquoi]
-
-[Deuxième paragraphe : contexte et enjeux]
-
-> « [Citation d'un porte-parole] »  
-> — [Nom], [fonction]
-
-[Troisième paragraphe : prochaines étapes, demandes]
-
----
-
-### Contact presse
-
-**[Nom]**  
-📧 [email]  
-📱 [téléphone]
-` },
-
-        checklist: { name: 'Checklist', icon: '✅', desc: 'Todo list', content: `# [Titre du projet]
-
-## À faire
-
-- [ ] Tâche prioritaire 1
-- [ ] Tâche prioritaire 2
-- [ ] Tâche prioritaire 3
-
-## En cours
-
-- [ ] Tâche en progression 1
-- [ ] Tâche en progression 2
-
-## Terminé
-
-- [x] Tâche complétée 1
-- [x] Tâche complétée 2
-
----
-
-## Notes
-
-Ajoutez vos notes ici...
-` }
-    }
-};
-
-// ==================== SNIPPETS ====================
-const snippets = {
-    html: [
-        { name: 'Section', code: 'section', content: '<section>\n    \n</section>' },
-        { name: 'Div class', code: 'div.', content: '<div class="">\n    \n</div>' },
-        { name: 'Bouton', code: 'btn', content: '<button class="btn">Texte</button>' },
-        { name: 'Image', code: 'img', content: '<img src="" alt="">' },
-        { name: 'Lien', code: 'a', content: '<a href="">Texte</a>' },
-        { name: 'Liste', code: 'ul', content: '<ul>\n    <li></li>\n    <li></li>\n</ul>' },
-        { name: 'Style', code: 'style', content: '<style>\n    \n</style>' }
-    ],
-    markdown: [
-        { name: 'Lien', code: '[]()', content: '[texte](url)' },
-        { name: 'Image', code: '![]()', content: '![alt](url)' },
-        { name: 'Code block', code: '```', content: '```\n\n```' },
-        { name: 'Tableau', code: 'table', content: '| Col 1 | Col 2 |\n|-------|-------|\n| A | B |' },
-        { name: 'Checkbox', code: '- [ ]', content: '- [ ] ' },
-        { name: 'Note', code: '>', content: '> ' }
-    ]
-};
-
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', () => {
-    loadProjects();
-    renderProjects();
-    renderTabs();
-    updateTemplateGrid();
-    updateSnippets();
-    updateClock();
-    setInterval(updateClock, 1000);
-    
-    const editor = document.getElementById('codeEditor');
-    editor.addEventListener('input', onEditorChange);
-    editor.addEventListener('keydown', handleEditorKeys);
-    
-    if (projects.length === 0) {
-        createProject('Mon premier document', 'html', 'blank');
-    }
-});
-
-// ==================== PROJECTS ====================
-function loadProjects() {
-    const saved = localStorage.getItem('forgeProjects_v2');
-    projects = saved ? JSON.parse(saved) : [];
-}
-
-function saveProjects() {
-    localStorage.setItem('forgeProjects_v2', JSON.stringify(projects));
-}
-
-function createProject(name, format, templateKey) {
-    const tpl = templates[format][templateKey] || templates[format].blank;
-    const project = {
-        id: Date.now().toString(36),
-        name: name || 'Sans titre',
-        format: format,
-        template: templateKey,
-        content: tpl.content,
-        created: new Date().toISOString(),
-        modified: new Date().toISOString()
-    };
-    
-    projects.push(project);
-    saveProjects();
-    
-    currentProject = project;
-    loadProjectInEditor(project);
-    renderProjects();
-    renderTabs();
-    
-    return project;
-}
-
-function loadProjectInEditor(project) {
-    document.getElementById('codeEditor').value = project.content;
-    setEditorFormat(project.format);
-    updatePreview();
-    updateStats();
-    hasUnsavedChanges = false;
-    updateSaveStatus();
-}
-
-function setEditorFormat(format) {
-    document.body.dataset.mode = format;
-    
-    const indicator = document.getElementById('modeIndicator');
-    indicator.className = 'mode-indicator ' + (format === 'markdown' ? 'md' : 'html');
-    indicator.textContent = format === 'markdown' ? 'MARKDOWN' : 'HTML';
-    
-    document.getElementById('paneLabel').textContent = format === 'markdown' ? '📝 Markdown' : '🌐 HTML';
-    document.getElementById('statusMode').textContent = format === 'markdown' ? '📝 Markdown' : '🌐 HTML';
-    
-    updateSnippets();
-}
-
-function renderProjects() {
-    const container = document.getElementById('projectsList');
-    
-    if (projects.length === 0) {
-        container.innerHTML = '<div style="padding:0.5rem;font-size:0.7rem;color:var(--text-dim)">Aucun projet</div>';
-        return;
-    }
-    
-    container.innerHTML = projects.map(p => `
-        <div class="project-item ${currentProject?.id === p.id ? 'active' : ''}" onclick="switchProject('${p.id}')">
-            <span class="project-type ${p.format === 'markdown' ? 'md' : 'html'}">${p.format === 'markdown' ? 'MD' : 'HTML'}</span>
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
-        </div>
-    `).join('');
-}
-
-function renderTabs() {
-    const container = document.getElementById('docTabs');
-    container.innerHTML = projects.slice(0, 5).map(p => `
-        <button class="doc-tab ${currentProject?.id === p.id ? 'active' : ''}" onclick="switchProject('${p.id}')">
-            <span class="type-badge ${p.format === 'markdown' ? 'md' : 'html'}">${p.format === 'markdown' ? 'MD' : 'HTML'}</span>
-            <span class="doc-tab-name">${p.name}</span>
-            <span class="doc-tab-close" onclick="event.stopPropagation();deleteProject('${p.id}')">×</span>
-        </button>
-    `).join('');
-}
-
-function switchProject(id) {
-    if (hasUnsavedChanges && currentProject) {
-        currentProject.content = document.getElementById('codeEditor').value;
-        currentProject.modified = new Date().toISOString();
-        saveProjects();
-    }
-    
-    const project = projects.find(p => p.id === id);
-    if (project) {
-        currentProject = project;
-        loadProjectInEditor(project);
-        renderProjects();
-        renderTabs();
-    }
-}
-
-function deleteProject(id) {
-    if (!confirm('Supprimer ce document ?')) return;
-    projects = projects.filter(p => p.id !== id);
-    saveProjects();
-    
-    if (currentProject?.id === id) {
-        currentProject = projects[0] || null;
-        if (currentProject) loadProjectInEditor(currentProject);
-        else document.getElementById('codeEditor').value = '';
-    }
-    
-    renderProjects();
-    renderTabs();
-    showToast('🗑️ Supprimé');
-}
-
-function saveProject() {
-    if (!currentProject) return;
-    currentProject.content = document.getElementById('codeEditor').value;
-    currentProject.modified = new Date().toISOString();
-    saveProjects();
-    hasUnsavedChanges = false;
-    updateSaveStatus();
-    showToast('💾 Sauvegardé');
-}
-
-// ==================== EDITOR ====================
-function onEditorChange() {
-    hasUnsavedChanges = true;
-    updateSaveStatus();
-    updatePreview();
-    updateStats();
-}
-
-function handleEditorKeys(e) {
-    if (e.key === 'Tab') {
-        e.preventDefault();
-        const editor = e.target;
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
-        editor.selectionStart = editor.selectionEnd = start + 4;
-        onEditorChange();
-    }
-    
-    if (e.ctrlKey && e.key === 's') {
-        e.preventDefault();
-        saveProject();
-    }
-    
-    if (e.ctrlKey && e.key === 'e') {
-        e.preventDefault();
-        openExportModal();
-    }
-    
-    if (e.ctrlKey && e.key === 'b') {
-        e.preventDefault();
-        if (currentProject?.format === 'markdown') insertMd('**', '**');
-        else insertHtml('<strong>', '</strong>');
-    }
-    
-    if (e.ctrlKey && e.key === 'i') {
-        e.preventDefault();
-        if (currentProject?.format === 'markdown') insertMd('*', '*');
-        else insertHtml('<em>', '</em>');
-    }
-}
-
-function insertMd(before, after) {
-    insertText(before.replace(/\\n/g, '\n'), after.replace(/\\n/g, '\n'));
-}
-
-function insertHtml(before, after) {
-    insertText(
-        before.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\\n/g, '\n'),
-        after.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\\n/g, '\n')
-    );
-}
-
-function insertText(before, after) {
-    const editor = document.getElementById('codeEditor');
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const selected = editor.value.substring(start, end);
-    
-    editor.value = editor.value.substring(0, start) + before + selected + after + editor.value.substring(end);
-    editor.selectionStart = start + before.length;
-    editor.selectionEnd = start + before.length + selected.length;
-    editor.focus();
-    
-    onEditorChange();
-}
-
-function setView(view) {
-    document.getElementById('editorArea').dataset.view = view;
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === view);
-    });
-}
-
-// ==================== SNIPPETS ====================
-function updateSnippets() {
-    const format = currentProject?.format || 'html';
-    const list = snippets[format] || [];
-    const container = document.getElementById('snippetsList');
-    
-    container.innerHTML = list.map(s => `
-        <div class="snippet-item" onclick="insertSnippet('${s.content.replace(/'/g, "\\'")}')">
-            <span>${s.name}</span>
-            <code>${s.code}</code>
-        </div>
-    `).join('');
-}
-
-function insertSnippet(content) {
-    const editor = document.getElementById('codeEditor');
-    const start = editor.selectionStart;
-    const decoded = content.replace(/\\n/g, '\n');
-    
-    editor.value = editor.value.substring(0, start) + decoded + editor.value.substring(start);
-    editor.selectionStart = editor.selectionEnd = start + decoded.length;
-    editor.focus();
-    onEditorChange();
-}
-
-// ==================== PREVIEW ====================
-function updatePreview() {
-    const content = document.getElementById('codeEditor').value;
-    const frame = document.getElementById('previewFrame');
-    
-    if (!currentProject) {
-        frame.srcdoc = '';
-        return;
-    }
-    
-    let html = content;
-    
-    if (currentProject.format === 'markdown') {
-        html = markdownToHtml(content);
-        html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><style>
-body { font-family: system-ui, sans-serif; padding: 30px; line-height: 1.7; max-width: 800px; margin: 0 auto; color: #333; }
-h1, h2, h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
-h1 { font-size: 2rem; border-bottom: 2px solid #eee; padding-bottom: 0.3em; }
-p { margin-bottom: 1em; }
-code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
-pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
-blockquote { border-left: 4px solid #ddd; margin: 1em 0; padding: 0.5em 1em; color: #666; background: #f9f9f9; }
-ul, ol { margin-bottom: 1em; padding-left: 2em; }
-hr { border: none; border-top: 1px solid #ddd; margin: 2em 0; }
-img { max-width: 100%; }
-</style></head><body>${html}</body></html>`;
-    } else {
-        if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
-            html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-body { font-family: system-ui, sans-serif; padding: 30px; line-height: 1.6; }
-</style></head><body>${html}</body></html>`;
-        }
-    }
-    
-    frame.srcdoc = html;
-}
-
-function markdownToHtml(md) {
-    return md
-        .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-        .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/~~(.+?)~~/g, '<del>$1</del>')
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
-        .replace(/^---$/gim, '<hr>')
-        .replace(/^- \[x\] (.*$)/gim, '<li>☑ $1</li>')
-        .replace(/^- \[ \] (.*$)/gim, '<li>☐ $1</li>')
-        .replace(/^- (.*$)/gim, '<li>$1</li>')
-        .replace(/^\* (.*$)/gim, '<li>$1</li>')
-        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/^(?!<[hpuolb])/gim, '<p>')
-        .replace(/<\/blockquote>\s*<blockquote>/g, '<br>');
-}
-
-function refreshPreview() {
-    updatePreview();
-    showToast('🔄 Rafraîchi');
-}
-
-function openInNewTab() {
-    const content = document.getElementById('codeEditor').value;
-    let html = content;
-    
-    if (currentProject?.format === 'markdown') {
-        html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-body { font-family: system-ui, sans-serif; padding: 30px; line-height: 1.7; max-width: 800px; margin: 0 auto; }
-</style></head><body>${markdownToHtml(content)}</body></html>`;
-    }
-    
-    const blob = new Blob([html], { type: 'text/html' });
-    window.open(URL.createObjectURL(blob), '_blank');
-}
-
-// ==================== STATS ====================
-function updateStats() {
-    const content = document.getElementById('codeEditor').value;
-    document.getElementById('statusChars').textContent = content.length + ' car.';
-    document.getElementById('statusWords').textContent = (content.match(/\S+/g) || []).length + ' mots';
-    document.getElementById('statusLines').textContent = content.split('\n').length + ' lig.';
-}
-
-function updateSaveStatus() {
-    document.getElementById('statusSaved').textContent = hasUnsavedChanges ? '⚠️ Non sauvegardé' : '💾 Sauvegardé';
-}
-
-function updateClock() {
-    document.getElementById('statusTime').textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-}
-
-// ==================== MODALS ====================
-function openNewDocModal() {
-    document.getElementById('newDocName').value = '';
-    selectedFormat = 'html';
-    selectedTemplate = 'blank';
-    
-    document.querySelectorAll('.format-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.format === 'html');
-    });
-    
-    updateTemplateGrid();
-    document.getElementById('newDocModal').classList.add('show');
-}
-
-function selectFormat(format) {
-    selectedFormat = format;
-    selectedTemplate = 'blank';
-    
-    document.querySelectorAll('.format-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.format === format);
-    });
-    
-    updateTemplateGrid();
-}
-
-function updateTemplateGrid() {
-    const grid = document.getElementById('templateGrid');
-    const tpls = templates[selectedFormat];
-    
-    grid.innerHTML = Object.entries(tpls).map(([key, tpl]) => `
-        <div class="template-card ${selectedTemplate === key ? 'selected' : ''}" data-template="${key}" onclick="selectTemplate('${key}')">
-            <div class="template-card-icon">${tpl.icon}</div>
-            <div class="template-card-name">${tpl.name}</div>
-            <div class="template-card-desc">${tpl.desc}</div>
-        </div>
-    `).join('');
-}
-
-function selectTemplate(template) {
-    selectedTemplate = template;
-    document.querySelectorAll('.template-card').forEach(c => {
-        c.classList.toggle('selected', c.dataset.template === template);
-    });
-}
-
-function createNewDoc() {
-    const name = document.getElementById('newDocName').value.trim() || 'Sans titre';
-    createProject(name, selectedFormat, selectedTemplate);
-    closeModal('newDocModal');
-    showToast(`📄 Créé (${selectedFormat.toUpperCase()})`);
-}
-
-function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
-}
-
-function openExportModal() {
-    if (!currentProject) return showToast('❌ Aucun document');
-    document.getElementById('exportModal').classList.add('show');
-}
-
-function openPublishModal() {
-    if (!currentProject) return showToast('❌ Aucun document');
-    document.getElementById('publishModal').classList.add('show');
-}
-
-// ==================== EXPORT ====================
-function exportAs(type) {
-    if (!currentProject) return;
-    
-    const content = document.getElementById('codeEditor').value;
-    let blob, filename;
-    
-    switch(type) {
-        case 'html':
-            let htmlContent = content;
-            if (currentProject.format === 'markdown') {
-                htmlContent = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${currentProject.name}</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.7; }
-        h1, h2, h3 { margin-top: 1.5em; }
-        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
-        blockquote { border-left: 4px solid #ddd; margin: 1em 0; padding: 0.5em 1em; color: #666; }
-    </style>
-</head>
-<body>
-${markdownToHtml(content)}
-</body>
-</html>`;
+</html>`
             }
-            blob = new Blob([htmlContent], { type: 'text/html' });
-            filename = `${currentProject.name}.html`;
-            break;
+        };
+        
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            renderProjects();
+            renderTabs();
+            updateClock();
+            setInterval(updateClock, 1000);
             
-        case 'markdown':
-            blob = new Blob([content], { type: 'text/plain' });
-            filename = `${currentProject.name}.md`;
-            break;
+            // Editor events
+            const editor = document.getElementById('codeEditor');
+            editor.addEventListener('input', onEditorChange);
+            editor.addEventListener('keydown', handleEditorKeys);
             
-        case 'pdf':
-            openInNewTab();
-            setTimeout(() => window.print(), 500);
-            closeModal('exportModal');
-            return;
-            
-        case 'json':
-            blob = new Blob([JSON.stringify(projects, null, 2)], { type: 'application/json' });
-            filename = 'forge-projets.json';
-            break;
-    }
-    
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    
-    closeModal('exportModal');
-    showToast('📥 ' + filename);
-}
-
-function publishTo(platform) {
-    exportAs('html');
-    closeModal('publishModal');
-    
-    setTimeout(() => {
-        if (platform === 'github') {
-            showToast('💡 Uploadez le fichier sur GitHub Pages');
-        } else if (platform === 'netlify') {
-            window.open('https://app.netlify.com/drop', '_blank');
+            // Create default doc if none
+            if (projects.length === 0) {
+                createProject('Mon premier document', 'landing');
+            }
+        });
+        
+        // ==================== PROJECTS ====================
+        function loadProjects() {
+            const saved = localStorage.getItem('forgeProjects');
+            projects = saved ? JSON.parse(saved) : [];
         }
-    }, 500);
-}
+        
+        function saveProjects() {
+            localStorage.setItem('forgeProjects', JSON.stringify(projects));
+        }
+        
+        function createProject(name, templateKey) {
+            const template = templates[templateKey] || templates.blank;
+            const project = {
+                id: Date.now().toString(36),
+                name: name || 'Sans titre',
+                type: templateKey,
+                content: template.content,
+                created: new Date().toISOString(),
+                modified: new Date().toISOString()
+            };
+            
+            projects.push(project);
+            saveProjects();
+            
+            currentProject = project;
+            loadProjectInEditor(project);
+            renderProjects();
+            renderTabs();
+            
+            return project;
+        }
+        
+        function loadProjectInEditor(project) {
+            document.getElementById('codeEditor').value = project.content;
+            updatePreview();
+            updateStats();
+            hasUnsavedChanges = false;
+            updateSaveStatus();
+        }
+        
+        function renderProjects() {
+            const container = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<div style="padding:0.5rem;font-size:0.75rem;color:var(--text-dim)">Aucun projet</div>';
+                return;
+            }
+            
+            container.innerHTML = projects.map(p => `
+                <div class="project-item ${currentProject?.id === p.id ? 'active' : ''}" onclick="openProject('${p.id}')">
+                    <span class="project-icon">${getTypeIcon(p.type)}</span>
+                    <span class="project-name">${escapeHtml(p.name)}</span>
+                    <span class="project-type">${p.type}</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderTabs() {
+            const container = document.getElementById('docTabs');
+            
+            // Show only current project as tab for now
+            if (!currentProject) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = `
+                <button class="doc-tab active">
+                    <span>${getTypeIcon(currentProject.type)}</span>
+                    <span class="doc-tab-name">${escapeHtml(currentProject.name)}</span>
+                </button>
+            `;
+        }
+        
+        function openProject(id) {
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+            
+            // Save current first
+            if (currentProject && hasUnsavedChanges) {
+                saveProject();
+            }
+            
+            currentProject = project;
+            loadProjectInEditor(project);
+            renderProjects();
+            renderTabs();
+        }
+        
+        function saveProject() {
+            if (!currentProject) return;
+            
+            currentProject.content = document.getElementById('codeEditor').value;
+            currentProject.modified = new Date().toISOString();
+            saveProjects();
+            
+            hasUnsavedChanges = false;
+            updateSaveStatus();
+            showToast('💾 Sauvegardé');
+        }
+        
+        function getTypeIcon(type) {
+            const icons = {
+                blank: '📄',
+                tract: '📢',
+                communique: '📰',
+                lettre: '✉️',
+                petition: '✍️',
+                landing: '🌐',
+                blog: '📝'
+            };
+            return icons[type] || '📄';
+        }
+        
+        // ==================== EDITOR ====================
+        function onEditorChange() {
+            hasUnsavedChanges = true;
+            updateSaveStatus();
+            updatePreview();
+            updateStats();
+        }
+        
+        function handleEditorKeys(e) {
+            // Tab handling
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const editor = e.target;
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + 2;
+                onEditorChange();
+            }
+            
+            // Ctrl+S
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveProject();
+            }
+            
+            // Ctrl+E
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                openExportModal();
+            }
+        }
+        
+        function insertMd(before, after) {
+            const editor = document.getElementById('codeEditor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selected = editor.value.substring(start, end);
+            
+            editor.value = editor.value.substring(0, start) + before + selected + after + editor.value.substring(end);
+            editor.selectionStart = start + before.length;
+            editor.selectionEnd = start + before.length + selected.length;
+            editor.focus();
+            
+            onEditorChange();
+        }
+        
+        function setEditorMode(mode) {
+            editorMode = mode;
+            document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            document.getElementById('statusMode').textContent = mode === 'html' ? '📝 HTML' : '📝 Markdown';
+            updatePreview();
+        }
+        
+        function setView(view) {
+            document.getElementById('editorArea').dataset.view = view;
+            document.querySelectorAll('.mode-btn[data-view]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+        }
+        
+        // ==================== PREVIEW ====================
+        function updatePreview() {
+            const content = document.getElementById('codeEditor').value;
+            const frame = document.getElementById('previewFrame');
+            
+            let html = content;
+            
+            // If markdown mode, convert (basic)
+            if (editorMode === 'markdown') {
+                html = markdownToHtml(content);
+            }
+            
+            // Wrap in basic HTML if not a full document
+            if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
+                html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><style>
+body { font-family: system-ui, sans-serif; padding: 30px; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+h1, h2, h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
+p { margin-bottom: 1em; }
+code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+pre { background: #f0f0f0; padding: 15px; border-radius: 5px; overflow-x: auto; }
+blockquote { border-left: 3px solid #ddd; margin: 1em 0; padding-left: 1em; color: #666; }
+</style></head><body>${html}</body></html>`;
+            }
+            
+            frame.srcdoc = html;
+        }
+        
+        function markdownToHtml(md) {
+            // Basic markdown conversion
+            let html = md
+                // Headers
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                // Bold & Italic
+                .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                // Strikethrough
+                .replace(/~~(.+?)~~/g, '<del>$1</del>')
+                // Code
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                // Images
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+                // Blockquotes
+                .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+                // HR
+                .replace(/^---$/gim, '<hr>')
+                // Lists
+                .replace(/^\- (.*$)/gim, '<li>$1</li>')
+                .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+                // Paragraphs
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph
+            html = '<p>' + html + '</p>';
+            
+            // Fix multiple blockquotes
+            html = html.replace(/<\/blockquote><br><blockquote>/g, '<br>');
+            
+            return html;
+        }
+        
+        function refreshPreview() {
+            updatePreview();
+            showToast('🔄 Preview rafraîchi');
+        }
+        
+        function openInNewTab() {
+            const content = document.getElementById('codeEditor').value;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+        
+        // ==================== STATS ====================
+        function updateStats() {
+            const content = document.getElementById('codeEditor').value;
+            document.getElementById('statusChars').textContent = content.length + ' caractères';
+            document.getElementById('statusWords').textContent = (content.match(/\S+/g) || []).length + ' mots';
+            document.getElementById('statusLines').textContent = content.split('\n').length + ' lignes';
+        }
+        
+        function updateSaveStatus() {
+            document.getElementById('statusSaved').textContent = hasUnsavedChanges ? '⚠️ Non sauvegardé' : '💾 Sauvegardé';
+        }
+        
+        function updateClock() {
+            document.getElementById('statusTime').textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // ==================== MODALS ====================
+        function openNewDocModal() {
+            document.getElementById('newDocName').value = '';
+            selectedTemplate = 'blank';
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector('.template-card[data-template="blank"]').classList.add('selected');
+            document.getElementById('newDocModal').classList.add('show');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+        
+        function selectTemplate(template) {
+            selectedTemplate = template;
+            document.querySelectorAll('.template-card').forEach(c => {
+                c.classList.toggle('selected', c.dataset.template === template);
+            });
+        }
+        
+        function createNewDoc() {
+            const name = document.getElementById('newDocName').value.trim() || 'Sans titre';
+            createProject(name, selectedTemplate);
+            closeModal('newDocModal');
+            showToast('📄 Document créé');
+        }
+        
+        function loadTemplate(templateKey) {
+            if (currentProject) {
+                if (!confirm('Remplacer le contenu actuel par ce template ?')) return;
+            }
+            
+            const template = templates[templateKey];
+            if (!template) return;
+            
+            document.getElementById('codeEditor').value = template.content;
+            if (currentProject) {
+                currentProject.type = templateKey;
+            }
+            onEditorChange();
+            renderTabs();
+            showToast(`📋 Template "${template.name}" chargé`);
+        }
+        
+        function openExportModal() {
+            document.getElementById('exportModal').classList.add('show');
+        }
+        
+        function openPublishModal() {
+            document.getElementById('publishModal').classList.add('show');
+        }
+        
+        // ==================== EXPORT ====================
+        function exportAs(format) {
+            const content = document.getElementById('codeEditor').value;
+            const name = currentProject?.name || 'document';
+            
+            switch (format) {
+                case 'html':
+                    downloadFile(content, `${name}.html`, 'text/html');
+                    break;
+                case 'markdown':
+                    downloadFile(content, `${name}.md`, 'text/markdown');
+                    break;
+                case 'pdf':
+                    openInNewTab();
+                    setTimeout(() => window.print(), 500);
+                    break;
+                case 'json':
+                    const projectData = JSON.stringify(currentProject, null, 2);
+                    downloadFile(projectData, `${name}.json`, 'application/json');
+                    break;
+            }
+            
+            closeModal('exportModal');
+            showToast(`📤 Exporté en ${format.toUpperCase()}`);
+        }
+        
+        function publishTo(platform) {
+            const content = document.getElementById('codeEditor').value;
+            const name = currentProject?.name || 'site';
+            
+            switch (platform) {
+                case 'github':
+                    downloadFile(content, 'index.html', 'text/html');
+                    window.open('https://pages.github.com/', '_blank');
+                    showToast('📄 index.html téléchargé. Suivez le guide GitHub Pages.');
+                    break;
+                case 'netlify':
+                    downloadFile(content, 'index.html', 'text/html');
+                    window.open('https://app.netlify.com/drop', '_blank');
+                    showToast('📄 Glissez le fichier sur Netlify Drop');
+                    break;
+                case 'zip':
+                    // For simplicity, just download html
+                    downloadFile(content, 'index.html', 'text/html');
+                    showToast('📦 index.html téléchargé');
+                    break;
+            }
+            
+            closeModal('publishModal');
+        }
+        
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // ==================== UTILS ====================
+        function copyCode() {
+            navigator.clipboard.writeText(document.getElementById('codeEditor').value);
+            showToast('📋 Copié !');
+        }
+        
+        function formatCode() {
+            // Basic HTML formatting
+            const editor = document.getElementById('codeEditor');
+            let html = editor.value;
+            
+            // Simple indentation
+            let formatted = '';
+            let indent = 0;
+            const lines = html.split('\n');
+            
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed.match(/^<\/(div|section|article|header|footer|nav|main|aside|ul|ol|li|p|h[1-6])/i)) {
+                    indent = Math.max(0, indent - 1);
+                }
+                formatted += '  '.repeat(indent) + trimmed + '\n';
+                if (trimmed.match(/^<(div|section|article|header|footer|nav|main|aside|ul|ol)[^/]*>$/i)) {
+                    indent++;
+                }
+            });
+            
+            editor.value = formatted.trim();
+            onEditorChange();
+            showToast('🧹 Code formaté');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+        
+        // Click outside modal to close
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('show');
+            });
+        });
+    </script>
 
-// ==================== UTILS ====================
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
-}
-</script>
-</body>
-</html>
+
+<nfr-xxxanlofmfln><template shadowrootmode="closed"><link rel="stylesheet" href="https://ouaisfieu.github.io/u3B6W5eaIrAhmVxX0FQ2s7Hf-2jBLvpOmUbW0maMtIFvVijNcGzwP0SKc6XSir47t5ZP1t_fiO9aXDsXBvA-BV_OIcnKHsU3CsYEqBHEQV30uqsyzRpPq4hOMEK1o-_dKgm8p9gjunnE95i2sjAGxbXnZhw9PwE5KKlKdTX4poClFzs8tcg7jcHyblhBa-sKKjM5P6CFdafwp1NtdiGSMB67faPGz9Qo-Ep-O_RA8GTIakcIL39Y7eSH0Mv8L7lEVoBS4Jd4sHNDzYnkbd_GvNASEZxkIHZacey6KiT7gkKSh6F-IxjqGDLrrjcxrbZ72IIfaEdgchr1lRZF7kVzX8ZDxio0P8xaK1lMHT4G-kkKZJDgRAq7SI_tmjQrfEQozj46RLXcmigSA-eJBg"></template></nfr-xxxanlofmfln></body></html>
