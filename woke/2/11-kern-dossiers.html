@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERN::DOSSIERS — Système de Fiches Politiques</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#0a0a0f;--bg2:#0d1117;--bg3:#161b22;--bg4:#21262d;
+            --border:#30363d;--border-bright:#3fb950;
+            --neon:#00ff41;--neon-dim:#00ff4180;--neon-glow:#00ff4140;
+            --cyan:#00d4ff;--magenta:#ff00ff;--yellow:#ffff00;--red:#ff3333;--orange:#ff8800;
+            --text:#e6edf3;--dim:#7d8590;
+            --matrix-green:#00ff41;--matrix-dark:#003300
+        }
+        body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+        
+        /* Matrix rain background */
+        .matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.03;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px)}
+        
+        /* Scanlines */
+        .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);opacity:0.3}
+        
+        /* Header */
+        header{background:linear-gradient(180deg,var(--bg2),var(--bg));border-bottom:1px solid var(--border);padding:1rem 1.5rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+        .header-content{max-width:1600px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .logo{display:flex;align-items:center;gap:1rem}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--neon),var(--cyan));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 0 20px var(--neon-glow)}
+        .logo-text{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.1em}
+        .logo-text span{color:var(--neon);text-shadow:0 0 10px var(--neon-dim)}
+        .header-stats{display:flex;gap:1.5rem}
+        .h-stat{text-align:center}
+        .h-stat-value{font-size:1.2rem;font-weight:700;color:var(--neon);text-shadow:0 0 10px var(--neon-dim)}
+        .h-stat-label{font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em}
+        
+        main{max-width:1600px;margin:0 auto;padding:1.5rem;position:relative;z-index:1}
+        
+        /* Toolbar */
+        .toolbar{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+        .btn{padding:0.6rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.75rem;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
+        .btn:hover{border-color:var(--neon);box-shadow:0 0 15px var(--neon-glow)}
+        .btn-primary{background:linear-gradient(135deg,var(--neon),#00cc33);color:#000;font-weight:600;border-color:var(--neon)}
+        .btn-primary:hover{box-shadow:0 0 25px var(--neon-dim)}
+        .btn-danger{border-color:var(--red)}
+        .btn-danger:hover{border-color:var(--red);box-shadow:0 0 15px rgba(255,51,51,0.3)}
+        
+        .search-box{flex:1;min-width:200px;padding:0.6rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.75rem}
+        .search-box:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 15px rgba(0,212,255,0.2)}
+        .search-box::placeholder{color:var(--dim)}
+        
+        /* Level tabs */
+        .level-tabs{display:flex;gap:4px;background:var(--bg2);padding:4px;border-radius:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+        .level-tab{padding:0.5rem 1rem;background:transparent;border:none;border-radius:6px;color:var(--dim);font-size:0.7rem;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
+        .level-tab:hover{color:var(--text);background:var(--bg3)}
+        .level-tab.active{background:var(--neon);color:#000;font-weight:600}
+        .level-tab .count{background:var(--bg4);padding:0.1rem 0.4rem;border-radius:10px;font-size:0.6rem}
+        .level-tab.active .count{background:rgba(0,0,0,0.3)}
+        
+        /* Grid de fiches */
+        .dossiers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+        
+        /* Carte dossier */
+        .dossier-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.3s;position:relative}
+        .dossier-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--magenta));opacity:0;transition:opacity 0.3s}
+        .dossier-card:hover{border-color:var(--neon);transform:translateY(-4px);box-shadow:0 10px 40px rgba(0,255,65,0.1)}
+        .dossier-card:hover::before{opacity:1}
+        
+        .card-header{padding:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start}
+        .card-avatar{width:50px;height:50px;background:linear-gradient(135deg,var(--bg3),var(--bg4));border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:var(--neon)}
+        .card-info{flex:1;margin-left:0.75rem}
+        .card-name{font-size:0.9rem;font-weight:600;margin-bottom:0.2rem}
+        .card-role{font-size:0.7rem;color:var(--dim)}
+        .card-level{font-size:0.55rem;padding:0.2rem 0.5rem;border-radius:4px;font-weight:600}
+        .card-level.eu{background:var(--cyan);color:#000}
+        .card-level.fed{background:var(--yellow);color:#000}
+        .card-level.reg{background:var(--magenta);color:#fff}
+        .card-level.prov{background:var(--orange);color:#000}
+        .card-level.com{background:var(--neon);color:#000}
+        
+        .card-body{padding:1rem}
+        .card-tags{display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.75rem}
+        .card-tag{font-size:0.6rem;padding:0.15rem 0.4rem;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--dim)}
+        .card-notes{font-size:0.7rem;color:var(--dim);line-height:1.5;max-height:3rem;overflow:hidden;text-overflow:ellipsis}
+        
+        .card-footer{padding:0.75rem 1rem;background:var(--bg3);display:flex;justify-content:space-between;align-items:center}
+        .card-date{font-size:0.6rem;color:var(--dim)}
+        .card-priority{width:12px;height:12px;border-radius:50%;border:2px solid}
+        .priority-high{background:var(--red);border-color:var(--red);box-shadow:0 0 10px var(--red)}
+        .priority-medium{background:var(--orange);border-color:var(--orange);box-shadow:0 0 10px var(--orange)}
+        .priority-low{background:var(--neon);border-color:var(--neon);box-shadow:0 0 10px var(--neon)}
+        
+        /* Empty state */
+        .empty-state{text-align:center;padding:4rem 2rem;color:var(--dim)}
+        .empty-state .icon{font-size:4rem;margin-bottom:1rem;opacity:0.3}
+        .empty-state h3{font-size:1rem;color:var(--text);margin-bottom:0.5rem}
+        .empty-state p{font-size:0.75rem;max-width:400px;margin:0 auto 1.5rem}
+        
+        /* ============ MODAL NSA-STYLE ============ */
+        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);backdrop-filter:blur(5px);z-index:1000;display:none;justify-content:center;align-items:center;padding:1rem}
+        .modal-overlay.active{display:flex}
+        
+        .modal{background:var(--bg);border:1px solid var(--neon);border-radius:12px;width:100%;max-width:900px;max-height:90vh;overflow:hidden;box-shadow:0 0 60px var(--neon-glow),inset 0 0 60px rgba(0,255,65,0.02);position:relative}
+        .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--magenta),var(--yellow),var(--neon));animation:gradient-scroll 3s linear infinite}
+        @keyframes gradient-scroll{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+        
+        .modal-header{background:var(--bg2);padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+        .modal-title{font-family:'Orbitron',sans-serif;font-size:0.9rem;letter-spacing:0.1em;display:flex;align-items:center;gap:0.75rem}
+        .modal-title .status{width:10px;height:10px;background:var(--neon);border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+        @keyframes pulse{0%,100%{box-shadow:0 0 5px var(--neon)}50%{box-shadow:0 0 20px var(--neon)}}
+        .modal-close{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .modal-close:hover{border-color:var(--red);color:var(--red)}
+        
+        .modal-body{padding:1.5rem;max-height:calc(90vh - 140px);overflow-y:auto}
+        
+        /* Form sections */
+        .form-section{margin-bottom:1.5rem}
+        .form-section-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--neon);margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
+        .form-section-title::before{content:'▸';color:var(--cyan)}
+        
+        .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
+        
+        .form-group{display:flex;flex-direction:column;gap:0.4rem}
+        .form-label{font-size:0.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em}
+        .form-input,.form-select,.form-textarea{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;color:var(--text);font-family:inherit;font-size:0.75rem;transition:all 0.2s}
+        .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 15px rgba(0,212,255,0.2)}
+        .form-textarea{min-height:100px;resize:vertical}
+        .form-select{cursor:pointer}
+        
+        /* Dossier sections in modal */
+        .dossier-tabs{display:flex;gap:2px;background:var(--bg2);padding:2px;border-radius:6px;margin-bottom:1rem}
+        .dossier-tab{flex:1;padding:0.5rem;background:transparent;border:none;border-radius:4px;color:var(--dim);font-size:0.65rem;font-family:inherit;cursor:pointer;transition:all 0.2s;text-align:center}
+        .dossier-tab:hover{color:var(--text)}
+        .dossier-tab.active{background:var(--neon);color:#000;font-weight:600}
+        
+        .dossier-section{display:none}
+        .dossier-section.active{display:block}
+        
+        /* Intelligence section */
+        .intel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem}
+        .intel-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.75rem;text-align:center}
+        .intel-value{font-size:1.2rem;font-weight:700;color:var(--cyan)}
+        .intel-label{font-size:0.6rem;color:var(--dim);margin-top:0.25rem}
+        
+        /* Timeline */
+        .timeline{border-left:2px solid var(--border);padding-left:1rem;margin-left:0.5rem}
+        .timeline-item{position:relative;padding-bottom:1rem}
+        .timeline-item::before{content:'';position:absolute;left:-1.35rem;top:0.3rem;width:10px;height:10px;background:var(--neon);border-radius:50%;border:2px solid var(--bg)}
+        .timeline-date{font-size:0.6rem;color:var(--dim);margin-bottom:0.25rem}
+        .timeline-content{font-size:0.75rem;background:var(--bg3);padding:0.5rem 0.75rem;border-radius:6px}
+        
+        .timeline-add{background:var(--bg2);border:1px dashed var(--border);border-radius:6px;padding:0.75rem;text-align:center;cursor:pointer;font-size:0.7rem;color:var(--dim);transition:all 0.2s}
+        .timeline-add:hover{border-color:var(--neon);color:var(--neon)}
+        
+        /* Relations */
+        .relations-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.5rem}
+        .relation-chip{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:0.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.7rem}
+        .relation-chip .avatar{width:24px;height:24px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--dim)}
+        .relation-add{border-style:dashed;cursor:pointer;justify-content:center;color:var(--dim)}
+        .relation-add:hover{border-color:var(--neon);color:var(--neon)}
+        
+        /* Documents */
+        .docs-list{display:flex;flex-direction:column;gap:0.5rem}
+        .doc-item{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:0.75rem;display:flex;align-items:center;gap:0.75rem;font-size:0.7rem}
+        .doc-icon{font-size:1.2rem}
+        .doc-info{flex:1}
+        .doc-name{font-weight:500}
+        .doc-meta{font-size:0.6rem;color:var(--dim)}
+        
+        .modal-footer{background:var(--bg2);padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+        
+        /* Import/Export section */
+        .interop-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-top:2rem}
+        .interop-title{font-family:'Orbitron',sans-serif;font-size:0.85rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+        .interop-title span{color:var(--cyan)}
+        .interop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+        .interop-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center}
+        .interop-card:hover{border-color:var(--cyan)}
+        .interop-card .icon{font-size:2rem;margin-bottom:0.5rem}
+        .interop-card h4{font-size:0.75rem;margin-bottom:0.25rem}
+        .interop-card p{font-size:0.65rem;color:var(--dim)}
+        
+        /* Toast */
+        .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg2);border:1px solid var(--neon);padding:0.75rem 1.5rem;border-radius:8px;font-size:0.75rem;opacity:0;transition:all 0.3s;z-index:2000;box-shadow:0 0 30px var(--neon-glow)}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+        
+        /* Responsive */
+        @media(max-width:768px){
+            .dossiers-grid{grid-template-columns:1fr}
+            .modal{max-height:95vh}
+            .form-row{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="scanlines"></div>
+    
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📁</div>
+                <div class="logo-text">KERN::<span>DOSSIERS</span></div>
+            </div>
+            <div class="header-stats">
+                <div class="h-stat">
+                    <div class="h-stat-value" id="stat-total">0</div>
+                    <div class="h-stat-label">Dossiers</div>
+                </div>
+                <div class="h-stat">
+                    <div class="h-stat-value" id="stat-priority">0</div>
+                    <div class="h-stat-label">Prioritaires</div>
+                </div>
+                <div class="h-stat">
+                    <div class="h-stat-value" id="stat-updated">--</div>
+                    <div class="h-stat-label">MAJ</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="openModal()">
+                <span>➕</span> Nouveau Dossier
+            </button>
+            <input type="text" class="search-box" id="search" placeholder="🔍 Rechercher un nom, parti, fonction..." oninput="filterDossiers()">
+            <button class="btn" onclick="importData()">
+                <span>📥</span> Importer
+            </button>
+            <button class="btn" onclick="exportData()">
+                <span>📤</span> Exporter
+            </button>
+            <button class="btn" onclick="importFromBeldata()">
+                <span>🔗</span> Sync BELDATA
+            </button>
+        </div>
+        
+        <!-- Level tabs -->
+        <div class="level-tabs">
+            <button class="level-tab active" data-level="all" onclick="filterByLevel('all')">
+                🌍 Tous <span class="count" id="count-all">0</span>
+            </button>
+            <button class="level-tab" data-level="eu" onclick="filterByLevel('eu')">
+                🇪🇺 Européen <span class="count" id="count-eu">0</span>
+            </button>
+            <button class="level-tab" data-level="fed" onclick="filterByLevel('fed')">
+                🇧🇪 Fédéral <span class="count" id="count-fed">0</span>
+            </button>
+            <button class="level-tab" data-level="reg" onclick="filterByLevel('reg')">
+                🏛️ Régional <span class="count" id="count-reg">0</span>
+            </button>
+            <button class="level-tab" data-level="prov" onclick="filterByLevel('prov')">
+                🏢 Provincial <span class="count" id="count-prov">0</span>
+            </button>
+            <button class="level-tab" data-level="com" onclick="filterByLevel('com')">
+                🏘️ Communal <span class="count" id="count-com">0</span>
+            </button>
+        </div>
+        
+        <!-- Grid dossiers -->
+        <div class="dossiers-grid" id="dossiers-grid">
+            <!-- Populated by JS -->
+        </div>
+        
+        <!-- Empty state -->
+        <div class="empty-state" id="empty-state" style="display:none">
+            <div class="icon">📂</div>
+            <h3>Aucun dossier</h3>
+            <p>Créez votre premier dossier pour commencer à cartographier les acteurs politiques de votre territoire.</p>
+            <button class="btn btn-primary" onclick="openModal()">➕ Créer un dossier</button>
+        </div>
+        
+        <!-- Interoperability section -->
+        <div class="interop-section">
+            <div class="interop-title">🔗 <span>INTEROPÉRABILITÉ</span> — Modules KERN</div>
+            <div class="interop-grid">
+                <div class="interop-card" onclick="syncWithModule('network')">
+                    <div class="icon">🕸️</div>
+                    <h4>Network Map</h4>
+                    <p>Exporter vers la carte réseau</p>
+                </div>
+                <div class="interop-card" onclick="syncWithModule('agenda')">
+                    <div class="icon">📅</div>
+                    <h4>Agenda Politique</h4>
+                    <p>Lier aux événements</p>
+                </div>
+                <div class="interop-card" onclick="syncWithModule('missions')">
+                    <div class="icon">🎯</div>
+                    <h4>Missions</h4>
+                    <p>Assigner à des missions</p>
+                </div>
+                <div class="interop-card" onclick="syncWithModule('journal')">
+                    <div class="icon">📓</div>
+                    <h4>Journal</h4>
+                    <p>Lier aux notes</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- MODAL NSA-STYLE -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="status"></span>
+                    <span id="modal-title-text">NOUVEAU DOSSIER</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Tabs -->
+                <div class="dossier-tabs">
+                    <button class="dossier-tab active" onclick="showDossierSection('info')">📋 Informations</button>
+                    <button class="dossier-tab" onclick="showDossierSection('intel')">🔍 Intelligence</button>
+                    <button class="dossier-tab" onclick="showDossierSection('timeline')">📅 Timeline</button>
+                    <button class="dossier-tab" onclick="showDossierSection('relations')">🔗 Relations</button>
+                    <button class="dossier-tab" onclick="showDossierSection('docs')">📎 Documents</button>
+                </div>
+                
+                <!-- Section: Informations -->
+                <div class="dossier-section active" id="section-info">
+                    <div class="form-section">
+                        <div class="form-section-title">Identité</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nom complet *</label>
+                                <input type="text" class="form-input" id="f-name" placeholder="Ex: Sophie Wilmès">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fonction actuelle</label>
+                                <input type="text" class="form-input" id="f-role" placeholder="Ex: Eurodéputée">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Niveau de pouvoir</label>
+                                <select class="form-select" id="f-level">
+                                    <option value="eu">🇪🇺 Européen</option>
+                                    <option value="fed">🇧🇪 Fédéral</option>
+                                    <option value="reg">🏛️ Régional/Communautaire</option>
+                                    <option value="prov">🏢 Provincial</option>
+                                    <option value="com">🏘️ Communal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Parti politique</label>
+                                <input type="text" class="form-input" id="f-party" placeholder="Ex: MR">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Circonscription / Territoire</label>
+                                <input type="text" class="form-input" id="f-territory" placeholder="Ex: Brabant wallon">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Priorité</label>
+                                <select class="form-select" id="f-priority">
+                                    <option value="low">🟢 Basse</option>
+                                    <option value="medium">🟠 Moyenne</option>
+                                    <option value="high">🔴 Haute</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title">Contact</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="f-email" placeholder="email@parlement.be">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-input" id="f-phone" placeholder="+32 2 xxx xx xx">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Site web / Réseaux</label>
+                                <input type="url" class="form-input" id="f-website" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Twitter/X</label>
+                                <input type="text" class="form-input" id="f-twitter" placeholder="@username">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title">Notes & Tags</div>
+                        <div class="form-group">
+                            <label class="form-label">Tags (séparés par virgules)</label>
+                            <input type="text" class="form-input" id="f-tags" placeholder="climat, mobilité, jeunesse...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes personnelles</label>
+                            <textarea class="form-textarea" id="f-notes" placeholder="Vos observations, stratégies, points d'attention..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section: Intelligence -->
+                <div class="dossier-section" id="section-intel">
+                    <div class="form-section">
+                        <div class="form-section-title">Métriques & Scores</div>
+                        <div class="intel-grid">
+                            <div class="intel-item">
+                                <div class="intel-value" id="intel-influence">--</div>
+                                <div class="intel-label">Influence (1-10)</div>
+                                <input type="range" min="1" max="10" value="5" id="f-influence" style="width:100%;margin-top:0.5rem">
+                            </div>
+                            <div class="intel-item">
+                                <div class="intel-value" id="intel-accessibility">--</div>
+                                <div class="intel-label">Accessibilité (1-10)</div>
+                                <input type="range" min="1" max="10" value="5" id="f-accessibility" style="width:100%;margin-top:0.5rem">
+                            </div>
+                            <div class="intel-item">
+                                <div class="intel-value" id="intel-alignment">--</div>
+                                <div class="intel-label">Alignement (1-10)</div>
+                                <input type="range" min="1" max="10" value="5" id="f-alignment" style="width:100%;margin-top:0.5rem">
+                            </div>
+                            <div class="intel-item">
+                                <div class="intel-value" id="intel-reliability">--</div>
+                                <div class="intel-label">Fiabilité (1-10)</div>
+                                <input type="range" min="1" max="10" value="5" id="f-reliability" style="width:100%;margin-top:0.5rem">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title">Positions connues</div>
+                        <div class="form-group">
+                            <label class="form-label">Thèmes favorables</label>
+                            <textarea class="form-textarea" id="f-pro" placeholder="Sujets sur lesquels cette personne est généralement favorable..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Thèmes défavorables</label>
+                            <textarea class="form-textarea" id="f-contra" placeholder="Sujets sur lesquels cette personne est généralement opposée..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section: Timeline -->
+                <div class="dossier-section" id="section-timeline">
+                    <div class="form-section">
+                        <div class="form-section-title">Historique des interactions</div>
+                        <div class="timeline" id="timeline-container">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="timeline-add" onclick="addTimelineEntry()">
+                            + Ajouter une entrée
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section: Relations -->
+                <div class="dossier-section" id="section-relations">
+                    <div class="form-section">
+                        <div class="form-section-title">Réseau & Connexions</div>
+                        <div class="relations-grid" id="relations-container">
+                            <div class="relation-chip relation-add" onclick="addRelation()">
+                                + Ajouter
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section: Documents -->
+                <div class="dossier-section" id="section-docs">
+                    <div class="form-section">
+                        <div class="form-section-title">Documents & Liens</div>
+                        <div class="docs-list" id="docs-container">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="timeline-add" onclick="addDocument()" style="margin-top:0.75rem">
+                            + Ajouter un document/lien
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-delete" onclick="deleteDossier()" style="display:none">
+                    🗑️ Supprimer
+                </button>
+                <div>
+                    <button class="btn" onclick="closeModal()">Annuler</button>
+                    <button class="btn btn-primary" onclick="saveDossier()">💾 Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+<script>
+// ==================== DATA STORE ====================
+const STORAGE_KEY = 'kern_dossiers';
+let dossiers = [];
+let currentDossierId = null;
+let currentLevel = 'all';
+
+// Load from localStorage
+function loadData() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        dossiers = JSON.parse(stored);
+    }
+    renderDossiers();
+    updateStats();
+}
+
+// Save to localStorage
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dossiers));
+    updateStats();
+}
+
+// ==================== RENDERING ====================
+function renderDossiers() {
+    const grid = document.getElementById('dossiers-grid');
+    const empty = document.getElementById('empty-state');
+    const search = document.getElementById('search').value.toLowerCase();
+    
+    let filtered = dossiers.filter(d => {
+        const matchLevel = currentLevel === 'all' || d.level === currentLevel;
+        const matchSearch = !search || 
+            d.name.toLowerCase().includes(search) ||
+            (d.party && d.party.toLowerCase().includes(search)) ||
+            (d.role && d.role.toLowerCase().includes(search)) ||
+            (d.tags && d.tags.some(t => t.toLowerCase().includes(search)));
+        return matchLevel && matchSearch;
+    });
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+    } else {
+        empty.style.display = 'none';
+        grid.innerHTML = filtered.map(d => renderCard(d)).join('');
+    }
+    
+    updateCounts();
+}
+
+function renderCard(d) {
+    const initials = d.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+    const levelLabels = {eu:'🇪🇺 EU',fed:'🇧🇪 FED',reg:'🏛️ RÉG',prov:'🏢 PROV',com:'🏘️ COM'};
+    const priorityClass = d.priority === 'high' ? 'priority-high' : d.priority === 'medium' ? 'priority-medium' : 'priority-low';
+    const tags = (d.tags || []).slice(0,3).map(t => `<span class="card-tag">${t}</span>`).join('');
+    const date = d.updatedAt ? new Date(d.updatedAt).toLocaleDateString('fr-BE') : '--';
+    
+    return `
+        <div class="dossier-card" onclick="openDossier('${d.id}')">
+            <div class="card-header">
+                <div class="card-avatar">${initials}</div>
+                <div class="card-info">
+                    <div class="card-name">${d.name}</div>
+                    <div class="card-role">${d.role || 'Non spécifié'}</div>
+                </div>
+                <span class="card-level ${d.level}">${levelLabels[d.level] || d.level}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-tags">${tags}${d.party ? `<span class="card-tag">${d.party}</span>` : ''}</div>
+                <div class="card-notes">${d.notes || 'Aucune note'}</div>
+            </div>
+            <div class="card-footer">
+                <span class="card-date">MAJ: ${date}</span>
+                <span class="card-priority ${priorityClass}"></span>
+            </div>
+        </div>
+    `;
+}
+
+function updateStats() {
+    document.getElementById('stat-total').textContent = dossiers.length;
+    document.getElementById('stat-priority').textContent = dossiers.filter(d => d.priority === 'high').length;
+    
+    if (dossiers.length > 0) {
+        const latest = Math.max(...dossiers.map(d => new Date(d.updatedAt || 0).getTime()));
+        document.getElementById('stat-updated').textContent = new Date(latest).toLocaleDateString('fr-BE', {day:'2-digit',month:'2-digit'});
+    }
+}
+
+function updateCounts() {
+    document.getElementById('count-all').textContent = dossiers.length;
+    document.getElementById('count-eu').textContent = dossiers.filter(d => d.level === 'eu').length;
+    document.getElementById('count-fed').textContent = dossiers.filter(d => d.level === 'fed').length;
+    document.getElementById('count-reg').textContent = dossiers.filter(d => d.level === 'reg').length;
+    document.getElementById('count-prov').textContent = dossiers.filter(d => d.level === 'prov').length;
+    document.getElementById('count-com').textContent = dossiers.filter(d => d.level === 'com').length;
+}
+
+// ==================== FILTERING ====================
+function filterByLevel(level) {
+    currentLevel = level;
+    document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-level="${level}"]`).classList.add('active');
+    renderDossiers();
+}
+
+function filterDossiers() {
+    renderDossiers();
+}
+
+// ==================== MODAL ====================
+function openModal(id = null) {
+    currentDossierId = id;
+    const modal = document.getElementById('modal-overlay');
+    const deleteBtn = document.getElementById('btn-delete');
+    
+    // Reset form
+    resetForm();
+    
+    if (id) {
+        // Edit mode
+        const d = dossiers.find(x => x.id === id);
+        if (d) {
+            document.getElementById('modal-title-text').textContent = `DOSSIER: ${d.name.toUpperCase()}`;
+            deleteBtn.style.display = 'block';
+            populateForm(d);
+        }
+    } else {
+        // New mode
+        document.getElementById('modal-title-text').textContent = 'NOUVEAU DOSSIER';
+        deleteBtn.style.display = 'none';
+    }
+    
+    modal.classList.add('active');
+    showDossierSection('info');
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentDossierId = null;
+}
+
+function closeModalOutside(e) {
+    if (e.target.id === 'modal-overlay') closeModal();
+}
+
+function openDossier(id) {
+    openModal(id);
+}
+
+function showDossierSection(section) {
+    document.querySelectorAll('.dossier-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.dossier-section').forEach(s => s.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(`section-${section}`).classList.add('active');
+}
+
+function resetForm() {
+    const fields = ['name','role','level','party','territory','priority','email','phone','website','twitter','tags','notes','influence','accessibility','alignment','reliability','pro','contra'];
+    fields.forEach(f => {
+        const el = document.getElementById(`f-${f}`);
+        if (el) {
+            if (el.type === 'range') el.value = 5;
+            else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+            else el.value = '';
+        }
+    });
+    document.getElementById('timeline-container').innerHTML = '';
+    document.getElementById('relations-container').innerHTML = '<div class="relation-chip relation-add" onclick="addRelation()">+ Ajouter</div>';
+    document.getElementById('docs-container').innerHTML = '';
+    updateIntelDisplays();
+}
+
+function populateForm(d) {
+    document.getElementById('f-name').value = d.name || '';
+    document.getElementById('f-role').value = d.role || '';
+    document.getElementById('f-level').value = d.level || 'fed';
+    document.getElementById('f-party').value = d.party || '';
+    document.getElementById('f-territory').value = d.territory || '';
+    document.getElementById('f-priority').value = d.priority || 'low';
+    document.getElementById('f-email').value = d.email || '';
+    document.getElementById('f-phone').value = d.phone || '';
+    document.getElementById('f-website').value = d.website || '';
+    document.getElementById('f-twitter').value = d.twitter || '';
+    document.getElementById('f-tags').value = (d.tags || []).join(', ');
+    document.getElementById('f-notes').value = d.notes || '';
+    
+    // Intel
+    if (d.intel) {
+        document.getElementById('f-influence').value = d.intel.influence || 5;
+        document.getElementById('f-accessibility').value = d.intel.accessibility || 5;
+        document.getElementById('f-alignment').value = d.intel.alignment || 5;
+        document.getElementById('f-reliability').value = d.intel.reliability || 5;
+        document.getElementById('f-pro').value = d.intel.pro || '';
+        document.getElementById('f-contra').value = d.intel.contra || '';
+    }
+    updateIntelDisplays();
+    
+    // Timeline
+    if (d.timeline && d.timeline.length > 0) {
+        document.getElementById('timeline-container').innerHTML = d.timeline.map((t,i) => `
+            <div class="timeline-item">
+                <div class="timeline-date">${t.date}</div>
+                <div class="timeline-content">${t.content}</div>
+            </div>
+        `).join('');
+    }
+    
+    // Relations
+    if (d.relations && d.relations.length > 0) {
+        const relHtml = d.relations.map(r => `
+            <div class="relation-chip">
+                <div class="avatar">${r.name.substring(0,2).toUpperCase()}</div>
+                <span>${r.name}</span>
+            </div>
+        `).join('');
+        document.getElementById('relations-container').innerHTML = relHtml + '<div class="relation-chip relation-add" onclick="addRelation()">+ Ajouter</div>';
+    }
+    
+    // Docs
+    if (d.docs && d.docs.length > 0) {
+        document.getElementById('docs-container').innerHTML = d.docs.map(doc => `
+            <div class="doc-item">
+                <div class="doc-icon">${doc.type === 'link' ? '🔗' : '📄'}</div>
+                <div class="doc-info">
+                    <div class="doc-name">${doc.name}</div>
+                    <div class="doc-meta">${doc.url || doc.description || ''}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function updateIntelDisplays() {
+    document.getElementById('intel-influence').textContent = document.getElementById('f-influence').value;
+    document.getElementById('intel-accessibility').textContent = document.getElementById('f-accessibility').value;
+    document.getElementById('intel-alignment').textContent = document.getElementById('f-alignment').value;
+    document.getElementById('intel-reliability').textContent = document.getElementById('f-reliability').value;
+}
+
+// Update displays on range change
+['influence','accessibility','alignment','reliability'].forEach(id => {
+    document.getElementById(`f-${id}`).addEventListener('input', updateIntelDisplays);
+});
+
+// ==================== CRUD ====================
+function saveDossier() {
+    const name = document.getElementById('f-name').value.trim();
+    if (!name) {
+        showToast('❌ Le nom est requis');
+        return;
+    }
+    
+    const dossier = {
+        id: currentDossierId || generateId(),
+        name,
+        role: document.getElementById('f-role').value.trim(),
+        level: document.getElementById('f-level').value,
+        party: document.getElementById('f-party').value.trim(),
+        territory: document.getElementById('f-territory').value.trim(),
+        priority: document.getElementById('f-priority').value,
+        email: document.getElementById('f-email').value.trim(),
+        phone: document.getElementById('f-phone').value.trim(),
+        website: document.getElementById('f-website').value.trim(),
+        twitter: document.getElementById('f-twitter').value.trim(),
+        tags: document.getElementById('f-tags').value.split(',').map(t => t.trim()).filter(t => t),
+        notes: document.getElementById('f-notes').value.trim(),
+        intel: {
+            influence: parseInt(document.getElementById('f-influence').value),
+            accessibility: parseInt(document.getElementById('f-accessibility').value),
+            alignment: parseInt(document.getElementById('f-alignment').value),
+            reliability: parseInt(document.getElementById('f-reliability').value),
+            pro: document.getElementById('f-pro').value.trim(),
+            contra: document.getElementById('f-contra').value.trim()
+        },
+        timeline: [], // Would need proper implementation
+        relations: [],
+        docs: [],
+        createdAt: currentDossierId ? dossiers.find(d => d.id === currentDossierId)?.createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    if (currentDossierId) {
+        const idx = dossiers.findIndex(d => d.id === currentDossierId);
+        if (idx !== -1) dossiers[idx] = dossier;
+    } else {
+        dossiers.push(dossier);
+    }
+    
+    saveData();
+    renderDossiers();
+    closeModal();
+    showToast('✅ Dossier enregistré');
+}
+
+function deleteDossier() {
+    if (!currentDossierId) return;
+    if (!confirm('Supprimer ce dossier définitivement ?')) return;
+    
+    dossiers = dossiers.filter(d => d.id !== currentDossierId);
+    saveData();
+    renderDossiers();
+    closeModal();
+    showToast('🗑️ Dossier supprimé');
+}
+
+function addTimelineEntry() {
+    const date = prompt('Date (JJ/MM/AAAA):');
+    const content = prompt('Description:');
+    if (date && content) {
+        const container = document.getElementById('timeline-container');
+        container.innerHTML += `
+            <div class="timeline-item">
+                <div class="timeline-date">${date}</div>
+                <div class="timeline-content">${content}</div>
+            </div>
+        `;
+    }
+}
+
+function addRelation() {
+    const name = prompt('Nom de la personne:');
+    if (name) {
+        const container = document.getElementById('relations-container');
+        const addBtn = container.querySelector('.relation-add');
+        const chip = document.createElement('div');
+        chip.className = 'relation-chip';
+        chip.innerHTML = `
+            <div class="avatar">${name.substring(0,2).toUpperCase()}</div>
+            <span>${name}</span>
+        `;
+        container.insertBefore(chip, addBtn);
+    }
+}
+
+function addDocument() {
+    const name = prompt('Nom du document:');
+    const url = prompt('URL (optionnel):');
+    if (name) {
+        const container = document.getElementById('docs-container');
+        container.innerHTML += `
+            <div class="doc-item">
+                <div class="doc-icon">${url ? '🔗' : '📄'}</div>
+                <div class="doc-info">
+                    <div class="doc-name">${name}</div>
+                    <div class="doc-meta">${url || ''}</div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// ==================== IMPORT/EXPORT ====================
+function exportData() {
+    const data = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        source: 'KERN::DOSSIERS',
+        dossiers
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kern-dossiers-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    showToast('📤 Export téléchargé');
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (data.dossiers) {
+                    dossiers = [...dossiers, ...data.dossiers];
+                    saveData();
+                    renderDossiers();
+                    showToast(`📥 ${data.dossiers.length} dossiers importés`);
+                }
+            } catch(err) {
+                showToast('❌ Erreur d\'import');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function importFromBeldata() {
+    // Try to get data from BELDATA in localStorage
+    const beldataKey = 'kern_beldata_sync';
+    const beldataRaw = localStorage.getItem(beldataKey);
+    
+    if (!beldataRaw) {
+        // Generate sample from BELDATA's EU data
+        const sampleEU = [
+            {name:"Sophie Wilmès",party:"MR",role:"Eurodéputée",level:"eu"},
+            {name:"Elio Di Rupo",party:"PS",role:"Eurodéputé",level:"eu"},
+            {name:"Bart De Wever",party:"N-VA",role:"Premier ministre",level:"fed"},
+            {name:"Maxime Prévot",party:"Les Engagés",role:"Vice-PM Affaires étrangères",level:"fed"},
+            {name:"Adrien Dolimont",party:"MR",role:"Min.-Président Wallonie",level:"reg"},
+            {name:"Oliver Paasch",party:"ProDG",role:"Min.-Président DG",level:"reg"}
+        ];
+        
+        if (confirm(`Importer ${sampleEU.length} exemples depuis BELDATA ?`)) {
+            sampleEU.forEach(p => {
+                if (!dossiers.find(d => d.name === p.name)) {
+                    dossiers.push({
+                        id: generateId(),
+                        name: p.name,
+                        party: p.party,
+                        role: p.role,
+                        level: p.level,
+                        priority: 'low',
+                        tags: [],
+                        notes: 'Importé depuis BELDATA',
+                        intel: {influence:5,accessibility:5,alignment:5,reliability:5},
+                        timeline: [],
+                        relations: [],
+                        docs: [],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+            });
+            saveData();
+            renderDossiers();
+            showToast(`🔗 ${sampleEU.length} dossiers synchronisés`);
+        }
+    }
+}
+
+function syncWithModule(module) {
+    const exportData = {
+        source: 'KERN::DOSSIERS',
+        timestamp: new Date().toISOString(),
+        contacts: dossiers.map(d => ({
+            id: d.id,
+            name: d.name,
+            party: d.party,
+            role: d.role,
+            level: d.level,
+            tags: d.tags
+        }))
+    };
+    
+    localStorage.setItem(`kern_sync_${module}`, JSON.stringify(exportData));
+    showToast(`🔗 Sync vers ${module} effectuée`);
+}
+
+// ==================== UTILS ====================
+function generateId() {
+    return 'dossier_' + Date.now() + '_' + Math.random().toString(36).substr(2,9);
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ==================== INIT ====================
+loadData();
+</script>
+</body>
+</html>
