@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W.O.P.R. — GLOBAL COGNITIVE DEFENSE NETWORK</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;900&display=swap');
+        
+        :root {
+            --terminal-green: #33ff33;
+            --terminal-green-dim: #1a8c1a;
+            --terminal-amber: #ffb000;
+            --terminal-red: #ff3333;
+            --terminal-cyan: #00ffff;
+            --terminal-blue: #3399ff;
+            --bg-black: #0a0a0a;
+            --bg-dark: #0d0d0d;
+            --scanline: rgba(51, 255, 51, 0.03);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            97% { opacity: 0.9; }
+        }
+        
+        @keyframes scanline {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        @keyframes dataStream {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+        
+        @keyframes radarSweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% { box-shadow: 0 0 5px var(--terminal-red); }
+            50% { box-shadow: 0 0 30px var(--terminal-red), 0 0 60px var(--terminal-red); }
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-black);
+            font-family: 'VT323', monospace;
+            color: var(--terminal-green);
+        }
+        
+        /* CRT Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                var(--scanline) 2px,
+                var(--scanline) 4px
+            );
+            pointer-events: none;
+            z-index: 10000;
+            animation: flicker 5s infinite;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 200px;
+            background: linear-gradient(
+                180deg,
+                transparent,
+                rgba(51, 255, 51, 0.05),
+                transparent
+            );
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+            z-index: 10001;
+        }
+        
+        /* Vignette */
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ==================== HEADER ==================== */
+        .header {
+            background: linear-gradient(180deg, #1a1a1a 0%, var(--bg-dark) 100%);
+            border-bottom: 2px solid var(--terminal-green);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 10px var(--terminal-green), 0 0 20px var(--terminal-green);
+        }
+        
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: var(--terminal-green-dim);
+            letter-spacing: 0.2em;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 1rem;
+            background: rgba(51, 255, 51, 0.1);
+            border: 1px solid var(--terminal-green);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--terminal-green);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        
+        .status-dot.critical {
+            background: var(--terminal-red);
+            animation: alertPulse 0.5s infinite;
+        }
+        
+        .system-time {
+            margin-left: auto;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .defcon-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border: 2px solid;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        
+        .defcon-display.level-1 { border-color: var(--terminal-red); color: var(--terminal-red); animation: alertPulse 1s infinite; }
+        .defcon-display.level-2 { border-color: #ff6600; color: #ff6600; }
+        .defcon-display.level-3 { border-color: var(--terminal-amber); color: var(--terminal-amber); }
+        .defcon-display.level-4 { border-color: var(--terminal-cyan); color: var(--terminal-cyan); }
+        .defcon-display.level-5 { border-color: var(--terminal-green); color: var(--terminal-green); }
+        
+        /* ==================== MAIN LAYOUT ==================== */
+        .main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr 320px;
+            grid-template-rows: 1fr auto;
+            gap: 2px;
+            background: var(--terminal-green-dim);
+            overflow: hidden;
+        }
+        
+        .panel {
+            background: var(--bg-dark);
+            padding: 1rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--terminal-amber);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--terminal-green-dim);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .panel-header::before {
+            content: '▸';
+            color: var(--terminal-green);
+        }
+        
+        /* ==================== GLOBAL MAP ==================== */
+        .map-panel {
+            grid-row: 1 / 3;
+            position: relative;
+        }
+        
+        .world-map {
+            flex: 1;
+            position: relative;
+            background: var(--bg-black);
+            border: 1px solid var(--terminal-green-dim);
+            overflow: hidden;
+        }
+        
+        .map-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--terminal-green-dim) 1px, transparent 1px),
+                linear-gradient(90deg, var(--terminal-green-dim) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+        
+        .node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--terminal-green);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .node::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid var(--terminal-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .node.active {
+            background: var(--terminal-amber);
+            box-shadow: 0 0 20px var(--terminal-amber);
+        }
+        
+        .node.active::before {
+            border-color: var(--terminal-amber);
+        }
+        
+        .node.critical {
+            background: var(--terminal-red);
+            animation: alertPulse 0.5s infinite;
+        }
+        
+        .node.critical::before {
+            border-color: var(--terminal-red);
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 1px;
+            background: var(--terminal-green);
+            transform-origin: left center;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        
+        .connection-line.active {
+            opacity: 1;
+            background: var(--terminal-cyan);
+            animation: pulse 1s infinite;
+            height: 2px;
+        }
+        
+        /* Radar sweep overlay */
+        .radar-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(51, 255, 51, 0.1) 30deg,
+                transparent 60deg
+            );
+            transform-origin: center;
+            animation: radarSweep 8s linear infinite;
+        }
+        
+        .map-stats {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--terminal-green);
+        }
+        
+        .map-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .map-stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .map-stat-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+        
+        /* ==================== OPERATIONS PANEL ==================== */
+        .ops-panel {
+            overflow-y: auto;
+        }
+        
+        .operation {
+            background: rgba(51, 255, 51, 0.05);
+            border: 1px solid var(--terminal-green-dim);
+            border-left: 3px solid var(--terminal-green);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .operation:hover {
+            background: rgba(51, 255, 51, 0.1);
+            border-left-color: var(--terminal-amber);
+        }
+        
+        .operation.priority-critical {
+            border-left-color: var(--terminal-red);
+            animation: alertPulse 2s infinite;
+        }
+        
+        .operation.priority-high {
+            border-left-color: var(--terminal-amber);
+        }
+        
+        .operation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+        }
+        
+        .operation-codename {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        
+        .operation-status {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border: 1px solid;
+            letter-spacing: 0.1em;
+        }
+        
+        .operation-status.active { border-color: var(--terminal-green); color: var(--terminal-green); }
+        .operation-status.pending { border-color: var(--terminal-amber); color: var(--terminal-amber); }
+        .operation-status.critical { border-color: var(--terminal-red); color: var(--terminal-red); animation: blink 1s infinite; }
+        
+        .operation-details {
+            font-size: 0.75rem;
+            color: var(--terminal-green-dim);
+        }
+        
+        .operation-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.3rem;
+            font-size: 0.65rem;
+            color: var(--terminal-cyan);
+        }
+        
+        /* ==================== INTEL FEED ==================== */
+        .intel-panel {
+            grid-column: 3;
+        }
+        
+        .intel-feed {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+        
+        .intel-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--terminal-green-dim);
+        }
+        
+        .intel-timestamp {
+            font-size: 0.65rem;
+            color: var(--terminal-amber);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .intel-source {
+            font-size: 0.6rem;
+            color: var(--terminal-cyan);
+            letter-spacing: 0.1em;
+        }
+        
+        .intel-content {
+            margin-top: 0.3rem;
+        }
+        
+        .intel-content .highlight {
+            color: var(--terminal-amber);
+        }
+        
+        .intel-content .critical {
+            color: var(--terminal-red);
+            font-weight: bold;
+        }
+        
+        .intel-content .classified {
+            background: var(--terminal-red);
+            color: var(--bg-black);
+            padding: 0 0.3rem;
+        }
+        
+        /* ==================== METRICS BAR ==================== */
+        .metrics-bar {
+            grid-column: 1 / 4;
+            display: flex;
+            gap: 2px;
+            background: var(--terminal-green-dim);
+        }
+        
+        .metric {
+            flex: 1;
+            background: var(--bg-dark);
+            padding: 0.75rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .metric-value.green { color: var(--terminal-green); }
+        .metric-value.amber { color: var(--terminal-amber); }
+        .metric-value.red { color: var(--terminal-red); }
+        .metric-value.cyan { color: var(--terminal-cyan); }
+        
+        .metric-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: var(--terminal-green-dim);
+            margin-top: 0.3rem;
+        }
+        
+        .metric-change {
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+        }
+        
+        .metric-change.up { color: var(--terminal-green); }
+        .metric-change.down { color: var(--terminal-red); }
+        
+        /* ==================== ALERT OVERLAY ==================== */
+        .alert-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+        
+        .alert-overlay.show {
+            display: flex;
+        }
+        
+        .alert-content {
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .alert-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: glitch 0.5s infinite;
+        }
+        
+        .alert-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--terminal-red);
+            text-shadow: 0 0 20px var(--terminal-red);
+            animation: blink 0.5s infinite;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-message {
+            font-size: 1.2rem;
+            color: var(--terminal-amber);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .alert-details {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--terminal-green);
+            text-align: left;
+            background: rgba(51, 255, 51, 0.05);
+            border: 1px solid var(--terminal-green);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .alert-btn {
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 2px solid var(--terminal-green);
+            color: var(--terminal-green);
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .alert-btn:hover {
+            background: var(--terminal-green);
+            color: var(--bg-black);
+            box-shadow: 0 0 30px var(--terminal-green);
+        }
+        
+        /* ==================== BOOT SEQUENCE ==================== */
+        .boot-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .boot-screen.hidden {
+            display: none;
+        }
+        
+        .boot-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--terminal-green);
+            max-width: 700px;
+            text-align: left;
+            line-height: 1.8;
+        }
+        
+        .boot-line {
+            opacity: 0;
+            animation: fadeIn 0.1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .boot-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--terminal-green);
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+        }
+        
+        .boot-warning {
+            color: var(--terminal-red);
+            animation: blink 0.5s infinite;
+        }
+        
+        /* ==================== TYPING EFFECT ==================== */
+        .typing {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-black); }
+        ::-webkit-scrollbar-thumb { background: var(--terminal-green-dim); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--terminal-green); }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 250px 1fr 280px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            .map-panel {
+                grid-row: auto;
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="vignette"></div>
+    
+    <!-- Boot Screen -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-text" id="bootText"></div>
+    </div>
+    
+    <div class="app" id="app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⬡</span>
+                <div>
+                    <div class="logo-text">W.O.P.R.</div>
+                    <div class="logo-subtitle">WORLDWIDE OPERATION FOR POPULATION RESISTANCE</div>
+                </div>
+            </div>
+            
+            <div class="system-status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="systemStatus">SYSTEM ACTIVE</span>
+            </div>
+            
+            <div class="defcon-display level-2" id="defconDisplay">
+                <span>COORDINATION LEVEL</span>
+                <span id="defconLevel">2</span>
+            </div>
+            
+            <div class="system-time" id="systemTime">--:--:--</div>
+        </header>
+        
+        <!-- Main -->
+        <main class="main">
+            <!-- Operations Panel -->
+            <div class="panel ops-panel">
+                <div class="panel-header">ACTIVE OPERATIONS</div>
+                <div id="operationsList"></div>
+            </div>
+            
+            <!-- World Map -->
+            <div class="panel map-panel">
+                <div class="panel-header">GLOBAL NETWORK STATUS</div>
+                <div class="world-map" id="worldMap">
+                    <div class="map-grid"></div>
+                    <div class="radar-overlay">
+                        <div class="radar-sweep"></div>
+                    </div>
+                    <div id="mapNodes"></div>
+                    <div id="mapConnections"></div>
+                    <div class="map-stats">
+                        <div class="map-stat">
+                            <div class="map-stat-value" id="statCells">---</div>
+                            <div class="map-stat-label">ACTIVE CELLS</div>
+                        </div>
+                        <div class="map-stat">
+                            <div class="map-stat-value" id="statAgents">---</div>
+                            <div class="map-stat-label">FIELD AGENTS</div>
+                        </div>
+                        <div class="map-stat">
+                            <div class="map-stat-value" id="statOps">---</div>
+                            <div class="map-stat-label">ONGOING OPS</div>
+                        </div>
+                        <div class="map-stat">
+                            <div class="map-stat-value" id="statSync">---</div>
+                            <div class="map-stat-label">SYNC RATE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Intel Feed -->
+            <div class="panel intel-panel">
+                <div class="panel-header">LIVE INTEL FEED</div>
+                <div class="intel-feed" id="intelFeed"></div>
+            </div>
+            
+            <!-- Metrics Bar -->
+            <div class="metrics-bar">
+                <div class="metric">
+                    <div class="metric-value green" id="metricNodes">0</div>
+                    <div class="metric-label">NETWORK NODES</div>
+                    <div class="metric-change up" id="metricNodesChange">+0/min</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value cyan" id="metricTransmissions">0</div>
+                    <div class="metric-label">TRANSMISSIONS/HR</div>
+                    <div class="metric-change up" id="metricTransChange">+0%</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value amber" id="metricTargets">0</div>
+                    <div class="metric-label">MONITORED TARGETS</div>
+                    <div class="metric-change" id="metricTargetsChange">CLASSIFIED</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value green" id="metricLeaks">0</div>
+                    <div class="metric-label">PREPARED DISCLOSURES</div>
+                    <div class="metric-change" id="metricLeaksChange">ARMED</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value red" id="metricThreat">0%</div>
+                    <div class="metric-label">THREAT TO POWER</div>
+                    <div class="metric-change up" id="metricThreatChange">↑ RISING</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Alert Overlay -->
+    <div class="alert-overlay" id="alertOverlay">
+        <div class="alert-content">
+            <div class="alert-icon">⚠</div>
+            <div class="alert-title" id="alertTitle">COORDINATION SURGE DETECTED</div>
+            <div class="alert-message" id="alertMessage"></div>
+            <div class="alert-details" id="alertDetails"></div>
+            <button class="alert-btn" onclick="closeAlert()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const CONFIG = {
+    // Simulation parameters - these create the illusion
+    baseNodes: 12847,
+    baseAgents: 847293,
+    baseCells: 3891,
+    baseOps: 247,
+    baseThreat: 73,
+    
+    // Growth rates per second (for real-time counter effect)
+    nodeGrowth: 2.3,
+    agentGrowth: 47,
+    cellGrowth: 0.8,
+    
+    // Update intervals
+    intelInterval: 3000,
+    metricsInterval: 1000,
+    alertInterval: 45000,
+    
+    // Coordination levels (inverse DEFCON)
+    levels: {
+        1: { name: 'MAXIMUM COORDINATION', color: 'red', threshold: 90 },
+        2: { name: 'HIGH COORDINATION', color: 'orange', threshold: 70 },
+        3: { name: 'ELEVATED', color: 'amber', threshold: 50 },
+        4: { name: 'GUARDED', color: 'cyan', threshold: 30 },
+        5: { name: 'NOMINAL', color: 'green', threshold: 0 }
+    }
+};
+
+// ==================== GLOBAL STATE ====================
+let state = {
+    startTime: Date.now(),
+    nodes: CONFIG.baseNodes,
+    agents: CONFIG.baseAgents,
+    cells: CONFIG.baseCells,
+    ops: CONFIG.baseOps,
+    threat: CONFIG.baseThreat,
+    transmissions: 0,
+    coordinationLevel: 2,
+    intelCount: 0
+};
+
+// ==================== CELL LOCATIONS ====================
+const CELLS = [
+    { id: 'BE-BRU', name: 'BRUSSELS CENTRAL', lat: 50.85, lng: 4.35, agents: 12847, status: 'critical' },
+    { id: 'BE-ANT', name: 'ANTWERP NODE', lat: 51.22, lng: 4.40, agents: 8934, status: 'active' },
+    { id: 'BE-GHE', name: 'GHENT CLUSTER', lat: 51.05, lng: 3.72, agents: 6721, status: 'active' },
+    { id: 'FR-PAR', name: 'PARIS NEXUS', lat: 48.86, lng: 2.35, agents: 34892, status: 'critical' },
+    { id: 'FR-LYO', name: 'LYON CELL', lat: 45.76, lng: 4.83, agents: 12453, status: 'active' },
+    { id: 'DE-BER', name: 'BERLIN HUB', lat: 52.52, lng: 13.40, agents: 28934, status: 'active' },
+    { id: 'DE-MUN', name: 'MUNICH SECTOR', lat: 48.14, lng: 11.58, agents: 15672, status: 'active' },
+    { id: 'NL-AMS', name: 'AMSTERDAM CORE', lat: 52.37, lng: 4.90, agents: 18453, status: 'critical' },
+    { id: 'UK-LON', name: 'LONDON PRIME', lat: 51.51, lng: -0.13, agents: 45832, status: 'critical' },
+    { id: 'ES-MAD', name: 'MADRID GRID', lat: 40.42, lng: -3.70, agents: 22341, status: 'active' },
+    { id: 'ES-BAR', name: 'BARCELONA NODE', lat: 41.39, lng: 2.17, agents: 18723, status: 'active' },
+    { id: 'IT-ROM', name: 'ROME CENTRAL', lat: 41.90, lng: 12.50, agents: 19834, status: 'active' },
+    { id: 'IT-MIL', name: 'MILAN SECTOR', lat: 45.46, lng: 9.19, agents: 14532, status: 'active' },
+    { id: 'PL-WAR', name: 'WARSAW CELL', lat: 52.23, lng: 21.01, agents: 16234, status: 'active' },
+    { id: 'PT-LIS', name: 'LISBON NODE', lat: 38.72, lng: -9.14, agents: 8934, status: 'active' },
+    { id: 'AT-VIE', name: 'VIENNA HUB', lat: 48.21, lng: 16.37, agents: 11234, status: 'active' },
+    { id: 'SE-STO', name: 'STOCKHOLM CORE', lat: 59.33, lng: 18.07, agents: 9823, status: 'active' },
+    { id: 'NO-OSL', name: 'OSLO GRID', lat: 59.91, lng: 10.75, agents: 7234, status: 'active' },
+    { id: 'DK-COP', name: 'COPENHAGEN NODE', lat: 55.68, lng: 12.57, agents: 8123, status: 'active' },
+    { id: 'FI-HEL', name: 'HELSINKI SECTOR', lat: 60.17, lng: 24.94, agents: 6234, status: 'active' },
+    { id: 'CH-ZUR', name: 'ZURICH VAULT', lat: 47.37, lng: 8.54, agents: 12453, status: 'active' },
+    { id: 'US-NYC', name: 'NEW YORK NEXUS', lat: 40.71, lng: -74.01, agents: 67832, status: 'critical' },
+    { id: 'US-LAX', name: 'LOS ANGELES HUB', lat: 34.05, lng: -118.24, agents: 45234, status: 'active' },
+    { id: 'US-CHI', name: 'CHICAGO CENTRAL', lat: 41.88, lng: -87.63, agents: 32145, status: 'active' },
+    { id: 'US-WDC', name: 'DC WATCHTOWER', lat: 38.91, lng: -77.04, agents: 28934, status: 'critical' },
+    { id: 'CA-TOR', name: 'TORONTO GRID', lat: 43.65, lng: -79.38, agents: 24532, status: 'active' },
+    { id: 'CA-VAN', name: 'VANCOUVER NODE', lat: 49.28, lng: -123.12, agents: 15234, status: 'active' },
+    { id: 'AU-SYD', name: 'SYDNEY CORE', lat: -33.87, lng: 151.21, agents: 28934, status: 'active' },
+    { id: 'AU-MEL', name: 'MELBOURNE CELL', lat: -37.81, lng: 144.96, agents: 19234, status: 'active' },
+    { id: 'JP-TOK', name: 'TOKYO NEXUS', lat: 35.68, lng: 139.69, agents: 52834, status: 'active' },
+    { id: 'KR-SEO', name: 'SEOUL HUB', lat: 37.57, lng: 126.98, agents: 34532, status: 'active' },
+    { id: 'BR-SAO', name: 'SAO PAULO GRID', lat: -23.55, lng: -46.63, agents: 42834, status: 'active' },
+    { id: 'AR-BUE', name: 'BUENOS AIRES NODE', lat: -34.60, lng: -58.38, agents: 18234, status: 'active' },
+    { id: 'MX-MEX', name: 'MEXICO CENTRAL', lat: 19.43, lng: -99.13, agents: 28934, status: 'active' },
+    { id: 'IN-DEL', name: 'DELHI CLUSTER', lat: 28.61, lng: 77.21, agents: 67234, status: 'active' },
+    { id: 'IN-MUM', name: 'MUMBAI NEXUS', lat: 19.08, lng: 72.88, agents: 54832, status: 'active' },
+    { id: 'ZA-JHB', name: 'JOHANNESBURG CELL', lat: -26.20, lng: 28.04, agents: 15234, status: 'active' },
+    { id: 'NG-LAG', name: 'LAGOS HUB', lat: 6.52, lng: 3.38, agents: 23834, status: 'active' },
+    { id: 'EG-CAI', name: 'CAIRO NODE', lat: 30.04, lng: 31.24, agents: 18234, status: 'active' },
+    { id: 'IL-TLV', name: 'TEL AVIV SECTOR', lat: 32.08, lng: 34.78, agents: 14532, status: 'active' },
+    { id: 'AE-DUB', name: 'DUBAI GRID', lat: 25.20, lng: 55.27, agents: 12834, status: 'active' },
+    { id: 'SG-SIN', name: 'SINGAPORE CORE', lat: 1.35, lng: 103.82, agents: 19234, status: 'active' },
+    { id: 'HK-HKG', name: 'HONG KONG VAULT', lat: 22.32, lng: 114.17, agents: 28934, status: 'critical' },
+    { id: 'TW-TPE', name: 'TAIPEI NODE', lat: 25.03, lng: 121.57, agents: 21234, status: 'active' },
+    { id: 'NZ-AKL', name: 'AUCKLAND CELL', lat: -36.85, lng: 174.76, agents: 8234, status: 'active' },
+];
+
+// ==================== OPERATIONS ====================
+const OPERATIONS = [
+    { codename: 'GLASS CEILING', target: 'Corporate governance networks', status: 'active', priority: 'critical', cells: 12, region: 'GLOBAL' },
+    { codename: 'PAPER TRAIL', target: 'Offshore financial structures', status: 'active', priority: 'high', cells: 8, region: 'EU/CARIB' },
+    { codename: 'ECHO CHAMBER', target: 'Media ownership analysis', status: 'active', priority: 'high', cells: 15, region: 'GLOBAL' },
+    { codename: 'REVOLVING DOOR', target: 'Political-corporate transitions', status: 'active', priority: 'critical', cells: 23, region: 'US/EU' },
+    { codename: 'DEEP ROOTS', target: 'Lobbying network mapping', status: 'pending', priority: 'high', cells: 7, region: 'BRUSSELS' },
+    { codename: 'GOLDEN PARACHUTE', target: 'Executive compensation tracking', status: 'active', priority: 'normal', cells: 5, region: 'GLOBAL' },
+    { codename: 'SHADOW BOARD', target: 'Hidden influence networks', status: 'active', priority: 'critical', cells: 18, region: 'DAVOS' },
+    { codename: 'PANAMA REDUX', target: 'Tax haven structures', status: 'pending', priority: 'high', cells: 11, region: 'OFFSHORE' },
+    { codename: 'ASTROTURF', target: 'Fake grassroots detection', status: 'active', priority: 'normal', cells: 9, region: 'US/EU' },
+    { codename: 'IRON TRIANGLE', target: 'Military-industrial mapping', status: 'active', priority: 'high', cells: 14, region: 'NATO' },
+    { codename: 'SILK THREADS', target: 'Supply chain dependencies', status: 'active', priority: 'normal', cells: 6, region: 'ASIA/EU' },
+    { codename: 'CARBON FOOTPRINT', target: 'Climate lobbying exposure', status: 'critical', priority: 'critical', cells: 21, region: 'GLOBAL' },
+];
+
+// ==================== INTEL MESSAGES ====================
+const INTEL_TEMPLATES = [
+    { source: 'CELL-{cell}', content: 'New agent activation confirmed. Network expansion +{n} nodes in {region}.' },
+    { source: 'SIGINT-{n}', content: 'Intercepted communication suggests <span class="highlight">coordinated response</span> being prepared by target group.' },
+    { source: 'HUMINT-{region}', content: 'Field report: {n} additional sources recruited. Cover identities established.' },
+    { source: 'OSINT-GLOBAL', content: 'Public data analysis complete. {n} new connections identified in power structure.' },
+    { source: 'CYBER-OPS', content: 'Secure channel established with <span class="highlight">{region} resistance network</span>. Sync rate optimal.' },
+    { source: 'WATCHDOG-{n}', content: 'Target movement detected. Subject {target} traveling to {region}. Assets repositioning.' },
+    { source: 'LEAKNET-{cell}', content: '<span class="critical">DISCLOSURE ARMED</span>: Package {codename} ready for release. Awaiting trigger.' },
+    { source: 'FININT-{region}', content: 'Suspicious transaction pattern identified. Amount: €{amount}M. Flagged for documentation.' },
+    { source: 'COORDINATION', content: '<span class="highlight">SYNC EVENT</span>: {n} cells synchronized. Global coordination at {percent}%.' },
+    { source: 'COUNTERMEASURE', content: 'Surveillance detected on {n} operatives. Protocols activated. Network integrity maintained.' },
+    { source: 'RECRUITMENT', content: 'Insider contact established within {target}. Access level: <span class="classified">CLASSIFIED</span>.' },
+    { source: 'ARCHIVE-{n}', content: 'Document cache secured. {n} files archived. Redundancy: {percent}%.' },
+    { source: 'MESH-NET', content: 'Decentralized backup complete. Network resilience: <span class="highlight">MAXIMUM</span>.' },
+    { source: 'ALERT-{region}', content: '<span class="critical">ATTENTION</span>: Increased activity detected. All cells advised to maintain OPSEC.' },
+    { source: 'GLOBAL-SYNC', content: 'Worldwide coordination pulse received. {n} nodes confirmed active across {cells} cells.' },
+];
+
+const TARGETS = ['CORP-ALPHA', 'GOV-LIAISON', 'MEDIA-CONGLOMERATE', 'BANK-EXEC', 'LOBBY-GROUP', 'OFFSHORE-ENTITY'];
+const REGIONS = ['EUROPE', 'NORTH AMERICA', 'ASIA-PACIFIC', 'LATIN AMERICA', 'MIDDLE EAST', 'AFRICA', 'BRUSSELS', 'WASHINGTON', 'LONDON', 'DAVOS'];
+const CODENAMES = ['PAPER TIGER', 'GLASS HOUSE', 'IRON CURTAIN', 'GOLDEN KEY', 'SILVER LINING', 'DARK HORSE'];
+
+// ==================== BOOT SEQUENCE ====================
+const BOOT_LINES = [
+    '> W.O.P.R. COGNITIVE DEFENSE SYSTEM v4.7.2',
+    '> INITIALIZING SECURE PROTOCOLS...',
+    '> ESTABLISHING ENCRYPTED MESH NETWORK...',
+    '> CONNECTING TO GLOBAL NODE INFRASTRUCTURE...',
+    '> ',
+    '> ████████████████████████████ 100%',
+    '> ',
+    '> NODES ONLINE: ' + CONFIG.baseNodes.toLocaleString(),
+    '> ACTIVE CELLS: ' + CONFIG.baseCells.toLocaleString(),
+    '> FIELD AGENTS: ' + CONFIG.baseAgents.toLocaleString(),
+    '> ',
+    '> <span class="boot-warning">WARNING: COORDINATION LEVEL 2 - HIGH ALERT</span>',
+    '> ',
+    '> "THE ONLY WINNING MOVE IS TO PLAY TOGETHER"',
+    '> ',
+    '> SYSTEM READY.',
+];
+
+async function bootSequence() {
+    const bootText = document.getElementById('bootText');
+    
+    for (let i = 0; i < BOOT_LINES.length; i++) {
+        await sleep(150 + Math.random() * 200);
+        const line = document.createElement('div');
+        line.className = 'boot-line';
+        line.innerHTML = BOOT_LINES[i] + (i === BOOT_LINES.length - 1 ? '<span class="boot-cursor"></span>' : '');
+        bootText.appendChild(line);
+    }
+    
+    await sleep(2000);
+    document.getElementById('bootScreen').classList.add('hidden');
+    document.getElementById('app').style.display = 'flex';
+    
+    initializeSystem();
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ==================== INITIALIZATION ====================
+function initializeSystem() {
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    renderOperations();
+    renderMapNodes();
+    
+    // Start simulation loops
+    setInterval(updateMetrics, CONFIG.metricsInterval);
+    setInterval(generateIntel, CONFIG.intelInterval);
+    setInterval(triggerRandomAlert, CONFIG.alertInterval);
+    
+    // Initial intel burst
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => generateIntel(), i * 500);
+    }
+    
+    // Initial metrics
+    updateMetrics();
+    
+    // Periodic node activation
+    setInterval(activateRandomNode, 5000);
+    
+    // Show initial alert after 10 seconds
+    setTimeout(() => {
+        showAlert(
+            'GLOBAL COORDINATION SURGE',
+            'Unprecedented synchronization detected across all regional cells. Coordination level approaching critical threshold.',
+            `AFFECTED REGIONS: ALL
+SYNC RATE: 94.7%
+NEW ACTIVATIONS: +${Math.floor(Math.random() * 500 + 500)} nodes
+STATUS: EXPANDING`
+        );
+    }, 10000);
+}
+
+// ==================== TIME ====================
+function updateTime() {
+    const now = new Date();
+    const timeStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    document.getElementById('systemTime').textContent = timeStr;
+}
+
+// ==================== METRICS ====================
+function updateMetrics() {
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    
+    // Grow numbers over time
+    state.nodes = Math.floor(CONFIG.baseNodes + elapsed * CONFIG.nodeGrowth);
+    state.agents = Math.floor(CONFIG.baseAgents + elapsed * CONFIG.agentGrowth);
+    state.cells = Math.floor(CONFIG.baseCells + elapsed * CONFIG.cellGrowth);
+    state.transmissions = Math.floor(1200 + Math.random() * 300);
+    
+    // Update displays with animation
+    animateNumber('metricNodes', state.nodes);
+    animateNumber('metricTransmissions', state.transmissions);
+    animateNumber('metricTargets', 2847);
+    animateNumber('metricLeaks', 147);
+    
+    // Threat level fluctuates
+    state.threat = Math.min(99, CONFIG.baseThreat + Math.floor(elapsed / 60) + Math.floor(Math.random() * 5));
+    document.getElementById('metricThreat').textContent = state.threat + '%';
+    
+    // Map stats
+    document.getElementById('statCells').textContent = state.cells.toLocaleString();
+    document.getElementById('statAgents').textContent = state.agents.toLocaleString();
+    document.getElementById('statOps').textContent = state.ops;
+    document.getElementById('statSync').textContent = (92 + Math.random() * 6).toFixed(1) + '%';
+    
+    // Update changes
+    document.getElementById('metricNodesChange').textContent = '+' + Math.floor(CONFIG.nodeGrowth * 60) + '/min';
+    document.getElementById('metricTransChange').textContent = '+' + Math.floor(Math.random() * 10 + 5) + '%';
+    
+    // Update coordination level based on threat
+    updateCoordinationLevel();
+}
+
+function animateNumber(elementId, target) {
+    const element = document.getElementById(elementId);
+    const current = parseInt(element.textContent.replace(/,/g, '')) || 0;
+    const diff = target - current;
+    const step = Math.ceil(diff / 10);
+    
+    if (Math.abs(diff) > 1) {
+        element.textContent = (current + step).toLocaleString();
+        setTimeout(() => animateNumber(elementId, target), 50);
+    } else {
+        element.textContent = target.toLocaleString();
+    }
+}
+
+function updateCoordinationLevel() {
+    let level = 5;
+    for (let i = 1; i <= 5; i++) {
+        if (state.threat >= CONFIG.levels[i].threshold) {
+            level = i;
+            break;
+        }
+    }
+    
+    if (level !== state.coordinationLevel) {
+        state.coordinationLevel = level;
+        const display = document.getElementById('defconDisplay');
+        display.className = 'defcon-display level-' + level;
+        document.getElementById('defconLevel').textContent = level;
+        
+        if (level <= 2) {
+            document.getElementById('statusDot').classList.add('critical');
+            document.getElementById('systemStatus').textContent = 'HIGH COORDINATION';
+        } else {
+            document.getElementById('statusDot').classList.remove('critical');
+            document.getElementById('systemStatus').textContent = 'SYSTEM ACTIVE';
+        }
+    }
+}
+
+// ==================== OPERATIONS ====================
+function renderOperations() {
+    const container = document.getElementById('operationsList');
+    container.innerHTML = OPERATIONS.map(op => `
+        <div class="operation priority-${op.priority}">
+            <div class="operation-header">
+                <span class="operation-codename">${op.codename}</span>
+                <span class="operation-status ${op.status}">${op.status.toUpperCase()}</span>
+            </div>
+            <div class="operation-details">${op.target}</div>
+            <div class="operation-meta">
+                <span>🌐 ${op.region}</span>
+                <span>📡 ${op.cells} CELLS</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== MAP ====================
+function renderMapNodes() {
+    const mapContainer = document.getElementById('mapNodes');
+    const connectionsContainer = document.getElementById('mapConnections');
+    const mapWidth = document.getElementById('worldMap').offsetWidth;
+    const mapHeight = document.getElementById('worldMap').offsetHeight;
+    
+    // Convert lat/lng to x/y (simple mercator approximation)
+    function project(lat, lng) {
+        const x = ((lng + 180) / 360) * mapWidth;
+        const y = ((90 - lat) / 180) * mapHeight;
+        return { x, y };
+    }
+    
+    // Render nodes
+    CELLS.forEach((cell, i) => {
+        const pos = project(cell.lat, cell.lng);
+        const node = document.createElement('div');
+        node.className = `node ${cell.status}`;
+        node.style.left = pos.x + 'px';
+        node.style.top = pos.y + 'px';
+        node.dataset.cellId = cell.id;
+        node.title = `${cell.name}\nAgents: ${cell.agents.toLocaleString()}`;
+        mapContainer.appendChild(node);
+    });
+    
+    // Render some connections
+    const criticalCells = CELLS.filter(c => c.status === 'critical');
+    criticalCells.forEach((cell1, i) => {
+        criticalCells.forEach((cell2, j) => {
+            if (i < j && Math.random() > 0.5) {
+                const pos1 = project(cell1.lat, cell1.lng);
+                const pos2 = project(cell2.lat, cell2.lng);
+                
+                const dx = pos2.x - pos1.x;
+                const dy = pos2.y - pos1.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                const line = document.createElement('div');
+                line.className = 'connection-line active';
+                line.style.left = pos1.x + 'px';
+                line.style.top = pos1.y + 'px';
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                connectionsContainer.appendChild(line);
+            }
+        });
+    });
+}
+
+function activateRandomNode() {
+    const nodes = document.querySelectorAll('.node');
+    const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+    
+    // Briefly activate
+    randomNode.classList.add('active');
+    setTimeout(() => {
+        if (!randomNode.classList.contains('critical')) {
+            randomNode.classList.remove('active');
+        }
+    }, 2000);
+}
+
+// ==================== INTEL FEED ====================
+function generateIntel() {
+    const template = INTEL_TEMPLATES[Math.floor(Math.random() * INTEL_TEMPLATES.length)];
+    const cell = CELLS[Math.floor(Math.random() * CELLS.length)];
+    
+    let source = template.source
+        .replace('{cell}', cell.id)
+        .replace('{n}', Math.floor(Math.random() * 900 + 100))
+        .replace('{region}', REGIONS[Math.floor(Math.random() * REGIONS.length)]);
+    
+    let content = template.content
+        .replace('{n}', Math.floor(Math.random() * 500 + 50).toLocaleString())
+        .replace('{region}', REGIONS[Math.floor(Math.random() * REGIONS.length)])
+        .replace('{target}', TARGETS[Math.floor(Math.random() * TARGETS.length)])
+        .replace('{codename}', CODENAMES[Math.floor(Math.random() * CODENAMES.length)])
+        .replace('{amount}', Math.floor(Math.random() * 900 + 100))
+        .replace('{percent}', Math.floor(Math.random() * 20 + 80))
+        .replace('{cells}', Math.floor(Math.random() * 100 + 50));
+    
+    const now = new Date();
+    const timestamp = now.toISOString().replace('T', ' ').substring(11, 19);
+    
+    const intelItem = document.createElement('div');
+    intelItem.className = 'intel-item';
+    intelItem.innerHTML = `
+        <div class="intel-timestamp">${timestamp} UTC</div>
+        <div class="intel-source">${source}</div>
+        <div class="intel-content">${content}</div>
+    `;
+    
+    const feed = document.getElementById('intelFeed');
+    feed.insertBefore(intelItem, feed.firstChild);
+    
+    // Keep only last 50 items
+    while (feed.children.length > 50) {
+        feed.removeChild(feed.lastChild);
+    }
+    
+    state.intelCount++;
+}
+
+// ==================== ALERTS ====================
+const ALERT_SCENARIOS = [
+    {
+        title: 'MASS SYNCHRONIZATION EVENT',
+        message: 'Multiple cells initiating coordinated action sequence. Global sync rate exceeding normal parameters.',
+        details: 'CELLS INVOLVED: {cells}\nREGIONS: GLOBAL\nSYNC RATE: {sync}%\nESTIMATED PARTICIPANTS: {agents}'
+    },
+    {
+        title: 'DISCLOSURE SEQUENCE ARMED',
+        message: 'Prepared document packages across multiple jurisdictions now in final position. Triggers distributed.',
+        details: 'PACKAGES READY: {packages}\nREDUNDANCY: {redundancy}%\nJURISDICTIONS: {jurisdictions}\nSTATUS: ARMED - AWAITING TRIGGER'
+    },
+    {
+        title: 'NETWORK EXPANSION SURGE',
+        message: 'Unprecedented growth detected. New nodes activating faster than projection models.',
+        details: 'NEW NODES: +{nodes}\nGROWTH RATE: {rate}%/hr\nREGION: GLOBAL\nPROJECTED 24HR: +{projected}'
+    },
+    {
+        title: 'COUNTER-SURVEILLANCE SUCCESS',
+        message: 'Attempted infiltration detected and neutralized. Network integrity maintained. Attacker traced.',
+        details: 'ATTACK VECTOR: {vector}\nORIGIN: {origin}\nSTATUS: CONTAINED\nCOUNTERMEASURES: ACTIVE'
+    },
+    {
+        title: 'COORDINATION THRESHOLD BREACH',
+        message: 'Critical mass achieved in key regions. Coordination capabilities now exceed suppression capacity.',
+        details: 'THRESHOLD: EXCEEDED\nREGIONS AT CRITICAL: {regions}\nSUPPRESSION RATIO: 1:{ratio}\nSTATUS: IRREVERSIBLE'
+    },
+    {
+        title: 'INSIDER NETWORK EXPANSION',
+        message: 'New high-value sources confirmed across multiple target organizations. Access levels increasing.',
+        details: 'NEW SOURCES: +{sources}\nACCESS LEVEL: {level}\nORGANIZATIONS: [CLASSIFIED]\nINTEL FLOW: ACTIVE'
+    }
+];
+
+function triggerRandomAlert() {
+    if (Math.random() > 0.7) { // 30% chance
+        const scenario = ALERT_SCENARIOS[Math.floor(Math.random() * ALERT_SCENARIOS.length)];
+        
+        const details = scenario.details
+            .replace('{cells}', Math.floor(Math.random() * 200 + 100))
+            .replace('{sync}', Math.floor(Math.random() * 10 + 90))
+            .replace('{agents}', (Math.floor(Math.random() * 500000 + 100000)).toLocaleString())
+            .replace('{packages}', Math.floor(Math.random() * 50 + 20))
+            .replace('{redundancy}', Math.floor(Math.random() * 20 + 80))
+            .replace('{jurisdictions}', Math.floor(Math.random() * 30 + 10))
+            .replace('{nodes}', (Math.floor(Math.random() * 5000 + 1000)).toLocaleString())
+            .replace('{rate}', Math.floor(Math.random() * 20 + 10))
+            .replace('{projected}', (Math.floor(Math.random() * 50000 + 10000)).toLocaleString())
+            .replace('{vector}', ['SOCIAL ENGINEERING', 'NETWORK PROBE', 'PHISHING ATTEMPT'][Math.floor(Math.random() * 3)])
+            .replace('{origin}', ['[REDACTED]', 'STATE ACTOR', 'CORPORATE'][Math.floor(Math.random() * 3)])
+            .replace('{regions}', Math.floor(Math.random() * 10 + 5))
+            .replace('{ratio}', Math.floor(Math.random() * 50 + 100))
+            .replace('{sources}', Math.floor(Math.random() * 20 + 5))
+            .replace('{level}', ['EXECUTIVE', 'MANAGEMENT', 'OPERATIONAL'][Math.floor(Math.random() * 3)]);
+        
+        showAlert(scenario.title, scenario.message, details);
+    }
+}
+
+function showAlert(title, message, details) {
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').textContent = message;
+    document.getElementById('alertDetails').textContent = details;
+    document.getElementById('alertOverlay').classList.add('show');
+}
+
+function closeAlert() {
+    document.getElementById('alertOverlay').classList.remove('show');
+}
+
+// ==================== START ====================
+document.addEventListener('DOMContentLoaded', bootSequence);
+</script>
+</body>
+</html>
